@@ -16,7 +16,7 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//div[@name='button_box']" position="inside">
-                    <button name="%(act_mrp_date_grouping)d" type="action" string="Plan Production" class="oe_highlight"/>
+                    <button name="act_mrp_date_grouping" type="action" string="Plan Production" class="oe_highlight"/>
                 </xpath>
             </field>
         </record>
