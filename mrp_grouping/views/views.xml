@@ -10,6 +10,7 @@
         </record>
 		
         <!-- Add button to sale order list view -->
+		<!--
         <record id="view_order_form_inherit_mrp_date_grouping" model="ir.ui.view">
             <field name="name">sale.order.form.mrp.date.grouping</field>
             <field name="model">sale.order</field>
@@ -20,6 +21,22 @@
                 </xpath>
             </field>
         </record>
+		-->
+		<record model="ir.actions.server" id="server_action_open_mrp_date_grouping_form">
+			<field name="name">Planifica produccion</field>
+			<field name="model_id" ref="model_sale_order"/>
+			<field name="binding_model_id" ref="model_sale_order"/>
+			<field name="state">code</field>
+			<field name="code">
+				action = {
+					"type": "ir.actions.act_window",
+					"res_model": "mrp.date.grouping",
+					"view_mode": "form",
+					"target": "new",
+				}
+			</field>
+		</record>
+
 
         <!-- Transient model form view -->
         <record id="view_mrp_date_grouping" model="ir.ui.view">
