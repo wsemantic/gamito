@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Add button to sale order list view -->
+        <record id="view_order_form_inherit_mrp_date_grouping" model="ir.ui.view">
+            <field name="name">sale.order.form.mrp.date.grouping</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="%(act_mrp_date_grouping)d" type="action" string="Plan Production" class="oe_highlight"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Transient model form view -->
+        <record id="view_mrp_date_grouping" model="ir.ui.view">
+            <field name="name">mrp.date.grouping.form</field>
+            <field name="model">mrp.date.grouping</field>
+            <field name="arch" type="xml">
+                <form string="Plan Production">
+                    <group>
+                        <field name="daysgroup"/>
+                        <field name="ngroups"/>
+                    </group>
+                    <footer>
+                        <button name="mrp_planning" type="object" string="Plan" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action to open transient model -->
+        <record id="act_mrp_date_grouping" model="ir.actions.act_window">
+            <field name="name">Plan Production</field>
+            <field name="res_model">mrp.date.grouping</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

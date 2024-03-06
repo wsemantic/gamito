@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+	<!--<record id="action_order_custom_logic" model="ir.actions.server">
+		<field name="name">Optimizar planificacion</field>
+		<field name="model_id" ref="sale.model_sale_order"/>
+		<field name="binding_model_id" ref="sale.model_sale_order"/>
+				
+		<field name="state">code</field>
+		<field name="code">
+				action = records.calcular_fecha_entrega()
+		</field>
+	</record>-->
+	
+    <!-- Vista del Formulario para el Modelo TransientModel -->
+    <record id="view_mrp_date_grouping_wizard_form" model="ir.ui.view">
+        <field name="name">mrp.date.grouping.wizard.form</field>
+        <field name="model">mrp.date.grouping.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Optimización de Agrupación por Fecha">
+                <group>
+                    <field name="parameter_field"/>
+                </group>
+                <footer>
+                    <button string="Aceptar" name="mrp_planning" type="object" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Acción de Ventana para Abrir el Formulario TransientModel -->
+    <record id="action_open_mrp_date_grouping_wizard" model="ir.actions.act_window">
+        <field name="name">Planificar Agrupación por Fecha</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.date.grouping.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_order_ids': active_ids}</field>
+    </record>
+    
+    <!-- Extensión de la Vista de Lista de Pedidos para Añadir un Botón Personalizado -->
+    <record id="view_sale_order_list_inherit_mrp_date_grouping" model="ir.ui.view">
+        <field name="name">sale.order.list.inherit.mrp.date.grouping</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <header>
+                    <button name="%(action_open_mrp_date_grouping_wizard)d" type="action"
+                            string="Planificar Agrupación por Fecha" class="oe_highlight"/>
+                </header>
+            </xpath>
+        </field>
+    </record>
+</odoo>
