@@ -115,9 +115,12 @@ class MrpDateGrouping(models.TransientModel):
                 workcenter = operation.workcenter_id
                 cycle_time = sum(wc_line.time_cycle for wc_line in workcenter.routing_line_ids)
                 lead_time += cycle_time / workcenter.default_capacity
+                _logger.info(f"WSEM cycle t:{cycle_time} leadtime:{lead_time}")
 
             for line in bom.bom_line_ids:
-                lead_time += self._calculate_product_lead_time(line.product_id)
+                extra=self._calculate_product_lead_time(line.product_id)
+                lead_time += extra
+                _logger.info(f"WSEM añadido leadtime:{extra}")
 
         return lead_time
 
@@ -131,7 +134,7 @@ class MrpDateGrouping(models.TransientModel):
             for product, quantity in products_info.items():
                 bom = self.env['mrp.bom']._bom_find(product)[product]
                 if not bom:
-                    _logger.warning(f"No se encontró BOM para el producto {product.display_name}. Se omite la creación de la orden de producción.")
+                    _logger.info(f"WSEM No se encontró BOM para el producto {product.display_name}. Se omite la creación de la orden de producción.")
                     continue
                 
                 # Preparar datos para la creación de la orden de producción
@@ -151,9 +154,9 @@ class MrpDateGrouping(models.TransientModel):
                 # Crear la orden de producción
                 production_order = ProductionOrder.create(production_data)
 
-                _logger.info(f"Orden de producción creada: {production_order.name} para el producto {product.display_name} con cantidad {quantity}.")
+                _logger.info(f"WSEM Orden de producción creada: {production_order.name} para el producto {product.display_name} con cantidad {quantity}.")
 
-        _logger.info("Todas las órdenes de producción han sido creadas.")
+        _logger.info("WSEM  Todas las órdenes de producción han sido creadas.")
 
 
  
