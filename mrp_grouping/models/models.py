@@ -70,11 +70,13 @@ class MrpDateGrouping(models.TransientModel):
 
         for order in sale_orders:
             for line in order.order_line:
-                product = line.product_id
-                bom = self.env['mrp.bom']._bom_find(product)
+                product = line.product_id                
+                bom = self.env['mrp.bom']._bom_find(products)[product]
                 if not bom:
+                    _logger.debug(f"WSEM no encontrado bom")
                     products_by_phase[0].append(product)
                 else:
+                    _logger.debug(f"WSEM encontrado bom : {bom.display_name}")
                     phase = max(self._get_bom_phases(bom))
                     products_by_phase[phase].append(product)
 
@@ -82,8 +84,8 @@ class MrpDateGrouping(models.TransientModel):
 
     def _get_bom_phases(self, bom):
         phases = set()
-        for bom_line in bom.bom_line_ids:
-            child_bom = self.env['mrp.bom']._bom_find(bom_line.product_id)
+        for bom_line in bom.bom_line_ids:            
+            child_bom = self.env['mrp.bom']._bom_find(bom_line.product_id)[bom_line.product_id]
             if child_bom:
                 phases.update(self._get_bom_phases(child_bom))
             else:
@@ -96,7 +98,7 @@ class MrpDateGrouping(models.TransientModel):
 
     def _calculate_product_lead_time(self, product):
         lead_time = 0.0
-        bom = self.env['mrp.bom']._bom_find(product)
+        bom = self.env['mrp.bom']._bom_find(product)[product]
         if bom:
             for operation in bom.operation_ids:
                 workcenter = operation.workcenter_id
@@ -113,7 +115,7 @@ class MrpDateGrouping(models.TransientModel):
 
         for order in sale_orders:
             for line in order.order_line:
-                bom = self.env['mrp.bom']._bom_find(line.product_id)
+                bom = self.env['mrp.bom']._bom_find(line.product_id)[line.product_id]
                 if bom:
                     production_order = production_orders.create({
                         'product_id': line.product_id.id,
@@ -135,7 +137,7 @@ class MrpDateGrouping(models.TransientModel):
 
     def _create_production_orders_recursive(self, production_order, bom, start_dates, end_dates):
         for bom_line in bom.bom_line_ids:
-            child_bom = self.env['mrp.bom']._bom_find(bom_line.product_id)
+            child_bom = self.env['mrp.bom']._bom_find(bom_line.product_id)[bom_line.product_id]
             if child_bom:
                 child_production_order = production_order.procurement_group_id.mrp_production_ids.create({
                     'product_id': bom_line.product_id.id,
