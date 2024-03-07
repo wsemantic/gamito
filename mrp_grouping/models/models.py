@@ -21,7 +21,7 @@ class MrpDateGrouping(models.TransientModel):
         latest_end_date = fields.Datetime.now()
         start_gr_date = fields.Datetime.now()
 
-        _logger.debug(f"WSEM Inicio:")
+        _logger.info(f"WSEM Inicio:")
         for order in sale_orders:
             _logger.debug(f"WSEM itera orden : {order.name}")
             current_group.append(order)

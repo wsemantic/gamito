@@ -1,27 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-	    <!-- Action to open transient model -->
-        <record id="act_mrp_date_grouping" model="ir.actions.act_window">
-            <field name="name">Plan Production</field>
-            <field name="res_model">mrp.date.grouping</field>
-            <field name="view_mode">form</field>
-            <field name="target">new</field>
-        </record>
 		
-        <!-- Add button to sale order list view -->
-		<!--
-        <record id="view_order_form_inherit_mrp_date_grouping" model="ir.ui.view">
-            <field name="name">sale.order.form.mrp.date.grouping</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//div[@name='button_box']" position="inside">
-                    <button name="%(act_mrp_date_grouping)d" type="action" string="Plan Production" class="oe_highlight"/>
-                </xpath>
-            </field>
-        </record>
-		-->
 		<record model="ir.actions.server" id="server_action_open_mrp_date_grouping_form">
 			<field name="name">Planifica produccion</field>
 			<field name="model_id" ref="sale.model_sale_order"/>
