@@ -28,6 +28,8 @@ class MrpDateGrouping(models.TransientModel):
             products_by_phase = self._sort_products_by_phase(current_group)
             
             product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(products_by_phase, group_end_date)
+            order.commitment_date = max(end_dates.values()) if end_dates else fields.Date.today()
+            
             group_end_date_old = group_end_date
             group_end_date = max(end_dates.values())
             _logger.info(f"WSEM fecha grupo : {group_end_date.strftime('%Y-%m-%d %H:%M:%S')}")
