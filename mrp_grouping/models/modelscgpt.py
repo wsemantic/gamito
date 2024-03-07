@@ -1,77 +1,133 @@
 from odoo import models, fields, api
-from datetime import datetime, timedelta
-from collections import defaultdict
+import datetime
 
-class MrpDateGroupingWizard(models.TransientModel):
-    _name = 'mrp.date.grouping.wizard'
-    _description = 'Wizard for Date-Based Grouping in MRP'
+class MrpDateGrouping(models.TransientModel):
+    _name = 'mrp.date.grouping'
+    _description = 'MRP Date Grouping'
 
-    daysgroup = fields.Integer("Número de días a agrupar", required=True, default=1)
-    ngroups = fields.Integer("Número de grupos a planificar", required=True, default=1)
+    daysgroup = fields.Integer("Number of Days to Group")
+    ngroups = fields.Integer("Number of Groups to Plan")
 
-    def mrp_planning(self):
-        # Obtener los pedidos seleccionados y ordenarlos por fecha de entrega ascendente
-        active_ids = self.env.context.get('active_ids')
-        orders = self.env['sale.order'].browse(active_ids).sorted(key=lambda o: o.commitment_date)
+    @api.model
+    def default_get(self, fields):
+        res = super(MrpDateGrouping, self).default_get(fields)
+        # Default values can be set here if needed
+        return res
+        
+    def calculate_batch_production_time(self, batch_orders):
+        """
+        Calcula el tiempo de producción para un lote de órdenes de venta basado en la demanda agregada.
+        :param batch_orders: Órdenes de venta en el lote actual.
+        :return: Tiempo total estimado de producción para el lote.
+        """
+        # Diccionario para acumular la demanda total por producto
+        product_demand = {}
 
-        # Preparación inicial para la planificación
-        current_batch = []
-        batches_processed = 0
-        last_batch_end_date = datetime.now()
-
-        for order in orders:
-            current_batch.append(order)
-            # Procesar el batch actual para ajustar las fechas de entrega
-            batch_end_date = self._process_batch(current_batch, last_batch_end_date)
-
-            if batch_end_date > last_batch_end_date + timedelta(days=self.daysgroup):
-                # Si se supera el límite de días para el batch actual, iniciar un nuevo batch
-                batches_processed += 1
-                if batches_processed >= self.ngroups:
-                    break  # Finalizar si se alcanza el número máximo de grupos
-                current_batch = [order]  # Iniciar un nuevo batch con el pedido actual
-                last_batch_end_date = batch_end_date
-            else:
-                last_batch_end_date = batch_end_date
-
-        # Aquí se puede agregar lógica para manejar las órdenes de trabajo resultantes del último batch procesado
-        # y cualquier acción final después de procesar todos los batches.
-
-        return {'type': 'ir.actions.act_window_close'}
-
-    def _process_batch(self, batch, start_date):
-        # Diccionario para agrupar la demanda por producto, operación y centro de trabajo
-        product_demand = defaultdict(lambda: defaultdict(lambda: defaultdict(float)))
-
-        # Recorrer cada pedido en el batch para procesar sus productos
-        for order in batch:
+        # Agregar las demandas de productos de todas las órdenes en el lote
+        for order in batch_orders:
             for line in order.order_line:
                 product = line.product_id
-                self._aggregate_product_demand(product, line.product_uom_qty, product_demand)
+                product_demand[product] = product_demand.get(product, 0) + line.product_uom_qty
 
-        # Aquí se procesaría la demanda agregada para calcular la nueva fecha de entrega
-        # Simulación de cómo se podría calcular el tiempo total basado en la demanda agregada
-        batch_end_date = start_date
-        for product, operations in product_demand.items():
-            for operation, workcenters in operations.items():
-                for workcenter, demand in workcenters.items():
-                    # Simular el cálculo del tiempo necesario basado en la demanda agregada
-                    # Este es solo un ejemplo; necesitarás implementar tu lógica de cálculo
-                    batch_end_date += timedelta(hours=demand / workcenter.capacity_per_hour)
+        # Calcular el tiempo de producción basado en la demanda agregada
+        total_production_time = 0
+        for product, qty in product_demand.items():
+            bom = self.env['mrp.bom']._bom_find(product=product)
+            if bom:
+                product_time, _ = self.calculate_product_time(bom, quantity=qty)
+                total_production_time += product_time
 
-        return batch_end_date
+        return total_production_time
 
-    def _aggregate_product_demand(self, product, quantity, product_demand):
-        # Verificar si el producto tiene una BOM
-        bom = self.env['mrp.bom']._bom_find(product=product)
-        if bom:
-            # Si el producto tiene BOM, procesar recursivamente los componentes
-            for bom_line in bom.bom_line_ids:
-                self._aggregate_product_demand(bom_line.product_id, bom_line.product_qty * quantity, product_demand)
-        else:
-            # Para productos sin BOM, agregar la demanda
-            # Aquí asumimos que tienes una forma de determinar la operación y el centro de trabajo
-            # para el producto. Esto podría requerir lógica adicional basada en tu configuración específica.
-            operation = "OperaciónPredeterminada"  # Este valor debe determinarse según tu lógica
-            workcenter = self.env['mrp.workcenter'].browse(1)  # Ejemplo: obtiene el primer centro de trabajo
-            product_demand[product][operation][workcenter] += quantity
+    def mrp_planning(self):
+        SaleOrder = self.env['sale.order']
+        selected_orders = SaleOrder.browse(self._context.get('active_ids', [])).sorted(key=lambda r: r.commitment_date)
+        
+        n_inicio_grupo_actual = 0
+        current_group = 0
+        fecha_inicio_grupo_actual = fields.Date.today()
+
+        while current_group < self.ngroups and n_inicio_grupo_actual < len(selected_orders):
+            # Seleccionar órdenes para el lote actual hasta que se supere el límite de tiempo o se procesen todas las órdenes
+            for next_order_index in range(n_inicio_grupo_actual, len(selected_orders)):
+                batch_orders = selected_orders[n_inicio_grupo_actual:next_order_index + 1]
+                total_production_time = self.calculate_batch_production_time(batch_orders)
+                
+                # Verificar si el tiempo de producción excede el límite para el lote actual
+                if total_production_time > self.daysgroup * self.get_daily_production_capacity():
+                    # Si se excede, procesar hasta la orden anterior
+                    batch_orders = selected_orders[n_inicio_grupo_actual:next_order_index]
+                    break
+
+            # Actualizar fechas de entrega y otros procesos necesarios para el lote
+            # ...
+
+            # Preparar para el siguiente grupo
+            current_group += 1
+            n_inicio_grupo_actual = next_order_index + 1  # Empezar el siguiente grupo con la siguiente orden
+
+        # Lógica adicional para manejar cualquier post-proceso necesario después de planificar todos los grupos
+
+
+    def get_production_capacity_per_day(self):
+        """
+        Devuelve la capacidad de producción por día del centro de trabajo.
+        Esto puede variar dependiendo de la configuración específica de tu centro de trabajo.
+        :return: Capacidad de producción por día en horas.
+        """
+        # Este es un valor de ejemplo. Debes ajustarlo según la capacidad real de tu centro de trabajo.
+        return 8 * number_of_work_centers  # Por ejemplo, 8 horas por día por el número de centros de trabajo
+
+
+    def calculate_product_time(self, bom, quantity=1.0):
+        """
+        Calcular el tiempo de producción para un producto específico basado en su BOM.
+        """
+        time = 0
+        # Considerar tanto las operaciones directas como las sub-operaciones (recursión en BOMs)
+        for line in bom.bom_line_ids:
+            operation_time = line.operation_id.time_cycle * line.product_qty * quantity
+            time += operation_time
+            # Recursión para componentes que a su vez tienen BOM
+            sub_bom = self.env['mrp.bom']._bom_find(product=line.product_id)
+            if sub_bom:
+                sub_time, _ = self.calculate_product_time(sub_bom, quantity=line.product_qty * quantity)
+                time += sub_time
+
+        # Considerar la capacidad general del centro de producción para ajustar el tiempo total
+        # Esto puede implicar dividir el tiempo entre el número de máquinas disponibles si se pueden realizar operaciones en paralelo
+        # time_adjusted = time / number_of_machines if parallel_operations_allowed else time
+
+        return time, completion_date
+
+
+    def create_production_orders(self, order, production_time):
+        for line in order.order_line:
+            product = line.product_id
+
+            # Encuentra o crea una Lista de Materiales (BOM) para el producto
+            bom = self.env['mrp.bom']._bom_find(product=product)
+            if not bom:
+                # Aquí se podría manejar la creación de una BOM si es necesario
+                # Esto dependerá de la lógica de negocio y cómo se manejen normalmente las BOMs en el sistema
+                continue  # Si no hay BOM, saltamos este producto
+
+            # Crea una orden de producción
+            production_order_vals = {
+                'product_id': product.id,
+                'product_qty': line.product_uom_qty,
+                'product_uom_id': product.uom_id.id,
+                'bom_id': bom.id,
+                'origin': order.name,
+                'date_planned_start': datetime.datetime.now(),  # Ejemplo de programación inmediata
+                # 'date_planned_finished': calculado basado en el tiempo de producción y la capacidad
+            }
+
+            production_order = self.env['mrp.production'].create(production_order_vals)
+
+            # Programar la orden de producción si es necesario
+            # Esto puede incluir la asignación de tiempos específicos basados en la disponibilidad de las máquinas y/o trabajadores
+            # También puedes lanzar aquí el cálculo de la planificación si tu sistema lo soporta automáticamente
+            # production_order.button_plan()
+
+            # Nota: Este es un ejemplo básico. Dependiendo de los detalles y requerimientos específicos

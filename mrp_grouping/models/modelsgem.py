@@ -2,19 +2,17 @@ from odoo import models, fields, api
 from datetime import datetime, timedelta
 from collections import defaultdict
 
-class MrpDateGroupingWizard(models.TransientModel):
-    _name = 'mrp.date.grouping.wizard'
+class MrpDateGrouping(models.TransientModel):
+    _name = 'mrp.date.grouping'
     _description = 'Wizard for Date-Based Grouping in MRP'
 
     daysgroup = fields.Integer("Número de días a agrupar", required=True, default=1)
     ngroups = fields.Integer("Número de grupos a planificar", required=True, default=1)
 
-    def mrp_planning(self):
-        # Obtener los pedidos seleccionados y ordenarlos por fecha de entrega ascendente
+    def mrp_planning(self):     
         active_ids = self.env.context.get('active_ids')
         orders = self.env['sale.order'].browse(active_ids).sorted(key=lambda o: o.commitment_date)
 
-        # Preparación inicial para la planificación
         current_batch = []
         batches_processed = 0
         last_batch_end_date = datetime.now()
