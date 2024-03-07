@@ -79,6 +79,7 @@ class MrpDateGrouping(models.TransientModel):
                 else:
                     _logger.info(f"WSEM encontrado bom : {bom.display_name}")
                     phase = max(self._get_bom_phases(bom))
+                    _logger.info(f"WSEM phase : {phase}")
                     products_by_phase[phase].append(product)
 
         return products_by_phase
