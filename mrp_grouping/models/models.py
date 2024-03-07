@@ -83,7 +83,7 @@ class MrpDateGrouping(models.TransientModel):
         for order in sale_orders:
             for line in order.order_line:
                 product = line.product_id
-                bom = self.env['mrp.bom']._bom_find(product=product)                                                                                                                                                                   
+                bom = self.env['mrp.bom']._bom_find(product)[product]                                                                                                                                                               
                                                                              
                 phase = 0 if not bom else max(self._get_bom_phases(bom))
                                                          
@@ -127,7 +127,7 @@ class MrpDateGrouping(models.TransientModel):
         ProductionOrder = self.env['mrp.production']
         for phase, products_info in products_by_phase.items():
             for product, quantity in products_info.items():
-                bom = self.env['mrp.bom']._bom_find(product=product)
+                bom = self.env['mrp.bom']._bom_find(product)[product]
                 if not bom:
                     _logger.warning(f"No se encontró BOM para el producto {product.display_name}. Se omite la creación de la orden de producción.")
                     continue
