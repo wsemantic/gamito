@@ -71,7 +71,7 @@ class MrpDateGrouping(models.TransientModel):
         for order in sale_orders:
             for line in order.order_line:
                 product = line.product_id                
-                bom = self.env['mrp.bom']._bom_find(products)[product]
+                bom = self.env['mrp.bom']._bom_find(product)[product]
                 if not bom:
                     _logger.debug(f"WSEM no encontrado bom")
                     products_by_phase[0].append(product)
