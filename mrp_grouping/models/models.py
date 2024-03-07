@@ -52,19 +52,22 @@ class MrpDateGrouping(models.TransientModel):
         end_dates = defaultdict(lambda: fields.Datetime.now())
         products_by_phase = self._sort_products_by_phase(sale_orders)
 
-        rangef=max(products_by_phase.keys()) + 1
-        _logger.info(f"WSEM dbg {rangef} contenido {1 in products_by_phase}" )
-        for phase in range(rangef):
-            if phase > 0:
-                start_date = end_dates[phase - 1]
+        if products_by_phase.keys():
+            rangef=max(products_by_phase.keys()) + 1
+            _logger.info(f"WSEM dbg {rangef} contenido {1 in products_by_phase}" )
+            for phase in range(rangef):
+                if phase > 0:
+                    start_date = end_dates[phase - 1]
 
-            for product in products_by_phase[phase]:
-                lead_time = self._calculate_product_lead_time(product)
-                product_lead_times[product.id] = lead_time
-                start_dates[product.id] = start_date
-                end_date = start_date + timedelta(days=lead_time)
-                end_dates[product.id] = end_date
-                start_date = end_date
+                for product in products_by_phase[phase]:
+                    lead_time = self._calculate_product_lead_time(product)
+                    product_lead_times[product.id] = lead_time
+                    start_dates[product.id] = start_date
+                    end_date = start_date + timedelta(days=lead_time)
+                    end_dates[product.id] = end_date
+                    start_date = end_date
+        else:
+            _logger.info(f"WSEM no hay fases" )
 
         return product_lead_times, start_dates, end_dates
 
