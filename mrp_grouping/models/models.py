@@ -62,7 +62,7 @@ class MrpDateGrouping(models.TransientModel):
         for orden in ordenes_venta:
             for linea in orden.order_line:
                 product = linea.product_id
-                bom = self.env['mrp.bom']._bom_find(product=product)
+                bom = self.env['mrp.bom']._bom_find(product)[product]
 
                 # Continuar solo si el producto tiene un BOM y el BOM tiene operaciones
                 if bom and bom.operation_ids:
