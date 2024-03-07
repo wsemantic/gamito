@@ -52,8 +52,9 @@ class MrpDateGrouping(models.TransientModel):
         end_dates = defaultdict(lambda: fields.Datetime.now())
         products_by_phase = self._sort_products_by_phase(sale_orders)
 
-        _logger.info(f"WSEM dbg {max(products_by_phase.keys())} contenido {1 in products_by_phase}" )
-        for phase in range(max(products_by_phase.keys()) + 1):
+        rangef=max(products_by_phase.keys()) + 1
+        _logger.info(f"WSEM dbg {rangef} contenido {1 in products_by_phase}" )
+        for phase in range(rangef):
             if phase > 0:
                 start_date = end_dates[phase - 1]
 
