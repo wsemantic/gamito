@@ -29,7 +29,7 @@ class MrpDateGrouping(models.TransientModel):
             products_by_phase = self._sort_products_by_phase(current_group)
             
             product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(products_by_phase, products_start)
-            order.commitment_date = max(end_dates.values()) if end_dates else fields.Date.today()
+            order.commitment_date = self.max_reserved_date_for_order(order, products_start)
             
             group_end_date_old = group_end_date
             group_end_date = max(end_dates.values())
@@ -55,6 +55,19 @@ class MrpDateGrouping(models.TransientModel):
 
         for group in groups:
             self._create_production_orders(*group)
+            
+     def max_reserved_date_for_order(self, orden, products_start):
+
+        fecha_maxima = False
+        
+        for linea in orden.order_line:
+            product = linea.product_id
+            if products_start[product]:
+                if not fecha_maxima or products_start[product] > fecha_maxima:
+                    fecha_maxima = products_start[product]           
+
+        return fecha_maxima
+        
 
     def find_max_reserved_date_for_work_centers(self, ordenes_venta):
         max_dates_per_product = {}
