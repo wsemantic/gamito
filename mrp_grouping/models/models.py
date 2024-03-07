@@ -175,8 +175,8 @@ class MrpDateGrouping(models.TransientModel):
                     'product_id': product.id,
                     'product_qty': quantity,
                     'bom_id': bom.id,
-                    'date_planned_start': start_dates[product],
-                    'date_planned_finished': end_dates[product],
+                    'date_planned_start': start_dates[product.id],
+                    'date_planned_finished': end_dates[product.id],
                     'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
                 }
 
