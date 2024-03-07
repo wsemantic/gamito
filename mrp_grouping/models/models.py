@@ -21,42 +21,43 @@ class MrpDateGrouping(models.TransientModel):
         latest_end_date = fields.Datetime.now()
         start_gr_date = fields.Datetime.now()
 
-        _logger.info(f"WSEM Inicio:")
+        _logger.info("WSEM Inicio:")
         for order in sale_orders:
             _logger.info(f"WSEM itera orden : {order.name}")
             current_group.append(order)
-            product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(current_group,group_end_date)
-            group_end_date_old=group_end_date;
+            products_by_phase = self._sort_products_by_phase(current_group)
+            
+            product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(products_by_phase, group_end_date)
+            group_end_date_old = group_end_date
             group_end_date = max(end_dates.values())
             _logger.info(f"WSEM fecha grupo : {group_end_date.strftime('%Y-%m-%d %H:%M:%S')}")
-            
-            if group_end_date >= start_gr_date + timedelta(days=self.daysgroup):   
-                if len(current_group)==1:
-                    _logger.info(f"WSEM primer grupo supera fecha")
+
+            if group_end_date >= start_gr_date + timedelta(days=self.daysgroup):
+                if len(current_group) == 1:
+                    _logger.info("WSEM primer grupo supera fecha")
                 else:
-                    #Elimino grupo que se pasa y actualizo datos
+                    # Elimino grupo que se pasa y actualizo datos
                     current_group.pop()
-                    product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(current_group,group_end_date_old)
+                    product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(products_by_phase, group_end_date_old)
                     group_end_date = max(end_dates.values())
-                    
-                start_gr_date=group_end_date
-                
-                groups.append((current_group, product_lead_times, start_dates, end_dates))
-                                
+
+                start_gr_date = group_end_date
+
+                groups.append((products_by_phase, product_lead_times, start_dates, end_dates))
+
                 if len(groups) >= self.ngroups:
                     break
-                    
-                current_group = []                 
 
-        for group, product_lead_times, start_dates, end_dates in groups:
-            self._create_production_orders(group, product_lead_times, start_dates, end_dates)
+                current_group = []
 
-    def _calculate_lead_times_by_phase(self, sale_orders, start_date):
+        for group in groups:
+            self._create_production_orders(*group)
+
+    def _calculate_lead_times_by_phase(self, products_by_phase, start_date):
         product_lead_times = defaultdict(lambda: 0.0)
         start_dates = defaultdict(lambda: fields.Datetime.now())
         end_dates = defaultdict(lambda: fields.Datetime.now())
-        products_by_phase = self._sort_products_by_phase(sale_orders)
-
+       
         if products_by_phase.keys():
             rangef=max(products_by_phase.keys()) + 1
             _logger.info(f"WSEM dbg {rangef} contenido {1 in products_by_phase}" )
@@ -77,20 +78,16 @@ class MrpDateGrouping(models.TransientModel):
         return product_lead_times, start_dates, end_dates
 
     def _sort_products_by_phase(self, sale_orders):
-        products_by_phase = defaultdict(list)
+        products_by_phase = defaultdict(lambda: defaultdict(float))
 
         for order in sale_orders:
             for line in order.order_line:
-                product = line.product_id                
-                bom = self.env['mrp.bom']._bom_find(product)[product]
-                if not bom:
-                    _logger.info(f"WSEM no encontrado bom")
-                    products_by_phase[0].append(product)
-                else:
-                    _logger.info(f"WSEM encontrado bom : {bom.display_name}")
-                    phase = max(self._get_bom_phases(bom))
-                    _logger.info(f"WSEM phase : {phase}")
-                    products_by_phase[phase].append(product)
+                product = line.product_id
+                bom = self.env['mrp.bom']._bom_find(product=product)                                                                                                                                                                   
+                                                                             
+                phase = 0 if not bom else max(self._get_bom_phases(bom))
+                                                         
+                products_by_phase[phase][product] += line.product_uom_qty
 
         return products_by_phase
 
@@ -122,44 +119,39 @@ class MrpDateGrouping(models.TransientModel):
 
         return lead_time
 
-    def _create_production_orders(self, sale_orders, product_lead_times, start_dates, end_dates):
-        production_orders = self.env['mrp.production']
+    def _create_production_orders(self, products_by_phase, product_lead_times, start_dates, end_dates):
+        """
+        Crear órdenes de producción basadas en los productos agrupados por fase,
+        considerando las cantidades acumuladas de cada producto.
+        """
+        ProductionOrder = self.env['mrp.production']
+        for phase, products_info in products_by_phase.items():
+            for product, quantity in products_info.items():
+                bom = self.env['mrp.bom']._bom_find(product=product)
+                if not bom:
+                    _logger.warning(f"No se encontró BOM para el producto {product.display_name}. Se omite la creación de la orden de producción.")
+                    continue
+                
+                # Preparar datos para la creación de la orden de producción
+                production_data = {
+                    'product_id': product.id,
+                    'product_qty': quantity,
+                    'bom_id': bom.id,
+                    'date_planned_start': start_dates[product],
+                    'date_planned_finished': end_dates[product],
+                    'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
+                }
 
-        for order in sale_orders:
-            for line in order.order_line:
-                bom = self.env['mrp.bom']._bom_find(line.product_id)[line.product_id]
-                if bom:
-                    production_order = production_orders.create({
-                        'product_id': line.product_id.id,
-                        'product_qty': line.product_uom_qty,
-                        'bom_id': bom.id,
-                        'sale_order_id': order.id,
-                        'sale_order_line_id': line.id,
-                        'date_planned_start': start_dates[line.product_id.id],
-                        'date_planned_finished': end_dates[line.product_id.id],
-                        'user_id': order.user_id.id,
-                        'company_id': order.company_id.id,
-                    })
+                # Opcional: establecer el usuario si está disponible en el contexto/env
+                if self.env.user and self.env.user.id:
+                    production_data['user_id'] = self.env.user.id
 
-                    production_orders |= production_order
+                # Crear la orden de producción
+                production_order = ProductionOrder.create(production_data)
 
-                    self._create_production_orders_recursive(production_order, bom, start_dates, end_dates)
+                _logger.info(f"Orden de producción creada: {production_order.name} para el producto {product.display_name} con cantidad {quantity}.")
 
-        return production_orders
+        _logger.info("Todas las órdenes de producción han sido creadas.")
 
-    def _create_production_orders_recursive(self, production_order, bom, start_dates, end_dates):
-        for bom_line in bom.bom_line_ids:
-            child_bom = self.env['mrp.bom']._bom_find(bom_line.product_id)[bom_line.product_id]
-            if child_bom:
-                child_production_order = production_order.procurement_group_id.mrp_production_ids.create({
-                    'product_id': bom_line.product_id.id,
-                    'product_qty': bom_line.product_qty * production_order.product_qty,
-                    'bom_id': child_bom.id,
-                    'sale_order_id': production_order.sale_order_id.id,
-                    'date_planned_start': start_dates[bom_line.product_id.id],
-                    'date_planned_finished': end_dates[bom_line.product_id.id],
-                    'user_id': production_order.user_id.id,
-                    'company_id': production_order.company_id.id,
-                })
 
-                self._create_production_orders_recursive(child_production_order, child_bom, start_dates, end_dates)
+ 
