@@ -65,7 +65,6 @@ class MrpDateGrouping(models.TransientModel):
             if products_start[product]:
                 if not fecha_maxima or products_start[product] > fecha_maxima:
                     fecha_maxima = products_start[product]           
-
         return fecha_maxima
         
 
