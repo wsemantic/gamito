@@ -68,10 +68,10 @@ class MrpDateGrouping(models.TransientModel):
                     start_date = end_dates[phase - 1]
 
                 for product in products_by_phase[phase]:
-                    lead_time = self._calculate_product_lead_time(product)
-                    product_lead_times[product.id] = lead_time
+                    lead_time_min = self._calculate_product_lead_time(product)
+                    product_lead_times[product.id] = lead_time_min
                     start_dates[product.id] = start_date
-                    end_date = start_date + timedelta(days=lead_time)
+                    end_date = start_date + timedelta(days=lead_time_min/60.0)
                     end_dates[product.id] = end_date
                     start_date = end_date
         else:
