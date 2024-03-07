@@ -63,9 +63,9 @@ class MrpDateGrouping(models.TransientModel):
         for linea in orden.order_line:
             product = linea.product_id
             if products_start[product]:
-                if not fecha_maxima or products_start[product] > fecha_maxima:
+                if not fecha_maxima or products_start.get(product, fields.Datetime.now()) > fecha_maxima:
                     fecha_maxima = products_start[product]           
-        return fecha_maxima
+        return fecha_maxima or fields.Datetime.now()
         
 
     def find_max_reserved_date_for_work_centers(self, ordenes_venta):
