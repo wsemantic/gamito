@@ -20,6 +20,7 @@ class MrpDateGrouping(models.TransientModel):
         group_end_date = fields.Datetime.now()
         latest_end_date = fields.Datetime.now()
         start_gr_date = fields.Datetime.now()
+        products_start=self.find_max_reserved_date_for_work_centers(sale_orders)
 
         _logger.info("WSEM Inicio:")
         for order in sale_orders:
@@ -27,7 +28,7 @@ class MrpDateGrouping(models.TransientModel):
             current_group.append(order)
             products_by_phase = self._sort_products_by_phase(current_group)
             
-            product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(products_by_phase, group_end_date)
+            product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(products_by_phase, products_start)
             order.commitment_date = max(end_dates.values()) if end_dates else fields.Date.today()
             
             group_end_date_old = group_end_date
@@ -40,7 +41,7 @@ class MrpDateGrouping(models.TransientModel):
                 else:
                     # Elimino grupo que se pasa y actualizo datos
                     current_group.pop()
-                    product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(products_by_phase, group_end_date_old)
+                    product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(products_by_phase, products_start)
                     group_end_date = max(end_dates.values())
 
                 start_gr_date = group_end_date
@@ -55,7 +56,40 @@ class MrpDateGrouping(models.TransientModel):
         for group in groups:
             self._create_production_orders(*group)
 
-    def _calculate_lead_times_by_phase(self, products_by_phase, start_date):
+    def find_max_reserved_date_for_work_centers(self, ordenes_venta):
+        max_dates_per_product = {}
+
+        for orden in ordenes_venta:
+            for linea in orden.order_line:
+                product = linea.product_id
+                bom = self.env['mrp.bom']._bom_find(product=product)
+
+                # Continuar solo si el producto tiene un BOM y el BOM tiene operaciones
+                if bom and bom.operation_ids:
+                    work_centers = bom.operation_ids.mapped('workcenter_id')
+                    max_date = fields.Datetime.now()
+
+                    for wc in work_centers:
+                        # Encuentra todas las órdenes de trabajo para este centro
+                        work_orders = self.env['mrp.workorder'].search([
+                            ('workcenter_id', '=', wc.id),
+                            ('state', 'not in', ['done', 'cancel'])  # Ejemplo de filtro por estado
+                        ])
+                        
+                        # Obtén la fecha de finalización más reciente de las órdenes de trabajo
+                        if work_orders:
+                            wc_max_date = max(work_orders.mapped('date_planned_finished'))
+                            if wc_max_date > max_date:
+                                max_date = wc_max_date
+
+                    # Actualizar la fecha máxima para el producto
+                    if product.id not in max_dates_per_product or max_date > max_dates_per_product[product.id]:
+                        max_dates_per_product[product.id] = max_date
+
+        return max_dates_per_product
+
+
+    def _calculate_lead_times_by_phase(self, products_by_phase, products_start):
         product_lead_times = defaultdict(lambda: 0.0)
         start_dates = defaultdict(lambda: fields.Datetime.now())
         end_dates = defaultdict(lambda: fields.Datetime.now())
@@ -64,16 +98,15 @@ class MrpDateGrouping(models.TransientModel):
             rangef=max(products_by_phase.keys()) + 1
             _logger.info(f"WSEM dbg {rangef} contenido {1 in products_by_phase}" )
             for phase in range(rangef):
-                if phase > 0:
-                    start_date = end_dates[phase - 1]
-
                 for product in products_by_phase[phase]:
+                    start_date=products_start.get(producto, datetime.now())
                     lead_time_min = self._calculate_product_lead_time(product)
                     product_lead_times[product.id] = lead_time_min
                     start_dates[product.id] = start_date
                     end_date = start_date + timedelta(days=lead_time_min/60.0)
                     end_dates[product.id] = end_date
-                    start_date = end_date
+                    products_start[producto]=end_date
+                    
         else:
             _logger.info(f"WSEM no hay fases" )
 
