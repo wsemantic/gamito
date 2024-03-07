@@ -99,7 +99,7 @@ class MrpDateGrouping(models.TransientModel):
             _logger.info(f"WSEM dbg {rangef} contenido {1 in products_by_phase}" )
             for phase in range(rangef):
                 for product in products_by_phase[phase]:
-                    start_date=products_start.get(producto, datetime.now())
+                    start_date=products_start.get(product, datetime.now())
                     lead_time_min = self._calculate_product_lead_time(product)
                     product_lead_times[product.id] = lead_time_min
                     start_dates[product.id] = start_date
