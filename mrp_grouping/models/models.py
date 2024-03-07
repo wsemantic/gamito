@@ -23,7 +23,7 @@ class MrpDateGrouping(models.TransientModel):
 
         _logger.info(f"WSEM Inicio:")
         for order in sale_orders:
-            _logger.debug(f"WSEM itera orden : {order.name}")
+            _logger.info(f"WSEM itera orden : {order.name}")
             current_group.append(order)
             product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(current_group,group_end_date)
             group_end_date_old=group_end_date;
@@ -74,10 +74,10 @@ class MrpDateGrouping(models.TransientModel):
                 product = line.product_id                
                 bom = self.env['mrp.bom']._bom_find(product)[product]
                 if not bom:
-                    _logger.debug(f"WSEM no encontrado bom")
+                    _logger.info(f"WSEM no encontrado bom")
                     products_by_phase[0].append(product)
                 else:
-                    _logger.debug(f"WSEM encontrado bom : {bom.display_name}")
+                    _logger.info(f"WSEM encontrado bom : {bom.display_name}")
                     phase = max(self._get_bom_phases(bom))
                     products_by_phase[phase].append(product)
 
