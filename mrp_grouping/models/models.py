@@ -105,7 +105,7 @@ class MrpDateGrouping(models.TransientModel):
                     start_dates[product.id] = start_date
                     end_date = start_date + timedelta(days=lead_time_min/60.0)
                     end_dates[product.id] = end_date
-                    products_start[producto]=end_date
+                    products_start[product]=end_date
                     
         else:
             _logger.info(f"WSEM no hay fases" )
