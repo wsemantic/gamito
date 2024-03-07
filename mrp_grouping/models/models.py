@@ -30,10 +30,15 @@ class MrpDateGrouping(models.TransientModel):
             group_end_date = max(end_dates.values())
             _logger.info(f"WSEM fecha grupo : {group_end_date.strftime('%Y-%m-%d %H:%M:%S')}")
             
-            if group_end_date >= start_gr_date + timedelta(days=self.daysgroup):         
-                current_group.pop()
-                product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(current_group,group_end_date_old)
-                group_end_date = max(end_dates.values())
+            if group_end_date >= start_gr_date + timedelta(days=self.daysgroup):   
+                if len(current_group)==1:
+                    _logger.info(f"WSEM primer grupo supera fecha")
+                else:
+                    #Elimino grupo que se pasa y actualizo datos
+                    current_group.pop()
+                    product_lead_times, start_dates, end_dates = self._calculate_lead_times_by_phase(current_group,group_end_date_old)
+                    group_end_date = max(end_dates.values())
+                    
                 start_gr_date=group_end_date
                 
                 groups.append((current_group, product_lead_times, start_dates, end_dates))
