@@ -22,9 +22,9 @@ class MrpDateGrouping(models.TransientModel):
 
         _logger.info("WSEM Inicio:")
         for index, order in enumerate(sale_orders):
-            _logger.info(f"WSEM itera orden : {order.name}")
             es_ultima_iteracion = (index == len(sale_orders) - 1)
             current_group.append(order)
+            _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)}")
             #products_demand se redefine actualizado con cada nueva orden
             products_demand = self._products_demand(current_group)
             
