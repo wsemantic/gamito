@@ -19,7 +19,7 @@ class MrpDateGrouping(models.TransientModel):
         current_group = []
         
         start_dates=self.find_max_reserved_date_for_work_centers(sale_orders,{})
-        defaultdict(lambda: fields.Datetime.now())
+        end_dates=defaultdict(lambda: fields.Datetime.now())
 
         _logger.info("WSEM Inicio:")
         for index, order in enumerate(sale_orders):
