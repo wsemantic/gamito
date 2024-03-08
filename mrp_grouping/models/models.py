@@ -37,14 +37,15 @@ class MrpDateGrouping(models.TransientModel):
             _logger.info(f"WSEM fecha grupo : {group_end_date.strftime('%Y-%m-%d %H:%M:%S')}")
 
             if group_end_date >= start_gr_date + timedelta(days=self.daysgroup) or es_ultima_iteracion:
-                if group_end_date >= start_gr_date and not len(current_group) == 1:
-                    _logger.info("WSEM superada fecha grupo")
-                    # Elimino grupo que se pasa y actualizo datos
-                    current_group.pop()
-                    products_demand = self._products_demand(current_group)
-                    start_dates, end_dates = self._calculate_lead_times_by_phase(products_demand, start_dates)
-                    group_end_date = max(end_dates.values())
-                else:
+                #TODO partir ordenes si se pasa de fecha
+                #if group_end_date >= start_gr_date and not len(current_group) == 1:
+                #    _logger.info("WSEM superada fecha grupo")
+                #    # Elimino grupo que se pasa y actualizo datos
+                #    current_group.pop()
+                #    products_demand = self._products_demand(current_group)
+                #    start_dates, end_dates = self._calculate_lead_times_by_phase(products_demand, start_dates)
+                #    group_end_date = max(end_dates.values())
+                #else:
                     _logger.info("WSEM fin de grupo ")                
 
                 groups.append((products_demand, start_dates, end_dates))
