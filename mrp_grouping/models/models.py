@@ -182,9 +182,6 @@ class MrpDateGrouping(models.TransientModel):
         Crear órdenes de producción basadas en los productos agrupados por fase,
         considerando las cantidades acumuladas de cada producto.
         """
-        for product_id, end_date in end_dates.items():
-            product = self.env['product.product'].browse(product_id)
-            _logger.info(f"WSEM Product: {product.display_name},{product_id} End Date: {end_date}")
             
         ProductionOrder = self.env['mrp.production']
         
@@ -193,15 +190,15 @@ class MrpDateGrouping(models.TransientModel):
             if not bom:
                 _logger.info(f"WSEM No se encontró BOM para el producto {product.display_name}. Se omite la creación de la orden de producción.")
                 continue
-            
+            end_date_pro=end_dates[product.id]
             # Preparar datos para la creación de la orden de producción
-            _logger.info(f"WSEM dbg Product ID: {product.id} date:{end_dates[product.id].strftime('%Y-%m-%d %H:%M:%S')}")
+            _logger.info(f"WSEM dbg Product ID: {product.id} date:{end_date_pro.strftime('%Y-%m-%d %H:%M:%S')}")
             production_data = {
                 'product_id': product.id,
                 'product_qty': quantity,
                 'bom_id': bom.id,
                 'date_planned_start': start_dates[product.id],
-                'date_planned_finished': end_dates[product.id],
+                'date_planned_finished': end_date_pro,
                 'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
             }
 
