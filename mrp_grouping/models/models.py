@@ -55,9 +55,6 @@ class MrpDateGrouping(models.TransientModel):
         for group in groups:
             self._create_production_orders(*group)
             
-        for product_id, end_date in end_dates.items():
-            product = self.env['product.product'].browse(product_id)
-            _logger.info(f"WSEM Product: {product.display_name}, End Date: {end_date}")
             
     def max_reserved_date_for_order(self, orden, end_dates):
 
@@ -185,6 +182,10 @@ class MrpDateGrouping(models.TransientModel):
         Crear órdenes de producción basadas en los productos agrupados por fase,
         considerando las cantidades acumuladas de cada producto.
         """
+        for product_id, end_date in end_dates.items():
+            product = self.env['product.product'].browse(product_id)
+            _logger.info(f"WSEM Product: {product.display_name}, End Date: {end_date}")
+            
         ProductionOrder = self.env['mrp.production']
         
         for product, quantity in products_demand.items():
