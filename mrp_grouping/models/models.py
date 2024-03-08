@@ -15,12 +15,9 @@ class MrpDateGrouping(models.TransientModel):
         sale_orders = self.env['sale.order'].browse(self._context.get('active_ids'))
         sale_orders = sale_orders.sorted(key=lambda r: r.commitment_date if r.commitment_date else r.create_date)
 
-
         groups = []
         current_group = []
-        group_end_date = fields.Datetime.now()
-        latest_end_date = fields.Datetime.now()
-        start_gr_date = fields.Datetime.now()
+        
         start_dates=self.find_max_reserved_date_for_work_centers(sale_orders)
 
         _logger.info("WSEM Inicio:")
@@ -33,7 +30,7 @@ class MrpDateGrouping(models.TransientModel):
             start_dates, end_dates = self._calculate_lead_times_by_phase(products_by_phase, start_dates)
             order.commitment_date = self.max_reserved_date_for_order(order, start_dates)
             
-            group_end_date_old = group_end_date
+            start_gr_date= min(start_dates.values())
             group_end_date = max(end_dates.values())
             _logger.info(f"WSEM fecha grupo : {group_end_date.strftime('%Y-%m-%d %H:%M:%S')}")
 
@@ -46,8 +43,6 @@ class MrpDateGrouping(models.TransientModel):
                     products_by_phase = self._sort_products_by_phase(current_group)
                     start_dates, end_dates = self._calculate_lead_times_by_phase(products_by_phase, start_dates)
                     group_end_date = max(end_dates.values())
-
-                start_gr_date = group_end_date
 
                 groups.append((products_by_phase, start_dates, end_dates))
 
