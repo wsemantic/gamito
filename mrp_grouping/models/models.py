@@ -198,7 +198,6 @@ class MrpDateGrouping(models.TransientModel):
                 'product_qty': quantity,
                 'bom_id': bom.id,
                 'date_planned_start': start_date_pro,
-                'date_planned_finished': end_date_pro,
                 'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
             }
 
@@ -212,7 +211,9 @@ class MrpDateGrouping(models.TransientModel):
             # Actualizar las fechas de las órdenes de trabajo
             work_orders = production_order.workorder_ids
             for work_order in work_orders:
-                work_order.date_planned_start = start_date_pro                
+                work_order.date_planned_start = start_date_pro  
+            
+            production_order.date_planned_finished=end_date_pro
 
             _logger.info(f"WSEM Orden de producción creada: {production_order.name} para el producto {product.display_name} con cantidad {quantity}.")
 
