@@ -134,7 +134,8 @@ class MrpDateGrouping(models.TransientModel):
 
     def _get_leadtime(self, workcenter_sched, workcenter_of_products, product ):
         wid=workcenter_of_products.get(product.id,0)
-        if wid==0 return 0
+        if wid==0:
+            return 0
         return workcenter_sched.get(wid,0)
  
     def _sort_products_by_phase(self, sale_orders):
