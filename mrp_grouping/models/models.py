@@ -102,7 +102,6 @@ class MrpDateGrouping(models.TransientModel):
 
         return max_dates_per_product
 
-
     def _calculate_lead_times_by_phase(self, products_by_phase, start_dates):
 
         end_dates = defaultdict(lambda: fields.Datetime.now())
