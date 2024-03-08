@@ -18,7 +18,7 @@ class MrpDateGrouping(models.TransientModel):
         groups = []
         current_group = []
         
-        start_dates=self.find_max_reserved_date_for_work_centers(sale_orders)
+        start_dates=self.find_max_reserved_date_for_work_centers(sale_orders,{})
 
         _logger.info("WSEM Inicio:")
         for index, order in enumerate(sale_orders):
@@ -28,7 +28,7 @@ class MrpDateGrouping(models.TransientModel):
             #products_demand se redefine actualizado con cada nueva orden
             products_demand = self._products_demand(current_group)
             
-            start_dates, end_dates = self._calculate_lead_times_by_phase(products_demand, start_dates)
+            end_dates = self._calculate_lead_times_by_phase(products_demand, start_dates)
             order.commitment_date = self.max_reserved_date_for_order(order, end_dates)
             
             start_gr_date= min(start_dates.values())
@@ -75,8 +75,7 @@ class MrpDateGrouping(models.TransientModel):
         return fecha_maxima or fields.Datetime.now()
         
 
-    def find_max_reserved_date_for_work_centers(self, ordenes_venta):
-        max_dates_per_product = {}
+    def find_max_reserved_date_for_work_centers(self, ordenes_venta,start_dates):        
 
         for orden in ordenes_venta:
             for linea in orden.order_line:
@@ -102,10 +101,10 @@ class MrpDateGrouping(models.TransientModel):
                                 max_date = wc_max_date
 
                     # Actualizar la fecha máxima para el producto
-                    if product.id not in max_dates_per_product or max_date > max_dates_per_product[product.id]:
-                        max_dates_per_product[product.id] = max_date
+                    if product.id not in start_dates or max_date > start_dates[product.id]:
+                        start_dates[product.id] = max_date
 
-        return max_dates_per_product
+        return start_dates
 
     def _calculate_lead_times_by_phase(self, products_demand, start_dates):
 
@@ -133,7 +132,7 @@ class MrpDateGrouping(models.TransientModel):
         else:
             _logger.info(f"WSEM no hay fases" )
 
-        return start_dates, end_dates
+        return end_dates
 
     def _get_leadtime(self, workcenter_sched, workcenter_of_products, product ):
         wid=workcenter_of_products.get(product.id,0)
