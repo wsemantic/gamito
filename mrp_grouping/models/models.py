@@ -115,10 +115,10 @@ class MrpDateGrouping(models.TransientModel):
             self._calculate_product_lead_time(product,workcenter_sched,workcenter_of_products,products_demand)
             new_lead_time= self._get_leadtime( workcenter_sched, workcenter_of_products, product )
             incr_lead_time=new_lead_time-lead_time_wc_reservado
-            start_dates[product.id] = start_date_init + timedelta(days=lead_time_wc_reservado/60.0)
+            start_dates[product.id] = start_date_init + timedelta(days=lead_time_wc_reservado/1440.0)
             _logger.info(f"WSEM start dates producto {product.name} start {start_dates[product.id].strftime('%Y-%m-%d %H:%M:%S')} incr lead {incr_lead_time}" )
              
-            end_date = start_dates[product.id] + timedelta(days=incr_lead_time/60.0)
+            end_date = start_dates[product.id] + timedelta(days=incr_lead_time/1440.0)
             end_dates[product.id] = end_date                    
                     
         else:
