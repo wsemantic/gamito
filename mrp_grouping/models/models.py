@@ -182,6 +182,10 @@ class MrpDateGrouping(models.TransientModel):
         """
         Crear órdenes de producción basadas en los productos agrupados por fase,
         considerando las cantidades acumuladas de cada producto.
+        
+        Nota, no sirve asignar fecha fin a la produccion porque lo recalcula a partir de sus ordenes de trabajo, ademas tiene en cuenta horarios
+        Sin ambargo en ORM solo recalcula fecha fin de la produccion si sus ordenes de trabajo no tienen fecha de inicio, si la tienen no hace nada, 
+        por tanto es necesario hacerlo en dos pasos, primero asigno fecha de inicio a las ordenes de trabajo y despues fecha de fin a la produccion
         """
             
         ProductionOrder = self.env['mrp.production']
