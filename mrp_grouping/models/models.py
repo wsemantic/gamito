@@ -140,7 +140,7 @@ class MrpDateGrouping(models.TransientModel):
                 product = line.product_id
                 bom = self.env['mrp.bom']._bom_find(product)[product]                                                                                                                                                                                                                                          
                                                          
-                products_demand[product] += line.product_uom_qty
+                products_demand[product] = products_demand.get(product,0)+line.product_uom_qty
 
         return products_demand
 
