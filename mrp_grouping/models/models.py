@@ -13,7 +13,8 @@ class MrpDateGrouping(models.TransientModel):
 
     def mrp_planning(self):
         sale_orders = self.env['sale.order'].browse(self._context.get('active_ids'))
-        sale_orders = sale_orders.filtered(lambda r: r.commitment_date).sorted(key=lambda r: r.commitment_date)
+        sale_orders = sale_orders.sorted(key=lambda r: r.commitment_date if r.commitment_date else r.create_date)
+
 
         groups = []
         current_group = []
