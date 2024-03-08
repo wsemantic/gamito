@@ -49,7 +49,7 @@ class MrpDateGrouping(models.TransientModel):
 
                 groups.append((products_demand, start_dates, end_dates))
 
-                if len(groups) >= self.ngroups:
+                if len(groups) > self.ngroups:
                     _logger.info("WSEM superado n grupos")
                     break
 
