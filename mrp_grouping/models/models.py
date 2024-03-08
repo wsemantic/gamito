@@ -171,7 +171,7 @@ class MrpDateGrouping(models.TransientModel):
                 _logger.info(f"WSEM cycle t:{cycle_time} leadtime:{workcenter_sched[workcenter.id]}")               
 
             for line in bom.bom_line_ids:
-                self._calculate_product_lead_time(line.product_id,workcenter_sched,workcenter_of_products)
+                self._calculate_product_lead_time(line.product_id,workcenter_sched,workcenter_of_products,products_demand)
                 _logger.info("WSEM añadido extra")
 
     def _create_production_orders(self, products_demand, start_dates, end_dates):
