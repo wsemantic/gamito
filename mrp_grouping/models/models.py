@@ -50,7 +50,7 @@ class MrpDateGrouping(models.TransientModel):
                 #else:
                 #    _logger.info("WSEM fin de grupo ")                
                 _logger.info("WSEM fin de grupo ")                
-                planned_groups++
+                planned_groups+=1
                 self._create_production_orders(products_demand, start_dates, end_dates)
 
                 if planned_groups > self.ngroups:
