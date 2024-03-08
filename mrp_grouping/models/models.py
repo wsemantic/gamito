@@ -180,31 +180,31 @@ class MrpDateGrouping(models.TransientModel):
         considerando las cantidades acumuladas de cada producto.
         """
         ProductionOrder = self.env['mrp.production']
-        for phase, products_info in products_demand.items():
-            for product, quantity in products_info.items():
-                bom = self.env['mrp.bom']._bom_find(product)[product]
-                if not bom:
-                    _logger.info(f"WSEM No se encontró BOM para el producto {product.display_name}. Se omite la creación de la orden de producción.")
-                    continue
-                
-                # Preparar datos para la creación de la orden de producción
-                production_data = {
-                    'product_id': product.id,
-                    'product_qty': quantity,
-                    'bom_id': bom.id,
-                    'date_planned_start': start_dates[product.id],
-                    'date_planned_finished': end_dates[product.id],
-                    'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
-                }
+        
+        for product, quantity in products_demand.items():
+            bom = self.env['mrp.bom']._bom_find(product)[product]
+            if not bom:
+                _logger.info(f"WSEM No se encontró BOM para el producto {product.display_name}. Se omite la creación de la orden de producción.")
+                continue
+            
+            # Preparar datos para la creación de la orden de producción
+            production_data = {
+                'product_id': product.id,
+                'product_qty': quantity,
+                'bom_id': bom.id,
+                'date_planned_start': start_dates[product.id],
+                'date_planned_finished': end_dates[product.id],
+                'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
+            }
 
-                # Opcional: establecer el usuario si está disponible en el contexto/env
-                if self.env.user and self.env.user.id:
-                    production_data['user_id'] = self.env.user.id
+            # Opcional: establecer el usuario si está disponible en el contexto/env
+            if self.env.user and self.env.user.id:
+                production_data['user_id'] = self.env.user.id
 
-                # Crear la orden de producción
-                production_order = ProductionOrder.create(production_data)
+            # Crear la orden de producción
+            production_order = ProductionOrder.create(production_data)
 
-                _logger.info(f"WSEM Orden de producción creada: {production_order.name} para el producto {product.display_name} con cantidad {quantity}.")
+            _logger.info(f"WSEM Orden de producción creada: {production_order.name} para el producto {product.display_name} con cantidad {quantity}.")
 
         _logger.info("WSEM  Todas las órdenes de producción han sido creadas.")
 
