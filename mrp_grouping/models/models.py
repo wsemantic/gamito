@@ -209,13 +209,24 @@ class MrpDateGrouping(models.TransientModel):
             # Crear la orden de producción
             production_order = ProductionOrder.create(production_data)
             
-            # Actualizar las fechas de las órdenes de trabajo
-            work_orders = production_order.workorder_ids
-            for work_order in work_orders:
-                work_order.date_planned_start = start_date_pro  
+            max_work_order_finish_date = None  # Inicializa la variable para almacenar la fecha de finalización más reciente
             
-            #date_planned_finished se recalcula al asignar la fecha de las ordenes de trabajo, o a la fecha de start si no existe. Pero desde ORM solo se actualiza si era nula, aunque asigne fecha de wo, tengo que actualizar aqui
-            production_order.date_planned_finished=end_date_pro
+            # Actualizar las fechas de las órdenes de trabajo y calcular la fecha de finalización más reciente
+            for work_order in production_order.workorder_ids:
+                work_order.date_planned_start = start_date_pro                
+                
+                if not max_work_order_finish_date or work_order.date_planned_finished > max_work_order_finish_date:
+                    max_work_order_finish_date = work_order.date_planned_finished
+
+            # Si se encontró alguna fecha de finalización más reciente, actualiza la orden de producción
+            if max_work_order_finish_date:
+                production_order.date_planned_finished = max_work_order_finish_date
+            else:
+                # Si no hay órdenes de trabajo o ninguna tiene fecha de finalización, usa end_date_pro
+                production_order.date_planned_finished = end_date_pro
+            
+            
+            
 
             _logger.info(f"WSEM Orden de producción creada: {production_order.name} para el producto {product.display_name} con cantidad {quantity}.")
 
