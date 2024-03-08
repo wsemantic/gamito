@@ -108,7 +108,7 @@ class MrpDateGrouping(models.TransientModel):
         workcenter_sched=defaultdict(lambda: fields.Datetime.now())
         workcenter_of_products={}
         
-        calcular fechas de finalziacion por centro de trabajo, y la fecha start es la final del mismo centro para la fase anterior
+        #calcular fechas de finalziacion por centro de trabajo, y la fecha start es la final del mismo centro para la fase anterior
         if products_by_phase.keys():
             rangef=max(products_by_phase.keys()) + 1
             _logger.info(f"WSEM dbg {rangef} contenido {1 in products_by_phase}" )
