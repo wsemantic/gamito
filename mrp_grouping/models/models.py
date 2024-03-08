@@ -184,7 +184,7 @@ class MrpDateGrouping(models.TransientModel):
         """
         for product_id, end_date in end_dates.items():
             product = self.env['product.product'].browse(product_id)
-            _logger.info(f"WSEM Product: {product.display_name}, End Date: {end_date}")
+            _logger.info(f"WSEM Product: {product.display_name},{product_id} End Date: {end_date}")
             
         ProductionOrder = self.env['mrp.production']
         
@@ -195,6 +195,7 @@ class MrpDateGrouping(models.TransientModel):
                 continue
             
             # Preparar datos para la creación de la orden de producción
+            _logger.info(f"WSEM Product ID: {product.id}")
             production_data = {
                 'product_id': product.id,
                 'product_qty': quantity,
