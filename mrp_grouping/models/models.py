@@ -21,8 +21,9 @@ class MrpDateGrouping(models.TransientModel):
         start_dates=self.find_max_reserved_date_for_work_centers(sale_orders)
 
         _logger.info("WSEM Inicio:")
-        for order in sale_orders:
+        for index, order in enumerate(sale_orders):
             _logger.info(f"WSEM itera orden : {order.name}")
+            es_ultima_iteracion = (index == len(sale_orders) - 1)
             current_group.append(order)
             #products_demand se redefine actualizado con cada nueva orden
             products_demand = self._products_demand(current_group)
@@ -35,19 +36,21 @@ class MrpDateGrouping(models.TransientModel):
             
             _logger.info(f"WSEM fecha grupo : {group_end_date.strftime('%Y-%m-%d %H:%M:%S')}")
 
-            if group_end_date >= start_gr_date + timedelta(days=self.daysgroup):
-                if len(current_group) == 1:
-                    _logger.info("WSEM primer grupo supera fecha")
-                else:
+            if group_end_date >= start_gr_date + timedelta(days=self.daysgroup) or es_ultima_iteracion:
+                if group_end_date >= start_gr_date and not len(current_group) == 1:
+                    _logger.info("WSEM fin de grupo")es_ultima_iteracion
                     # Elimino grupo que se pasa y actualizo datos
                     current_group.pop()
                     products_demand = self._products_demand(current_group)
                     start_dates, end_dates = self._calculate_lead_times_by_phase(products_demand, start_dates)
                     group_end_date = max(end_dates.values())
+                else:
+                    _logger.info("WSEM fin de grupo ")                
 
                 groups.append((products_demand, start_dates, end_dates))
 
                 if len(groups) >= self.ngroups:
+                    _logger.info("WSEM superado n grupos")
                     break
 
                 current_group = []
@@ -213,6 +216,7 @@ class MrpDateGrouping(models.TransientModel):
             for work_order in work_orders:
                 work_order.date_planned_start = start_date_pro  
             
+            #date_planned_finished se recalcula al asignar la fecha de las ordenes de trabajo, o a la fecha de start si no existe. Pero desde ORM solo se actualiza si era nula, aunque asigne fecha de wo, tengo que actualizar aqui
             production_order.date_planned_finished=end_date_pro
 
             _logger.info(f"WSEM Orden de producción creada: {production_order.name} para el producto {product.display_name} con cantidad {quantity}.")
