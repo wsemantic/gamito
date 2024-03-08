@@ -94,7 +94,7 @@ class MrpDateGrouping(models.TransientModel):
                         # Obtén la fecha de finalización más reciente de las órdenes de trabajo
                         if work_orders:
                             wc_max_date = max(work_orders.mapped('date_planned_finished'))
-                            if wc_max_date > max_date:
+                            if wc_max_date and wc_max_date > max_date:
                                 max_date = wc_max_date
 
                     # Actualizar la fecha máxima para el producto
