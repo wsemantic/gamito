@@ -19,6 +19,7 @@ class MrpDateGrouping(models.TransientModel):
         current_group = []
         
         start_dates=self.find_max_reserved_date_for_work_centers(sale_orders,{})
+        defaultdict(lambda: fields.Datetime.now())
 
         _logger.info("WSEM Inicio:")
         for index, order in enumerate(sale_orders):
@@ -28,7 +29,7 @@ class MrpDateGrouping(models.TransientModel):
             #products_demand se redefine actualizado con cada nueva orden
             products_demand = self._products_demand(current_group)
             
-            end_dates = self._calculate_lead_times_by_phase(products_demand, start_dates)
+            self._calculate_lead_times_by_phase(products_demand, start_dates,end_dates)
             order.commitment_date = self.max_reserved_date_for_order(order, end_dates)
             
             start_gr_date= min(start_dates.values())
@@ -106,9 +107,8 @@ class MrpDateGrouping(models.TransientModel):
 
         return start_dates
 
-    def _calculate_lead_times_by_phase(self, products_demand, start_dates):
-
-        end_dates = defaultdict(lambda: fields.Datetime.now())
+    def _calculate_lead_times_by_phase(self, products_demand, start_dates, end_dates):
+        
         workcenter_sched=defaultdict(lambda: fields.Datetime.now())
         workcenter_of_products={}
         
