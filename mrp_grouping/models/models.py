@@ -191,13 +191,13 @@ class MrpDateGrouping(models.TransientModel):
                 _logger.info(f"WSEM No se encontró BOM para el producto {product.display_name}. Se omite la creación de la orden de producción.")
                 continue
             end_date_pro=end_dates[product.id]
-            # Preparar datos para la creación de la orden de producción
-            _logger.info(f"WSEM dbg Product ID: {product.id} date:{end_date_pro.strftime('%Y-%m-%d %H:%M:%S')}")
+            start_date_pro=start_dates[product.id]
+            # Preparar datos para la creación de la orden de producción            
             production_data = {
                 'product_id': product.id,
                 'product_qty': quantity,
                 'bom_id': bom.id,
-                'date_planned_start': start_dates[product.id],
+                'date_planned_start': start_date_pro,
                 'date_planned_finished': end_date_pro,
                 'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
             }
@@ -208,6 +208,11 @@ class MrpDateGrouping(models.TransientModel):
 
             # Crear la orden de producción
             production_order = ProductionOrder.create(production_data)
+            
+            # Actualizar las fechas de las órdenes de trabajo
+            work_orders = production_order.workorder_ids
+            for work_order in work_orders:
+                work_order.date_planned_start = start_date_pro                
 
             _logger.info(f"WSEM Orden de producción creada: {production_order.name} para el producto {product.display_name} con cantidad {quantity}.")
 
