@@ -46,8 +46,9 @@ class MrpDateGrouping(models.TransientModel):
                 #    start_dates, end_dates = self._calculate_lead_times_by_phase(products_demand, start_dates)
                 #    group_end_date = max(end_dates.values())
                 #else:
-                    _logger.info("WSEM fin de grupo ")                
-
+                #    _logger.info("WSEM fin de grupo ")                
+                _logger.info("WSEM fin de grupo ")                
+                
                 groups.append((products_demand, start_dates, end_dates))
 
                 if len(groups) > self.ngroups:
