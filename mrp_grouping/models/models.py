@@ -195,7 +195,7 @@ class MrpDateGrouping(models.TransientModel):
                 continue
             
             # Preparar datos para la creación de la orden de producción
-            _logger.info(f"WSEM Product ID: {product.id}")
+            _logger.info(f"WSEM dbg Product ID: {product.id} date:{end_dates[product.id].strftime('%Y-%m-%d %H:%M:%S')}")
             production_data = {
                 'product_id': product.id,
                 'product_qty': quantity,
