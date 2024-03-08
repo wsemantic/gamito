@@ -57,7 +57,7 @@ class MrpDateGrouping(models.TransientModel):
                     break
 
                 current_group = []
-                start_dates=self.find_max_reserved_date_for_work_centers(sale_orders)
+                start_dates=self.find_max_reserved_date_for_work_centers(sale_orders,start_dates)
 
         for group in groups:
             self._create_production_orders(*group)
