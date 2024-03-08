@@ -15,13 +15,13 @@ class MrpDateGrouping(models.TransientModel):
         sale_orders = self.env['sale.order'].browse(self._context.get('active_ids'))
         sale_orders = sale_orders.sorted(key=lambda r: r.commitment_date if r.commitment_date else r.create_date)
 
-        groups = []
         current_group = []
         
         start_dates={}
         self.find_max_reserved_date_for_work_centers(sale_orders,start_dates)
         end_dates=defaultdict(lambda: fields.Datetime.now())
-
+        planned_groups=0
+        
         _logger.info("WSEM Inicio:")
         for index, order in enumerate(sale_orders):
             es_ultima_iteracion = (index == len(sale_orders) - 1)
@@ -50,18 +50,15 @@ class MrpDateGrouping(models.TransientModel):
                 #else:
                 #    _logger.info("WSEM fin de grupo ")                
                 _logger.info("WSEM fin de grupo ")                
-                
-                groups.append((products_demand, start_dates, end_dates))
+                planned_groups++
+                self._create_production_orders(products_demand, start_dates, end_dates)
 
-                if len(groups) > self.ngroups:
+                if planned_groups > self.ngroups:
                     _logger.info("WSEM superado n grupos")
                     break
 
                 current_group = []
                 self.find_max_reserved_date_for_work_centers(sale_orders,start_dates)
-
-        for group in groups:
-            self._create_production_orders(*group)
             
             
     def max_reserved_date_for_order(self, orden, end_dates):
