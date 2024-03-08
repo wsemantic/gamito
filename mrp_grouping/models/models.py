@@ -18,7 +18,8 @@ class MrpDateGrouping(models.TransientModel):
         groups = []
         current_group = []
         
-        start_dates=self.find_max_reserved_date_for_work_centers(sale_orders,{})
+        start_dates={}
+        self.find_max_reserved_date_for_work_centers(sale_orders,start_dates)
         end_dates=defaultdict(lambda: fields.Datetime.now())
 
         _logger.info("WSEM Inicio:")
@@ -57,7 +58,7 @@ class MrpDateGrouping(models.TransientModel):
                     break
 
                 current_group = []
-                start_dates=self.find_max_reserved_date_for_work_centers(sale_orders,start_dates)
+                self.find_max_reserved_date_for_work_centers(sale_orders,start_dates)
 
         for group in groups:
             self._create_production_orders(*group)
@@ -104,8 +105,6 @@ class MrpDateGrouping(models.TransientModel):
                     # Actualizar la fecha máxima para el producto
                     if product.id not in start_dates or max_date > start_dates[product.id]:
                         start_dates[product.id] = max_date
-
-        return start_dates
 
     def _calculate_lead_times_by_phase(self, products_demand, start_dates, end_dates):
         
