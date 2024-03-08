@@ -55,14 +55,18 @@ class MrpDateGrouping(models.TransientModel):
         for group in groups:
             self._create_production_orders(*group)
             
-    def max_reserved_date_for_order(self, orden, start_dates):
+        for product_id, end_date in end_dates.items():
+            product = self.env['product.product'].browse(product_id)
+            _logger.info(f"WSEM Product: {product.display_name}, End Date: {end_date}")
+            
+    def max_reserved_date_for_order(self, orden, end_dates):
 
         fecha_maxima = False
         
         for linea in orden.order_line:
             product = linea.product_id
-            if start_dates[product.id]:
-                start_date=start_dates.get(product.id, fields.Datetime.now())
+            if end_dates[product.id]:
+                start_date=end_dates.get(product.id, fields.Datetime.now())
                 if not fecha_maxima or start_date > fecha_maxima:
                     fecha_maxima = start_date        
         return fecha_maxima or fields.Datetime.now()
