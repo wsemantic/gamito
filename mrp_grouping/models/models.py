@@ -28,10 +28,11 @@ class MrpDateGrouping(models.TransientModel):
             products_demand = self._products_demand(current_group)
             
             start_dates, end_dates = self._calculate_lead_times_by_phase(products_demand, start_dates)
-            order.commitment_date = self.max_reserved_date_for_order(order, start_dates)
+            order.commitment_date = self.max_reserved_date_for_order(order, end_dates)
             
             start_gr_date= min(start_dates.values())
             group_end_date = max(end_dates.values())
+            
             _logger.info(f"WSEM fecha grupo : {group_end_date.strftime('%Y-%m-%d %H:%M:%S')}")
 
             if group_end_date >= start_gr_date + timedelta(days=self.daysgroup):
@@ -61,8 +62,9 @@ class MrpDateGrouping(models.TransientModel):
         for linea in orden.order_line:
             product = linea.product_id
             if start_dates[product.id]:
-                if not fecha_maxima or start_dates.get(product.id, fields.Datetime.now()) > fecha_maxima:
-                    fecha_maxima = start_dates.get(product.id, fields.Datetime.now())        
+                start_date=start_dates.get(product.id, fields.Datetime.now())
+                if not fecha_maxima or start_date > fecha_maxima:
+                    fecha_maxima = start_date        
         return fecha_maxima or fields.Datetime.now()
         
 
