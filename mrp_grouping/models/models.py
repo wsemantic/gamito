@@ -38,7 +38,7 @@ class MrpDateGrouping(models.TransientModel):
 
             if group_end_date >= start_gr_date + timedelta(days=self.daysgroup) or es_ultima_iteracion:
                 if group_end_date >= start_gr_date and not len(current_group) == 1:
-                    _logger.info("WSEM fin de grupo")es_ultima_iteracion
+                    _logger.info("WSEM superada fecha grupo")
                     # Elimino grupo que se pasa y actualizo datos
                     current_group.pop()
                     products_demand = self._products_demand(current_group)
