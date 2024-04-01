@@ -1,0 +1,8 @@
+<odoo>
+    <data>
+        <record id="product_removal_least_fifo_lot" model="product.removal">
+            <field name="name">Least FIFO Lot</field>
+            <field name="method">least_fifo_lot</field>
+        </record>
+    </data>
+</odoo>

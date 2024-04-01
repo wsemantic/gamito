@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_product_packaging_form_inherit" model="ir.ui.view">
+      <field name="name">product.packaging.form.inherit</field>
+      <field name="model">product.packaging</field>
+      <field name="inherit_id" ref="product.product_packaging_form_view"/> <!-- se localiza en menu tecnico views, campo External Id, y si no en la tabla .. FROM ir_model_data WHERE model='ir.ui.view' AND res_id=ID_DE_TU_VISTA; 
+																				Mas facil, se accede al formulario, se da a Edit View, y se muesrta en External ID-->
+	  <field name="arch" type="xml">
+		<xpath expr="//field[@name='barcode']" position="before">
+			<field name="ws_cajas_por_bulto"/>
+		</xpath>
+	   </field>
+    </record>
+	
+    <record id="view_ws_product_template_form_inherit" model="ir.ui.view">
+      <field name="name">ws.product.template.form.inherit</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="product.product_template_only_form_view"/> <!-- se localiza en menu tecnico views, campo External Id, y si no en la tabla .. FROM ir_model_data WHERE model='ir.ui.view' AND res_id=ID_DE_TU_VISTA; 
+																				Mas facil, se accede al formulario, se da a Edit View, y se muesrta en External ID-->
+	  <field name="arch" type="xml">
+		<xpath expr="//field[@name='barcode']" position="before">
+			<field name="ws_punto_verde"/>
+		</xpath>
+	   </field>
+    </record>	
+	
+	<record id="action_order_custom_logic" model="ir.actions.server">
+		<field name="name">Optimizar planificacion</field>
+		<field name="model_id" ref="sale.model_sale_order"/>
+		<field name="binding_model_id" ref="sale.model_sale_order"/>
+				
+		<field name="state">code</field>
+		<field name="code">
+				action = records.calcular_fecha_entrega()
+		</field>
+	</record>
+</odoo>
