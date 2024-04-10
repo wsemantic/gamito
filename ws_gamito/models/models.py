@@ -19,7 +19,8 @@ class ProductTemplate(models.Model):
 
     ws_punto_verde	= fields.Float('Punto Verde')
     
-    
+'''
+Utilizado para buscar solo productos de tu propia empresa, para soportar que empresa codinesa no encuentra productos 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
     
@@ -44,7 +45,7 @@ class ProductProduct(models.Model):
         # Continuar con la lógica de búsqueda
         #_logger.info('WSEM Argumentos de busqueda ProductProduct en _name_search: %s', new_args)
         return super(ProductProduct, self)._name_search(name, args=new_args, operator=operator, limit=limit, name_get_uid=name_get_uid)
-        
+ '''       
 
 
 class SaleOrder(models.Model):
