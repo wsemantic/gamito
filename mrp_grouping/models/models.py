@@ -201,6 +201,8 @@ class MrpDateGrouping(models.TransientModel):
             bom = self.env['mrp.bom']._bom_find(product)[product]
             if not bom:
                 _logger.info(f"WSEM No se encontró BOM para el producto {product.display_name}. Se omite la creación de la orden de producción.")
+                #crear ordenes de compra
+                self._create_reorder_rule(product,quantity)
                 continue
             end_date_pro=end_dates[product.id]
             start_date_pro=start_dates[product.id]
@@ -244,4 +246,40 @@ class MrpDateGrouping(models.TransientModel):
         _logger.info("WSEM  Todas las órdenes de producción han sido creadas.")
 
 
+    def _create_reorder_rule(self, product, reorder_qty):
+        # Obtener el almacén principal
+        warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.env.company.id)], limit=1)
+
+        # Obtener la ubicación de stock del almacén
+        location = warehouse.lot_stock_id
+
+        # Obtener la ruta de compra
+        buy_route = self.env.ref('purchase_stock.route_warehouse0_buy')
+
+        # Obtener el producto para el cual se creará la regla de reabastecimiento
+
+        # Verificar si el producto tiene una ruta de compra
+        if buy_route in product.route_ids:
+            # Verificar si ya existe una regla de reabastecimiento para el producto
+            existing_rule = self.env['stock.warehouse.orderpoint'].search([
+                ('product_id', '=', product.id),
+                ('location_id', '=', location.id),
+            ], limit=1)
+
+            if not existing_rule:
+                # Crear la regla de reabastecimiento
+                reorder_rule = self.env['stock.warehouse.orderpoint'].create({
+                    'name': 'Regla de reabastecimiento para ' + product.name,
+                    'product_id': product.id,
+                    'product_min_qty': 1,  # Cantidad mínima de stock
+                    'product_max_qty': reorder_qty,  # Cantidad máxima de stock
+                    'qty_multiple': 1,  # Cantidad múltiple para el reabastecimiento
+                    'trigger': 'auto',  # Disparador automático cuando el stock esté por debajo del mínimo
+                    'location_id': location.id,
+                    'warehouse_id': warehouse.id,
+                    'company_id': self.env.company.id,
+                    'route_id': buy_route.id,  # Ruta de compra
+                })
+
+        return True
  
