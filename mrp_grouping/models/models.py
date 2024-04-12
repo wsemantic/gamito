@@ -274,7 +274,7 @@ class MrpDateGrouping(models.TransientModel):
                     'product_min_qty': 1,  # Cantidad mínima de stock
                     'product_max_qty': reorder_qty,  # Cantidad máxima de stock
                     'qty_multiple': 1,  # Cantidad múltiple para el reabastecimiento
-                    'trigger': 'auto',  # Disparador automático cuando el stock esté por debajo del mínimo
+                    'trigger': 'manual',  # Disparador automático cuando el stock esté por debajo del mínimo
                     'location_id': location.id,
                     'warehouse_id': warehouse.id,
                     'company_id': self.env.company.id,
