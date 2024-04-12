@@ -141,12 +141,16 @@ class MrpDateGrouping(models.TransientModel):
 
         for order in sale_orders:
             for line in order.order_line:
-                product = line.product_id
-                bom = self.env['mrp.bom']._bom_find(product)[product]                                                                                                                                                                                                                                          
-                                                         
-                products_demand[product] = products_demand.get(product,0)+line.product_uom_qty
+                product = line.product_id                                                                                                                                                                                                                                                                                                       
+                products_demand[product] = products_demand.get(product,0)+line.product_uom_qty                                                
 
         return products_demand
+
+    def _products_demand_bomlines(self, products_demand, product, root_quantity):
+        bom = self.env['mrp.bom']._bom_find(product)[product]            
+        for line in bom.bom_line_ids:
+            products_demand[line.product_id] = products_demand.get(line.product_id,0)+root_quantity*line.product_qty
+            self._products_demand_bomlines(products_demand, line.product_id, root_quantity*line.product_qty
 
     def _get_bom_phases(self, bom):
         phases = set()
