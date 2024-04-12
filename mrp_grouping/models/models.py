@@ -142,7 +142,8 @@ class MrpDateGrouping(models.TransientModel):
         for order in sale_orders:
             for line in order.order_line:
                 product = line.product_id                                                                                                                                                                                                                                                                                                       
-                products_demand[product] = products_demand.get(product,0)+line.product_uom_qty                                                
+                products_demand[product] = products_demand.get(product,0)+line.product_uom_qty 
+                self._products_demand_bomlines(products_demand,product,line.product_uom_qty)     
 
         return products_demand
 
