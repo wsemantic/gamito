@@ -30,6 +30,7 @@
             <field name="inherit_id" ref="stock.view_stock_quant_tree"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='product_uom_id']" position="after">
+					<field name="product_id.expiration_date"/>
                     <field name="en_consumo_desde"/>
                 </xpath>
             </field>
