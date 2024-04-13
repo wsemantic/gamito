@@ -23,7 +23,18 @@
 		</xpath>
 	   </field>
     </record>	
-	
+
+	<record id="view_stock_quant_tree_inherit" model="ir.ui.view">
+            <field name="name">stock.quant.tree.wsem.inherit</field>
+            <field name="model">stock.quant</field>
+            <field name="inherit_id" ref="stock.product_product_stock_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='uom_id']" position="after">
+                    <field name="en_consumo_desde"/>
+                </xpath>
+            </field>
+    </record>
+		
 	<record id="action_order_custom_logic" model="ir.actions.server">
 		<field name="name">Optimizar planificacion</field>
 		<field name="model_id" ref="sale.model_sale_order"/>
