@@ -234,7 +234,7 @@ class StockLot(models.Model):
 class StockQuantCustom(models.Model):
     _inherit = 'stock.quant'
     en_consumo_desde = fields.Datetime(
-        'Fecha y hora de inicio de consumo',
+        'En consumo desde',
         default=fields.Datetime.now(),
         required=True,
     )
