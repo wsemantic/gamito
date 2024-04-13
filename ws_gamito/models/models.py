@@ -203,30 +203,31 @@ class StockLot(models.Model):
     _inherit = 'stock.lot'
 
     @api.model_create_multi
-    def create(self, vals):
-        product_id = vals.get('product_id', False)
-        if product_id:
-            product = self.env['product.product'].browse(product_id)
-            # Verificar si el producto tiene una ruta de fabricación
-            manufacture_route = self.env.ref('mrp.route_warehouse0_manufacture')  # Asegúrate de que este es el ID correcto de la ruta de fabricación en tu base de datos
-            if manufacture_route in product.route_ids:
-                # Generar el nombre del lote usando la referencia del producto y la fecha actual
-                date_now = datetime.now()
-                formatted_date = date_now.strftime("%y%W%w")
-                product_ref = product.default_code or 'NO_REF'
-                new_lot_name = f"{product_ref}-{formatted_date}"
+    def create(self, val_list):
+        for vals in val_list:
+            product_id = vals.get('product_id', False)
+            if product_id:
+                product = self.env['product.product'].browse(product_id)
+                # Verificar si el producto tiene una ruta de fabricación
+                manufacture_route = self.env.ref('mrp.route_warehouse0_manufacture')  # Asegúrate de que este es el ID correcto de la ruta de fabricación en tu base de datos
+                if manufacture_route in product.route_ids:
+                    # Generar el nombre del lote usando la referencia del producto y la fecha actual
+                    date_now = datetime.now()
+                    formatted_date = date_now.strftime("%y%W%w")
+                    product_ref = product.default_code or 'NO_REF'
+                    new_lot_name = f"{product_ref}-{formatted_date}"
 
-                # Buscar un lote existente con el mismo nombre
-                existing_lot = self.env['stock.lot'].search([('name', '=', new_lot_name), ('product_id', '=', product_id)], limit=1)
-                if existing_lot:
-                    # Si existe, usar el lote existente
-                    _logger.info(f'WSEM ya existía el lote :{new_lot_name}')
-                    return existing_lot
-                else:
-                    # Si no existe, asignar el nuevo nombre y continuar con la creación
-                    _logger.info(f'WSEM creando lote :{new_lot_name}')
-                    vals['name'] = new_lot_name
-        return super(StockLot, self).create(vals)
+                    # Buscar un lote existente con el mismo nombre
+                    existing_lot = self.env['stock.lot'].search([('name', '=', new_lot_name), ('product_id', '=', product_id)], limit=1)
+                    if existing_lot:
+                        # Si existe, usar el lote existente
+                        _logger.info(f'WSEM ya existía el lote :{new_lot_name}')
+                        return existing_lot
+                    else:
+                        # Si no existe, asignar el nuevo nombre y continuar con la creación
+                        _logger.info(f'WSEM creando lote :{new_lot_name}')
+                        vals['name'] = new_lot_name
+        return super(StockLot, self).create(val_list)
                 
 
 #removal estrategia least_fifo
