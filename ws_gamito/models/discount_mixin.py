@@ -34,10 +34,10 @@ class DiscountMixin:
 
         for line in sorted_lines:            
             # Si es una línea de descuento, calcular el descuento y actualizarla
-            es_real=DiscountMixin.is_line_real_or_virtual(line)
+            es_real=DiscountMixin.is_line_real_or_virtual(line)=='real'
             _logger.info(f'WSEM itera linea id:{line.id}, name:{line.product_id.name}, base:{base_before_discount}, seq:{line.sequence}. Es real {es_real}')
             subtotal_linea=line.price_subtotal            
-            if DiscountMixin.is_line_real_or_virtual(line):
+            if es_real:
                 if line.product_id.name == 'DESCUENTO':                
                     if line.name:                        
                         discount_percentage = DiscountMixin.extract_discount_percentage(line.name)                                
