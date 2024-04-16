@@ -36,7 +36,7 @@ class DiscountMixin:
             # Si es una línea de descuento, calcular el descuento y actualizarla
             _logger.info(f'WSEM itera linea id:{line.id}, name:{line.product_id.name}, base:{base_before_discount}, seq:{line.sequence}')
             subtotal_linea=line.price_subtotal            
-            if DocOrderGamitoMixing.is_line_real_or_virtual(line):
+            if DiscountMixin.is_line_real_or_virtual(line):
                 if line.product_id.name == 'DESCUENTO':                
                     if line.name:                        
                         discount_percentage = line._extract_discount_percentage(line.name)                                
