@@ -1,7 +1,7 @@
 from odoo import models
 import re
 
-class class DiscountMixin:
+class DiscountMixin:
 
 #DESCUENTOS GLOBALES  
     @staticmethod                  
