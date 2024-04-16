@@ -47,7 +47,10 @@ class DiscountMixin:
                         if discount_percentage:                                            
                             line.product_uom_qty= 1
                             precio_lin_desc=-(base_before_discount * (discount_percentage / 100.0))
-                            line.price_unit= precio_lin_desc
+                            line.write({
+                                'product_uom_qty': 1,
+                                'price_unit': precio_lin_desc,
+                            })
                             subtotal_linea= precio_lin_desc
                             _logger.info(f'WSEM descuento:{subtotal_linea}')
                             
