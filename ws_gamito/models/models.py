@@ -178,7 +178,7 @@ class PurchaseOrder(models.Model):
     _inherit = ['purchase.order','doc.order.gamito.mixin']
 
 class DocOrderLineGamitoMixin(models.AbstractModel):
-     _name = 'doc.order.line.gamito.mixin'
+    _name = 'doc.order.line.gamito.mixin'
     _description = 'Logica comun compra venta descuentos Mixin'
     
     #api.onchange('product_uom_qty', 'price_unit', 'product_id', 'tax_id', 'name','sequence')
