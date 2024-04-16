@@ -51,7 +51,7 @@ class ProductProduct(models.Model):
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 #MRP
-'''
+    '''
     def calcular_fecha_entrega(self):
         # Ordena los pedidos por fecha de entrega de forma ascendente
         orders = self.sorted(key=lambda r: r.date_order)
@@ -93,8 +93,7 @@ class SaleOrder(models.Model):
             fecha_entrega += timedelta(days=1)
             acumulado_tiempo -= 24  # Restablece el acumulado para el siguiente día
 
-        return acumulado_tiempo, fecha_entrega
-        '''
+        return acumulado_tiempo, fecha_entrega'''
 
 #Empresa Test
     @api.onchange('company_id')
