@@ -19,33 +19,33 @@ class ProductTemplate(models.Model):
 
     ws_punto_verde	= fields.Float('Punto Verde')
     
-'''
-Utilizado para buscar solo productos de tu propia empresa, para soportar que empresa codinesa no encuentra productos 
-class ProductProduct(models.Model):
-    _inherit = 'product.product'
-    
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
-        args = args or []
-        context = self._context
+    '''
+    Utilizado para buscar solo productos de tu propia empresa, para soportar que empresa codinesa no encuentra productos 
+    class ProductProduct(models.Model):
+        _inherit = 'product.product'
+        
+        def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+            args = args or []
+            context = self._context
 
-        # Comprobar si la información de la empresa está disponible en el contexto
-        new_args = []
-        skip_next = False
-        for arg in args:
-            if skip_next:
-                skip_next = False
-                continue
-            if arg == '|':
-                # Verificar si el siguiente par de argumentos es ['company_id', '=', False]
-                if args[args.index(arg) + 1] == ['company_id', '=', False]:
-                    skip_next = True
+            # Comprobar si la información de la empresa está disponible en el contexto
+            new_args = []
+            skip_next = False
+            for arg in args:
+                if skip_next:
+                    skip_next = False
                     continue
-            new_args.append(arg)
+                if arg == '|':
+                    # Verificar si el siguiente par de argumentos es ['company_id', '=', False]
+                    if args[args.index(arg) + 1] == ['company_id', '=', False]:
+                        skip_next = True
+                        continue
+                new_args.append(arg)
 
-        # Continuar con la lógica de búsqueda
-        #_logger.info('WSEM Argumentos de busqueda ProductProduct en _name_search: %s', new_args)
-        return super(ProductProduct, self)._name_search(name, args=new_args, operator=operator, limit=limit, name_get_uid=name_get_uid)
- '''       
+            # Continuar con la lógica de búsqueda
+            #_logger.info('WSEM Argumentos de busqueda ProductProduct en _name_search: %s', new_args)
+            return super(ProductProduct, self)._name_search(name, args=new_args, operator=operator, limit=limit, name_get_uid=name_get_uid)
+     '''       
 
 
 class DocOrderGamitoMixing(models.AbstractModel):
@@ -128,7 +128,8 @@ class DocOrderGamitoMixing(models.AbstractModel):
                     _logger.info("WSEM 4- Almacen nuevo %s ",new_warehouse.name)   
                     self.warehouse_id = new_warehouse.id
 
-#DESCUENTOS GLOBALES                    
+#DESCUENTOS GLOBALES  
+    @staticmethod                  
     def is_line_real_or_virtual(line):
         # Verificar si el id es un entero, lo que indica un registro guardado
         if isinstance(line.id, int):
@@ -157,7 +158,7 @@ class DocOrderGamitoMixing(models.AbstractModel):
             # Si es una línea de descuento, calcular el descuento y actualizarla
             _logger.info(f'WSEM itera linea id:{line.id}, name:{line.product_id.name}, base:{base_before_discount}, seq:{line.sequence}')
             subtotal_linea=line.price_subtotal            
-            if SaleOrder.is_line_real_or_virtual(line):
+            if DocOrderGamitoMixing.is_line_real_or_virtual(line):
                 if line.product_id.name == 'DESCUENTO':                
                     if line.name:                        
                         discount_percentage = line._extract_discount_percentage(line.name)                                
@@ -198,7 +199,7 @@ class DocOrderLineGamitoMixin(models.AbstractModel):
         
     def write(self, values):       
         # Llama al método super() para ejecutar la lógica original de write
-        result = super(SaleOrderLine, self).write(values)
+        result = super(DocOrderLineGamitoMixin, self).write(values)
 
         # Lógica personalizada después de la actualización
         _logger.info("WSEM Logica personalizada después de actualizar las líneas del pedido.")
