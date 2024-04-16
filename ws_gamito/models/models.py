@@ -172,10 +172,10 @@ class DocOrderGamitoMixing(models.AbstractModel):
                 # Actualizar la base antes de descuento acumulada
                 base_before_discount += subtotal_linea
             
-class SaleOrder(models.Model):
+class SaleOrderCustom(models.Model):
     _inherit = ['sale.order','doc.order.gamito.mixin']
 
-class PurchaseOrder(models.Model):
+class PurchaseOrderCustom(models.Model):
     _inherit = ['purchase.order','doc.order.gamito.mixin']
 
 class DocOrderLineGamitoMixin(models.AbstractModel):
@@ -206,10 +206,10 @@ class DocOrderLineGamitoMixin(models.AbstractModel):
         self._update_discount_lines();
         return result
 
-class SaleOrderLine(models.Model):
+class SaleOrderLineCustom(models.Model):
     _inherit = ['sale.order.line','doc.order.line.gamito.mixin']
     
-class PurchaseOrderLine(models.Model):
+class PurchaseOrderLineCustom(models.Model):
     _inherit = ['purchase.order.line','doc.order.line.gamito.mixin']
     
 #from odoo import models, fields, api
