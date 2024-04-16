@@ -28,7 +28,7 @@ class DiscountMixin:
     def update_discount_lines(order):
         # Ordenar las líneas por secuencia u otro criterio apropiado
         order.flush()
-        sorted_lines = order.order_line.sorted(key=lambda l: l.sequence or float('inf'))
+        sorted_lines = order.order_line #.sorted(key=lambda l: l.sequence or float('inf'))
 
 
         base_before_discount = 0.0
