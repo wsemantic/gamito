@@ -51,6 +51,7 @@ class ProductProduct(models.Model):
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 #MRP
+'''
     def calcular_fecha_entrega(self):
         # Ordena los pedidos por fecha de entrega de forma ascendente
         orders = self.sorted(key=lambda r: r.date_order)
@@ -93,6 +94,7 @@ class SaleOrder(models.Model):
             acumulado_tiempo -= 24  # Restablece el acumulado para el siguiente día
 
         return acumulado_tiempo, fecha_entrega
+        '''
 
 #Empresa Test
     @api.onchange('company_id')
@@ -193,7 +195,7 @@ class SaleOrderLine(models.Model):
         result = super(SaleOrderLine, self).write(values)
 
         # Lógica personalizada después de la actualización
-        _logger.info("Lógica personalizada después de actualizar las líneas del pedido.")
+        _logger.info("WSEM Logica personalizada después de actualizar las líneas del pedido.")
         self._update_discount_lines();
         return result
 
