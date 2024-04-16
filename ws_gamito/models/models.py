@@ -48,8 +48,9 @@ class ProductProduct(models.Model):
  '''       
 
 
-class SaleOrder(models.Model):
-    _inherit = 'sale.order'
+class DocOrderGamitoMixing(models.AbstractModel):
+    _name = 'doc.order.gamito.mixin'
+    _description = 'Logica comun compra venta descuentos Mixin'
 #MRP
     '''
     def calcular_fecha_entrega(self):
@@ -170,9 +171,15 @@ class SaleOrder(models.Model):
                 # Actualizar la base antes de descuento acumulada
                 base_before_discount += subtotal_linea
             
-            
-class SaleOrderLine(models.Model):
-    _inherit = 'sale.order.line'
+class SaleOrder(models.Model):
+    _inherit = ['sale.order','doc.order.gamito.mixin']
+
+class PurchaseOrder(models.Model):
+    _inherit = ['purchase.order','doc.order.gamito.mixin']
+
+class DocOrderLineGamitoMixin(models.AbstractModel):
+     _name = 'doc.order.line.gamito.mixin'
+    _description = 'Logica comun compra venta descuentos Mixin'
     
     #api.onchange('product_uom_qty', 'price_unit', 'product_id', 'tax_id', 'name','sequence')
     def _update_discount_lines(self):
@@ -198,6 +205,12 @@ class SaleOrderLine(models.Model):
         self._update_discount_lines();
         return result
 
+class SaleOrderLine(models.Model):
+    _inherit = ['sale.order.line','doc.order.line.gamito.mixin']
+    
+class PurchaseOrderLine(models.Model):
+    _inherit = ['purchase.order.line','doc.order.line.gamito.mixin']
+    
 #from odoo import models, fields, api
 #from datetime import datetime
 class StockLot(models.Model):
