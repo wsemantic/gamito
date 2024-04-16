@@ -89,22 +89,24 @@ class SaleOrderLineCustom(models.Model):
     _inherit = 'sale.order.line' 
 
     def create(self, vals_list):
-        # Llama al método super() para ejecutar la lógica original de create
+        # Llama al método super() para ejecutar la lógica original de create        
+        
         lines = super(SaleOrderLineCustom, self).create(vals_list)
 
         # Lógica personalizada después de la creación
         for line in lines:
+            line_is_descuento=DiscountMixin.ws_is_desc(line)
             _logger.info(f'WSEM Logica personalizada ventas después de crear una línea del pedido. order {line.order_id.id}')
             if line.order_id and not line._context.get('avoid_recursion'):
                 line = line.with_context(avoid_recursion=True)
-                DiscountMixin.update_discount_lines(line.order_id, line)
+                DiscountMixin.update_discount_lines(line.order_id, line if line_is_descuento else None)
 
         return lines    
         
     def write(self, values):       
         # Llama al método super() para ejecutar la lógica original de write
-        result = super(SaleOrderLineCustom, self).write(values)
-
+        result = super(SaleOrderLineCustom, self).write(values)        
+        
         # Lógica personalizada después de la actualización
         _logger.info(f'WSEM Logica personalizada ventas después de actualizar las líneas del pedido. order {self.order_id.id}')
         if self.order_id and not self._context.get('avoid_recursion'):

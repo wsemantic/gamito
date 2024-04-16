@@ -8,6 +8,10 @@ class DiscountMixin:
 
 #DESCUENTOS GLOBALES  
     @staticmethod                  
+    def ws_is_desc(line):
+        return line.product_id and line.product_id.name == 'DESCUENTO' 
+
+    @staticmethod                  
     def is_line_real_or_virtual(line):
         # Verificar si el id es un entero, lo que indica un registro guardado
         if isinstance(line.id, int):
@@ -25,9 +29,8 @@ class DiscountMixin:
             return "unknown"
             
     @staticmethod 
-    def update_discount_lines(order, context_line=None):
-        # Ordenar las líneas por secuencia u otro criterio apropiado
-        discount_line = context_line if context_line and context_line.product_id.name == 'DESCUENTO' else None
+    def update_discount_lines(order, discount_line):
+        # Ordenar las líneas por secuencia u otro criterio apropiado        
 
         sorted_lines = order.order_line.sorted(key=lambda l: l.sequence)
 
