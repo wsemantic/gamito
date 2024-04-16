@@ -25,10 +25,9 @@ class DiscountMixin:
             return "unknown"
             
     @staticmethod 
-    def update_discount_lines(order, discount_line=None):
+    def update_discount_lines(order, context_line=None):
         # Ordenar las líneas por secuencia u otro criterio apropiado
-        if discount_line and discount_line.product_id.name != 'DESCUENTO':
-            discount_line = None
+        discount_line = context_line if context_line and context_line.product_id.name == 'DESCUENTO' else None
 
         sorted_lines = order.sorted(key=lambda l: l.sequence)
 
