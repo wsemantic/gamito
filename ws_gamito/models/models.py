@@ -93,7 +93,7 @@ class SaleOrderLineCustom(models.Model):
         result = super(SaleOrderLineCustom, self).write(values)
 
         # Lógica personalizada después de la actualización
-        _logger.info("WSEM Logica personalizada ventas después de actualizar las líneas del pedido.")
+        _logger.info(f'WSEM Logica personalizada ventas después de actualizar las líneas del pedido. order {self.order_id.id}')
         if self.order_id and not self._context.get('avoid_recursion'):
             self = self.with_context(avoid_recursion=True)
             DiscountMixin.update_discount_lines(self.order_id);
@@ -108,7 +108,7 @@ class PurchaseOrderLineCustom(models.Model):
         result = super(PurchaseOrderLineCustom, self).write(values)
 
         # Lógica personalizada después de la actualización
-        _logger.info("WSEM Logica personalizada compras después de actualizar las líneas del pedido. order {self.order_id.id}")
+        _logger.info(f'WSEM Logica personalizada compras después de actualizar las líneas del pedido. order {self.order_id.id}')
         if self.order_id and not self._context.get('avoid_recursion'):
             _logger.info("WSEM Existe orden.")
             self = self.with_context(avoid_recursion=True)
