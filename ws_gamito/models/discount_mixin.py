@@ -38,9 +38,12 @@ class DiscountMixin:
             _logger.info(f'WSEM itera linea id:{line.id}, name:{line.product_id.name}, base:{base_before_discount}, seq:{line.sequence}. Es real {es_real}')
             subtotal_linea=line.price_subtotal            
             if es_real:
+                _logger.info(f'WSEM si es real pro name: {line.product_id.name}')
                 if line.product_id.name == 'DESCUENTO':                
-                    if line.name:                        
-                        discount_percentage = DiscountMixin.extract_discount_percentage(line.name)                                
+                    _logger.info(f'WSEM es descuenta: line name {line.name}')
+                    if line.name:              
+                        discount_percentage = DiscountMixin.extract_discount_percentage(line.name)   
+                        _logger.info(f'WSEM linea tiene name, porcentaje: {discount_percentage}')                                                                        
                         if discount_percentage:                                            
                             line.product_uom_qty= 1
                             precio_lin_desc=-(base_before_discount * (discount_percentage / 100.0))
