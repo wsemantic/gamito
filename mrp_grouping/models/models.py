@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+
 from collections import defaultdict
 from datetime import timedelta
 import logging
