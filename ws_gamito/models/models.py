@@ -90,7 +90,7 @@ class SaleOrderLineCustom(models.Model):
         
     def write(self, values):       
         # Llama al método super() para ejecutar la lógica original de write
-        result = super(SaleOrderCustom, self).write(values)
+        result = super(SaleOrderLineCustom, self).write(values)
 
         # Lógica personalizada después de la actualización
         _logger.info("WSEM Logica personalizada después de actualizar las líneas del pedido.")
@@ -100,12 +100,12 @@ class SaleOrderLineCustom(models.Model):
             
         return result
 
-class PurchaseOrderCustom(models.Model):
+class PurchaseOrderLineCustom(models.Model):
     _inherit = 'purchase.order.line'                            
         
     def write(self, values):       
         # Llama al método super() para ejecutar la lógica original de write
-        result = super(PurchaseOrderCustom, self).write(values)
+        result = super(PurchaseOrderLineCustom, self).write(values)
 
         # Lógica personalizada después de la actualización
         _logger.info("WSEM Logica personalizada después de actualizar las líneas del pedido.")
