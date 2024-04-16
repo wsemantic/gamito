@@ -116,7 +116,7 @@ class SaleOrderLineCustom(models.Model):
 class PurchaseOrderLineCustom(models.Model):
     _inherit = 'purchase.order.line'                            
         
-        def create(self, vals_list):
+    def create(self, vals_list):
         # Llama al método super() para ejecutar la lógica original de create
         lines = super(SaleOrderLineCustom, self).create(vals_list)
 
