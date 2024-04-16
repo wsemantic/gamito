@@ -90,7 +90,7 @@ class SaleOrderLineCustom(models.Model):
 
     def create(self, vals_list):
         # Llama al método super() para ejecutar la lógica original de create
-        result = super(SaleOrderLineCustom, self).create(vals_list)
+        lines = super(SaleOrderLineCustom, self).create(vals_list)
 
         # Lógica personalizada después de la creación
         for line in lines:
