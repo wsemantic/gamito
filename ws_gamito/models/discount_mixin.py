@@ -39,7 +39,7 @@ class DiscountMixin:
             if DiscountMixin.is_line_real_or_virtual(line):
                 if line.product_id.name == 'DESCUENTO':                
                     if line.name:                        
-                        discount_percentage = line._extract_discount_percentage(line.name)                                
+                        discount_percentage = DiscountMixin.extract_discount_percentage(line.name)                                
                         if discount_percentage:                                            
                             line.product_uom_qty= 1
                             precio_lin_desc=-(base_before_discount * (discount_percentage / 100.0))
