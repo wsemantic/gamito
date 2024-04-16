@@ -116,6 +116,19 @@ class SaleOrderLineCustom(models.Model):
 class PurchaseOrderLineCustom(models.Model):
     _inherit = 'purchase.order.line'                            
         
+        def create(self, vals_list):
+        # Llama al método super() para ejecutar la lógica original de create
+        lines = super(SaleOrderLineCustom, self).create(vals_list)
+
+        # Lógica personalizada después de la creación
+        for line in lines:
+            _logger.info(f'WSEM Logica personalizada compras después de crear una línea del pedido. order {line.order_id.id}')
+            if line.order_id and not line._context.get('avoid_recursion'):
+                line = line.with_context(avoid_recursion=True)
+                DiscountMixin.update_discount_lines(line.order_id, line)
+
+        return lines 
+        
     def write(self, values):       
         # Llama al método super() para ejecutar la lógica original de write
         result = super(PurchaseOrderLineCustom, self).write(values)
@@ -125,7 +138,7 @@ class PurchaseOrderLineCustom(models.Model):
         if self.order_id and not self._context.get('avoid_recursion'):
             _logger.info("WSEM Existe orden.")
             self = self.with_context(avoid_recursion=True)
-            DiscountMixin.update_discount_lines(self.order_id,self);
+            DiscountMixin.update_discount_lines(self.order_id,None);
             
         return result
 
