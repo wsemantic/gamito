@@ -29,7 +29,7 @@ class DiscountMixin:
         # Ordenar las líneas por secuencia u otro criterio apropiado
         discount_line = context_line if context_line and context_line.product_id.name == 'DESCUENTO' else None
 
-        sorted_lines = order.sorted(key=lambda l: l.sequence)
+        sorted_lines = order.order_line.sorted(key=lambda l: l.sequence)
 
 
         base_before_discount = 0.0
