@@ -1,5 +1,8 @@
 from odoo import models
+import logging
 import re
+
+_logger = logging.getLogger(__name__)
 
 class DiscountMixin:
 
