@@ -25,13 +25,16 @@ class DiscountMixin:
             return "unknown"
             
     @staticmethod 
-    def update_discount_lines(order):
+    def update_discount_lines(order, discount_line=None):
         # Ordenar las líneas por secuencia u otro criterio apropiado
-        
-        sorted_lines = order.order_line #.sorted(key=lambda l: l.sequence or float('inf'))
+        if discount_line and discount_line.product_id.name != 'DESCUENTO':
+            discount_line = None
+
+        sorted_lines = order.sorted(key=lambda l: l.sequence)
 
 
         base_before_discount = 0.0
+        discount_line_updated = False
 
         for line in sorted_lines:            
             # Si es una línea de descuento, calcular el descuento y actualizarla
@@ -40,23 +43,28 @@ class DiscountMixin:
             subtotal_linea=line.price_subtotal            
             if es_real:
                 _logger.info(f'WSEM si es real pro name: {line.product_id.name}')
-                if line.product_id.name == 'DESCUENTO':                
-                    _logger.info(f'WSEM es descuenta: line name {line.name}')
-                    if line.name:              
-                        discount_percentage = DiscountMixin.extract_discount_percentage(line.name)   
-                        _logger.info(f'WSEM linea tiene name, porcentaje: {discount_percentage}')                                                                        
-                        if discount_percentage:                                            
-                            line.product_uom_qty= 1
-                            precio_lin_desc=-(base_before_discount * (discount_percentage / 100.0))
-                            line.write({
-                                'product_uom_qty': 1,
-                                'price_unit': precio_lin_desc,
-                            })
-                            subtotal_linea= precio_lin_desc
-                            _logger.info(f'WSEM descuento:{subtotal_linea}')
+                DiscountMixin.update_discount_line(line, base_before_discount)
+                if discount_line and line == discount_line:
+                    discount_line_updated = True
                             
                 # Actualizar la base antes de descuento acumulada
                 base_before_discount += subtotal_linea
+                
+        # Si la línea de descuento no se actualizó en sorted_lines, forzar su actualización
+        if discount_line and not discount_line_updated:
+            DiscountMixin.update_discount_line(discount_line, base_before_discount)
+                
+    @staticmethod
+    def update_discount_line(line, base_before_discount):
+        if line.product_id.name == 'DESCUENTO':
+            if line.name:
+                discount_percentage = DiscountMixin.extract_discount_percentage(line.name)
+                if discount_percentage:
+                    precio_lin_desc = -(base_before_discount * (discount_percentage / 100.0))
+                    line.write({
+                        'product_uom_qty': 1,
+                        'price_unit': precio_lin_desc,
+                    })
      
     @staticmethod      
     def extract_discount_percentage(description):
