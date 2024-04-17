@@ -149,7 +149,7 @@ class PurchaseOrderLineCustom(models.Model):
 class StockLot(models.Model):
     _inherit = 'stock.lot'
 
-    @api.model_create_multi
+    @api.model
     def create(self, vals):
         product_id = vals.get('product_id', False)
         if product_id:
