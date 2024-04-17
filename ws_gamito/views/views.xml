@@ -52,7 +52,7 @@
 			<xpath expr="//div[@name='bom_div']" position="after">
                     <label for="ws_multiplos" name="multiplos_label"/>
                     <div class="o_row" name="multiplos_div">
-                        <field name="ws_multiplos" context="{'default_product_tmpl_id': product_tmpl_id}" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="ws_multiplos" context="{'default_product_tmpl_id': product_tmpl_id}" />
                     </div>
             </xpath>
         </field>
