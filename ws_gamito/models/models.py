@@ -251,3 +251,19 @@ class StockMoveCustom(models.Model):
 
 
         return res
+        
+class MrpProduction(models.Model):
+    _inherit = 'mrp.production'
+    
+    ws_multiplos	= fields.Float('Multiplos', default=1.0)
+    
+
+    @api.onchange('ws_multiplos')
+    def _onchange_ws_multiplos(self):
+        if self.ws_multiplos and self.bom_id:
+            self.product_qty = self.bom_id.product_qty * self.ws_multiplos
+
+    @api.onchange('product_qty', 'bom_id')
+    def _onchange_product_qty(self):
+        if self.product_qty and self.bom_id:
+            self.ws_multiplos = self.product_qty / self.bom_id.product_qty
