@@ -49,9 +49,12 @@
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='bom_id']" position="after">
-                <field name="ws_multiplos" string="Multiplos"/>
-            </xpath>
+			<xpath expr="//field[@name='product_qty']" position="after">
+				<label for="ws_multiplos"/>
+				<div class="o_row">
+					<field name="ws_multiplos"/>
+				</div>
+			</xpath>
         </field>
     </record>
 	
