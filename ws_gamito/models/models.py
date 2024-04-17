@@ -234,8 +234,8 @@ class StockMoveCustom(models.Model):
                         location_ids=(self.location_id.id,),
                             
                         stock_quants = self.env['stock.quant']._get_quants_by_products_locations(
-                            product_ids,
-                            location_ids,
+                            product_id,
+                            location_id,
                             extra_domain=extra_domain
                         )
 
