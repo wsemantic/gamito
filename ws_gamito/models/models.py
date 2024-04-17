@@ -262,7 +262,7 @@ class MrpProduction(models.Model):
     def _onchange_ws_multiplos(self):
         if self.ws_multiplos and self.bom_id:
             self.product_qty = self.bom_id.product_qty * self.ws_multiplos
-            self.qty_produced = self.product_qty
+            self.qty_producing = self.product_qty
 
     @api.onchange('product_qty', 'bom_id')
     def _onchange_product_qty(self):
