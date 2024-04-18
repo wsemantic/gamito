@@ -21,7 +21,7 @@
         <div class="row mt-4">
             <div class="col-6">
                 <strong>1Total Net Weight:</strong>
-                <span t-esc="total_net_weight"/>
+                <span t-esc="total_net_weight"/> Kg
             </div>
             <div class="col-6">
                 <strong>Total Weight:</strong>
