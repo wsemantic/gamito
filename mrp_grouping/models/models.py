@@ -273,11 +273,11 @@ class MrpDateGrouping(models.TransientModel):
                 if manufacture_route in product.route_ids:
                     existing_rule.qty_to_order = reorder_qty
                     existing_rule.save()
-                else:
+                    '''else:
                     # Actualizar la regla existente para otros casos
                     #existing_rule.write({
                     #    'product_max_qty': reorder_qty,  # Actualizar la cantidad máxima de stock
-                    #})
+                    #})'''
             else:
                 # Crear la regla de reabastecimiento
                 reorder_rule = self.env['stock.warehouse.orderpoint'].create({
