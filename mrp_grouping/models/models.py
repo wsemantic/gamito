@@ -276,7 +276,7 @@ class MrpDateGrouping(models.TransientModel):
                 else:
                     # Actualizar la regla existente para otros casos
                     #existing_rule.write({
-                        'product_max_qty': reorder_qty,  # Actualizar la cantidad máxima de stock
+                    #    'product_max_qty': reorder_qty,  # Actualizar la cantidad máxima de stock
                     #})
             else:
                 # Crear la regla de reabastecimiento
