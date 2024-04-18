@@ -20,7 +20,7 @@
     <xpath expr="//div[last()]" position="after">
         <div class="row mt-4">
             <div class="col-6">
-                <strong>Total Net Weight:</strong>
+                <strong>1Total Net Weight:</strong>
                 <span t-esc="total_net_weight"/>
             </div>
             <div class="col-6">
