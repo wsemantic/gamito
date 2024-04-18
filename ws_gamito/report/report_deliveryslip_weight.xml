@@ -6,10 +6,10 @@
 			<t t-set="total_weight" t-value="0"/>
 			<t t-foreach="o.move_ids" t-as="move">
 				<t t-foreach="move.move_line_ids" t-as="move_line">
-					<t t-set="product_net_weight" t-value="move_line.product_id.product_tmpl_id.net_weight"/>
-					<t t-set="product_weight" t-value="move_line.product_id.product_tmpl_id.weight"/>
-					<t t-set="total_net_weight" t-value="total_net_weight + (product_net_weight or 0) * move_line.qty_done"/>
-					<t t-set="total_weight" t-value="total_weight + (product_weight or 0) * move_line.qty_done"/>
+					<t t-set="product_net_weight" t-value="move_line.product_id.product_tmpl_id.net_weight or 0"/>
+					<t t-set="product_weight" t-value="move_line.product_id.product_tmpl_id.weight or 0"/>
+					<t t-set="total_net_weight" t-value="total_net_weight + product_net_weight * move_line.qty_done"/>
+					<t t-set="total_weight" t-value="total_weight + product_weight * move_line.qty_done"/>
 				</t>
 			</t>
 		</xpath>
