@@ -1,33 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-<template id="report_delivery_document_inherited" inherit_id="stock.report_delivery_document">
-    <xpath expr="//t[@t-call='web.external_layout']" position="inside">
-        <t t-set="total_net_weight" t-value="0"/>
-        <t t-set="total_weight" t-value="0"/>
-<!--
-        <t t-foreach="o.move_ids" t-as="move">
-            <t t-foreach="move.move_line_ids" t-as="move_line">
-                <t t-set="product" t-value="move_line.product_id.product_tmpl_id"/>
-                <t t-set="product_data" t-value="product.read(['net_weight', 'weight'])"/>
-                <t t-set="product_net_weight" t-value="product_data[0]['net_weight'] or 0"/>
-                <t t-set="product_weight" t-value="product_data[0]['weight'] or 0"/>
-                <t t-set="total_net_weight" t-value="total_net_weight + product_net_weight * move_line.qty_done"/>
-                <t t-set="total_weight" t-value="total_weight + product_weight * move_line.qty_done"/>
-            </t>
-        </t>-->
-    </xpath>
-
-    <xpath expr="//div[last()]" position="after">
-        <div class="row mt-4">
-            <div class="col-6">
-                <strong>1Total Net Weight:</strong>
-                <span t-esc="total_net_weight"/> Kg
-            </div>
-            <div class="col-6">
-                <strong>Total Weight:</strong>
-                <span t-esc="total_weight"/>
-            </div>
-        </div>
-    </xpath>
-</template>
+	<template id="report_delivery_document_inherited" inherit_id="stock.report_delivery_document">
+		<xpath expr="//t[@t-call='web.external_layout']" position="before">
+			<t t-set="total_net_weight" t-value="0"/>
+			<t t-set="total_weight" t-value="0"/>
+			<t t-foreach="o.move_ids" t-as="move">
+				<t t-foreach="move.move_line_ids" t-as="move_line">
+					<t t-set="product_net_weight" t-value="move_line.product_id.product_tmpl_id.net_weight or 0"/>
+					<t t-set="product_weight" t-value="move_line.product_id.product_tmpl_id.weight or 0"/>
+					<t t-set="total_net_weight" t-value="total_net_weight + product_net_weight * move_line.qty_done"/>
+					<t t-set="total_weight" t-value="total_weight + product_weight * move_line.qty_done"/>
+				</t>
+			</t>
+		</xpath>
+		<xpath expr="//div[last()]" position="after">
+			<div class="row mt-4">
+				<div class="col-6">
+					<strong>Total Peso Neto:</strong>
+					<span t-esc="total_net_weight"/>
+				</div>
+				<div class="col-6">
+					<strong>Total Peso Bruto:</strong>
+					<span t-esc="total_weight"/>
+				</div>
+			</div>
+		</xpath>
+	</template>
 </odoo>
