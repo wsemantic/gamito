@@ -28,7 +28,7 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
-        'report/report_deliveryslip_weight',
+        'report/report_deliveryslip_weight.xml',
         'data/ws_gamito_data.xml',
     ],
     # only loaded in demonstration mode
