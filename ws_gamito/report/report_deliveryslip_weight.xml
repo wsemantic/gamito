@@ -1,30 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-	<template id="report_delivery_document">
-		<t t-call="web.html_container">
-			<t t-call="web.external_layout">
-				<t t-set="o" t-value="o.with_context(lang=o._get_report_lang())"/>
-				<t t-set="total_net_weight" t-value="0"/>
-				<t t-set="total_weight" t-value="0"/>
-				<t t-foreach="o.move_ids" t-as="move">
-					<t t-foreach="move.move_line_ids" t-as="move_line">
-						<t t-set="total_net_weight" t-value="total_net_weight + move_line.product_id.product_tmpl_id.net_weight * move_line.qty_done"/>
-						<t t-set="total_weight" t-value="total_weight + move_line.product_id.product_tmpl_id.weight * move_line.qty_done"/>
-					</t>
+	<template id="report_delivery_document_inherited" inherit_id="stock.report_delivery_document">
+		<xpath expr="//t[@t-call='web.external_layout']" position="inside">
+			<t t-set="total_net_weight" t-value="0"/>
+			<t t-set="total_weight" t-value="0"/>
+			<t t-foreach="o.move_ids" t-as="move">
+				<t t-foreach="move.move_line_ids" t-as="move_line">
+					<t t-set="total_net_weight" t-value="total_net_weight + move_line.product_id.product_tmpl_id.net_weight * move_line.qty_done"/>
+					<t t-set="total_weight" t-value="total_weight + move_line.product_id.product_tmpl_id.weight * move_line.qty_done"/>
 				</t>
-				<!-- Rest of the code -->
-				<div class="row mt-4">
-					<div class="col-6">
-						<strong>Total Net Weight:</strong>
-						<span t-esc="total_net_weight"/>
-					</div>
-					<div class="col-6">
-						<strong>Total Weight:</strong>
-						<span t-esc="total_weight"/>
-					</div>
-				</div>
 			</t>
-		</t>
+		</xpath>
+		<xpath expr="//div[last()]" position="after">
+			<div class="row mt-4">
+				<div class="col-6">
+					<strong>Total Net Weight:</strong>
+					<span t-esc="total_net_weight"/>
+				</div>
+				<div class="col-6">
+					<strong>Total Weight:</strong>
+					<span t-esc="total_weight"/>
+				</div>
+			</div>
+		</xpath>
 	</template>
-	<!-- Rest of the code -->
 </odoo>
