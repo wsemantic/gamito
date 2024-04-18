@@ -254,20 +254,31 @@ class MrpDateGrouping(models.TransientModel):
         # Obtener la ubicación de stock del almacén
         location = warehouse.lot_stock_id
 
-        # Obtener la ruta de compra
+        # Obtener la ruta de compra desde el identificador externo
         buy_route = self.env.ref('purchase_stock.route_warehouse0_buy')
+        manufacture_route = self.env.ref('mrp.route_warehouse0_manufacture')
 
         # Obtener el producto para el cual se creará la regla de reabastecimiento
 
         # Verificar si el producto tiene una ruta de compra
-        if buy_route in product.route_ids:
+        if buy_route in product.route_ids or manufacture_route in product.route_ids:
             # Verificar si ya existe una regla de reabastecimiento para el producto
             existing_rule = self.env['stock.warehouse.orderpoint'].search([
                 ('product_id', '=', product.id),
                 ('location_id', '=', location.id),
             ], limit=1)
 
-            if not existing_rule:
+            if existing_rule:
+                # Si la ruta de fabricación está activa, actualizar específicamente qty_to_order
+                if manufacture_route in product.route_ids:
+                    existing_rule.qty_to_order = reorder_qty
+                    existing_rule.save()
+                else:
+                    # Actualizar la regla existente para otros casos
+                    #existing_rule.write({
+                        'product_max_qty': reorder_qty,  # Actualizar la cantidad máxima de stock
+                    #})
+            else:
                 # Crear la regla de reabastecimiento
                 reorder_rule = self.env['stock.warehouse.orderpoint'].create({
                     'name': 'Regla de reabastecimiento para ' + product.name,
