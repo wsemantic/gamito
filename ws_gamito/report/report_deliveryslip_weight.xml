@@ -4,7 +4,7 @@
     <xpath expr="//t[@t-call='web.external_layout']" position="inside">
         <t t-set="total_net_weight" t-value="0"/>
         <t t-set="total_weight" t-value="0"/>
-
+<!--
         <t t-foreach="o.move_ids" t-as="move">
             <t t-foreach="move.move_line_ids" t-as="move_line">
                 <t t-set="product" t-value="move_line.product_id.product_tmpl_id"/>
@@ -14,7 +14,7 @@
                 <t t-set="total_net_weight" t-value="total_net_weight + product_net_weight * move_line.qty_done"/>
                 <t t-set="total_weight" t-value="total_weight + product_weight * move_line.qty_done"/>
             </t>
-        </t>
+        </t>-->
     </xpath>
 
     <xpath expr="//div[last()]" position="after">
