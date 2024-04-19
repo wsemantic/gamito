@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
 	<template id="report_delivery_document_inherited" inherit_id="stock.report_delivery_document">
-		<xpath expr="//t[@t-call='web.external_layout']" position="before">
+		<xpath expr="//t[@t-call='web.external_layout']" position="before"><!-- para que las variables no sean locales al contexto donde se insertan-->
 			<t t-set="total_net_weight" t-value="0"/>
 			<t t-set="total_weight" t-value="0"/>
 			<t t-foreach="o.move_ids" t-as="move">
@@ -17,10 +17,10 @@
 			<div class="row mt-4">
 				<div class="col-6">
 					<strong>Total Peso Neto:</strong>
-					<span t-esc="total_net_weight"/>
+					<span t-esc="total_net_weight"/> Kg
 				</div>
 				<div class="col-6">
-					<strong>Total Peso Bruto:</strong>
+					<strong>Total Peso Bruto:</strong> Kg
 					<span t-esc="total_weight"/>
 				</div>
 			</div>
