@@ -19,7 +19,7 @@ class MrpDateGrouping(models.TransientModel):
         current_group = []
         
         start_dates={}
-        self.find_max_reserved_date_for_work_centers(sale_orders,start_dates)
+        self.find_max_reserved_date_for_work_centers(sale_orders,start_dates,fields.Datetime.now())
         end_dates=defaultdict(lambda: fields.Datetime.now())
         planned_groups=0
         
@@ -59,7 +59,7 @@ class MrpDateGrouping(models.TransientModel):
                     break
 
                 current_group = []
-                self.find_max_reserved_date_for_work_centers(sale_orders,start_dates)
+                self.find_max_reserved_date_for_work_centers(sale_orders,start_dates,fields.Datetime.now())
             
             
     def max_reserved_date_for_order(self, orden, end_dates):
@@ -75,7 +75,7 @@ class MrpDateGrouping(models.TransientModel):
         return fecha_maxima or fields.Datetime.now()
         
 
-    def find_max_reserved_date_for_work_centers(self, ordenes_venta,start_dates):        
+    def find_max_reserved_date_for_work_centers(self, ordenes_venta,start_dates, default_max_date):        
 
         for orden in ordenes_venta:
             for linea in orden.order_line:
@@ -95,8 +95,8 @@ class MrpDateGrouping(models.TransientModel):
                         ])
                         
                         # Obtén la fecha de finalización más reciente de las órdenes de trabajo
-                        if work_orders:
-                            wc_max_date = max(work_orders.mapped('date_planned_finished'))
+                        if work_orders:                            
+                            wc_max_date = max(work_orders.mapped(lambda wo: wo.date_planned_finished or default_max_date))
                             if wc_max_date and wc_max_date > max_date:
                                 max_date = wc_max_date
 
