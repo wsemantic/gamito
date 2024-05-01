@@ -29,7 +29,7 @@ class MrpDateGrouping(models.TransientModel):
             current_group.append(order)
             _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)}")
             #products_demand se redefine actualizado con cada nueva orden
-            products_demand = self._products_demand(current_group)
+            products_demand, product_tags = self._products_demand(current_group)
             
             self._calculate_lead_times_by_phase(products_demand, start_dates,end_dates)
             order.commitment_date = self.max_reserved_date_for_order(order, end_dates)
@@ -52,7 +52,7 @@ class MrpDateGrouping(models.TransientModel):
                 #    _logger.info("WSEM fin de grupo ")                
                 _logger.info("WSEM fin de grupo ")                
                 planned_groups+=1
-                self._create_production_orders(products_demand, start_dates, end_dates)
+                self._create_production_orders(products_demand, product_tags, start_dates, end_dates)
 
                 if planned_groups > self.ngroups:
                     _logger.info("WSEM superado n grupos")
@@ -139,14 +139,20 @@ class MrpDateGrouping(models.TransientModel):
  
     def _products_demand(self, sale_orders):
         products_demand = {}
-
+        product_tags = {}  # Diccionario para almacenar la primera etiqueta encontrada para cada producto
+        
         for order in sale_orders:
             for line in order.order_line:
                 product = line.product_id                                                                                                                                                                                                                                                                                                       
                 products_demand[product] = products_demand.get(product,0)+line.product_uom_qty 
                 self._products_demand_bomlines(products_demand,product,line.product_uom_qty)     
+                # Capturar la primera etiqueta encontrada para el producto
+                if product not in product_tags:
+                    tag = order.tag_ids.filtered(lambda t: t.name.strip())
+                    if tag:
+                        product_tags[product] = tag[0].name.strip()                                                                       
 
-        return products_demand
+        return products_demand, product_tags
 
     def _products_demand_bomlines(self, products_demand, product, root_quantity):
         bom = self.env['mrp.bom']._bom_find(product)[product]            
@@ -186,7 +192,7 @@ class MrpDateGrouping(models.TransientModel):
                 self._calculate_product_lead_time(line.product_id,workcenter_sched,workcenter_of_products,products_demand)
                 _logger.info("WSEM añadido extra")
 
-    def _create_production_orders(self, products_demand, start_dates, end_dates):
+    def _create_production_orders(self, products_demand, product_tags, start_dates, end_dates):
         """
         Crear órdenes de producción basadas en los productos agrupados por fase,
         considerando las cantidades acumuladas de cada producto.
@@ -216,6 +222,9 @@ class MrpDateGrouping(models.TransientModel):
                 'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
             }
 
+             # Agregar la etiqueta como origen si se encontró para el producto
+            if product in product_tags:
+                production_data['origin'] = product_tags[product]                                                                                                                                                                                     
             # Opcional: establecer el usuario si está disponible en el contexto/env
             if self.env.user and self.env.user.id:
                 production_data['user_id'] = self.env.user.id
@@ -238,9 +247,7 @@ class MrpDateGrouping(models.TransientModel):
             else:
                 # Si no hay órdenes de trabajo o ninguna tiene fecha de finalización, usa end_date_pro
                 production_order.date_planned_finished = end_date_pro
-            
-            
-            
+                                    
 
             _logger.info(f"WSEM Orden de producción creada: {production_order.name} para el producto {product.display_name} con cantidad {quantity}.")
 
