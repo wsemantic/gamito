@@ -222,13 +222,6 @@ class MrpDateGrouping(models.TransientModel):
                 'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
             }
 
-            # Crear un lote para el producto de salida utilizando tu método personalizado
-            lot_vals = {
-                'product_id': product.id,
-                # Agrega otros valores necesarios para la creación del lote
-            }
-            production_data['lot_producing_id'] = self.env['stock.lot'].create(lot_vals).id
-
              # Agregar la etiqueta como origen si se encontró para el producto
             if product in product_tags:
                 production_data['origin'] = product_tags[product]                                                                                                                                                                                     
