@@ -2,7 +2,7 @@ import logging
 from .discount_mixin import DiscountMixin
 
 from odoo import models, fields, api
-from datetime import datetime
+from datetime import datetime, timedelta
 _logger = logging.getLogger(__name__)
 
 #     @api.depends('value')
@@ -162,6 +162,7 @@ class StockLot(models.Model):
                 formatted_date = date_now.strftime("%y%W%w")
                 product_ref = product.default_code or 'NO_REF'
                 new_lot_name = f"{product_ref}-{formatted_date}"
+                expiration_date = date_now + timedelta(days=450)
 
                 # Buscar un lote existente con el mismo nombre
                 existing_lot = self.env['stock.lot'].search([('name', '=', new_lot_name), ('product_id', '=', product_id)], limit=1)
@@ -173,6 +174,7 @@ class StockLot(models.Model):
                     # Si no existe, asignar el nuevo nombre y continuar con la creación
                     _logger.info(f'WSEM creando lote :{new_lot_name}')
                     vals['name'] = new_lot_name
+                    vals['expiration_date'] = expiration_date
         return super(StockLot, self).create(vals)
                 
 
