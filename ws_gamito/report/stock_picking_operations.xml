@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="report_stockpicking_operations_inherited" inherit_id="stock.report_stockpicking_operations">
+        <xpath expr="//t[@t-call='web.external_layout']" position="before">
+            <t t-set="total_net_weight" t-value="0"/>
+            <t t-set="total_weight" t-value="0"/>
+            <t t-foreach="o.move_ids" t-as="move">
+                <t t-foreach="move.move_line_ids" t-as="move_line">
+                    <t t-set="product_net_weight" t-value="move_line.product_id.product_tmpl_id.net_weight or 0"/>
+                    <t t-set="product_weight" t-value="move_line.product_id.product_tmpl_id.weight or 0"/>
+                    <t t-set="total_net_weight" t-value="total_net_weight + product_net_weight * move_line.qty_done"/>
+                    <t t-set="total_weight" t-value="total_weight + product_weight * move_line.qty_done"/>
+                </t>
+            </t>
+        </xpath>
+
+        <xpath expr="//table[last()]" position="after">
+            <div class="row mt-4">
+                <div class="col-6">
+                    <strong>Total Peso Neto:</strong>
+                    <span t-esc="total_net_weight"/> Kg
+                </div>
+                <div class="col-6">
+                    <strong>Total Peso Bruto:</strong>
+                    <span t-esc="total_weight"/> Kg
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

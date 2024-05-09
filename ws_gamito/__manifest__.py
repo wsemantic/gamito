@@ -29,6 +29,7 @@
         'views/views.xml',
         'views/templates.xml',
         'report/report_deliveryslip_weight.xml',
+        'report/stock_picking_operations.xml',
         'data/ws_gamito_data.xml',
     ],
     # only loaded in demonstration mode
