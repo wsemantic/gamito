@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <template id="report_stockpicking_operations_inherited" inherit_id="stock.report_stockpicking_operations">
+    <template id="report_stockpicking_inherited" inherit_id="stock.report_picking">
         <xpath expr="//t[@t-call='web.external_layout']" position="before">
             <t t-set="total_net_weight" t-value="0"/>
             <t t-set="total_weight" t-value="0"/>
