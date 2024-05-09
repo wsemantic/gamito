@@ -18,11 +18,11 @@
             <div class="row mt-4">
                 <div class="col-6">
                     <strong>Total Peso Neto:</strong>
-                    <span t-esc="total_net_weight"/> Kg
+                    <span t-esc="total_net_weight / 1000"/> Kg
                 </div>
                 <div class="col-6">
                     <strong>Total Peso Bruto:</strong>
-                    <span t-esc="total_weight"/> Kg
+                    <span t-esc="total_weight  / 1000"/> Kg
                 </div>
             </div>
         </xpath>
