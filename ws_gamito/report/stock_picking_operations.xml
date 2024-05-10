@@ -27,7 +27,7 @@
             </div>
         </xpath>
 		
-		<xpath expr="//table[.//t[contains(@t-foreach, 'move_line_ids_without_package')]]//thead/tr" position="inside">
+		<xpath expr="//table[.//t[contains(@t-foreach, 'move_line_ids_without_package')]]//thead/tr/th[1]" position="before">
 			<th><strong>Net Weight</strong></th>
 			<th><strong>Gross Weight</strong></th>
 		</xpath>
