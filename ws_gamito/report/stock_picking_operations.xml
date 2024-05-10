@@ -34,10 +34,10 @@
 			<!-- Extender las filas de la tabla específica para añadir los pesos neto y bruto -->
 		<xpath expr="//table[.//t[contains(@t-foreach, 'move_line_ids_without_package')]]//tbody/tr" position="inside">
 			<td>
-				<span t-esc="ml.qty_done * ml.product_id.weight_net"/>
+				<span t-esc="ml.qty_done * ml.product_id.product_tmpl_id.net_weight"/>
 			</td>
 			<td>
-				<span t-esc="ml.qty_done * ml.product_id.weight"/>
+				<span t-esc="ml.qty_done * ml.product_id.product_tmpl_id.weight"/>
 			</td>
 		</xpath>
     </template>
