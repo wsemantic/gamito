@@ -27,12 +27,12 @@
             </div>
         </xpath>
 		
-		<xpath expr="//table[.//t[contains(@t-foreach, 'move_line_ids_without_package')]]//thead/tr" position="inside">
+		<xpath expr="//table[contains(@t-if, 'without_package')]//thead/tr" position="inside">		
 			<th name="th_pesoneto"><strong>Net Weight</strong></th>
 			<th name="th_peso"><strong>Gross Weight</strong></th>
 		</xpath>
 			<!-- Extender las filas de la tabla específica para añadir los pesos neto y bruto -->
-		<xpath expr="//table[.//t[contains(@t-foreach, 'move_line_ids_without_package')]]//tbody/tr" position="inside">
+		<xpath expr="//table[contains(@t-if, 'without_package')]//tbody/tr" position="inside">
 			<td>
 				<span t-esc="ml.qty_done * ml.product_id.product_tmpl_id.net_weight"/>
 			</td>
