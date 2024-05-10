@@ -28,16 +28,12 @@
         </xpath>
 		
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//thead/tr" position="inside">		
-			<th name="th_pesoneto"><strong>Peso Neto</strong></th>
-			<th name="th_peso"><strong>Peso Bruto</strong></th>
+			<th name="th_pesoneto"><strong>Bultos</strong></th>			
 		</xpath>
 			<!-- Extender las filas de la tabla específica para añadir los pesos neto y bruto -->
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//tbody/t/tr" position="inside">
 			<td>
-				<span t-esc="ml.qty_done * ml.product_id.product_tmpl_id.net_weight / 1000"/>
-			</td>
-			<td>
-				<span t-esc="ml.qty_done * ml.product_id.product_tmpl_id.weight / 1000"/>
+				<span t-esc="ml.qty_done * ml.product_id.product_tmpl_id.packaging_ids.qty"/>
 			</td>
 		</xpath>
     </template>
