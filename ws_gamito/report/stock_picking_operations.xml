@@ -26,5 +26,19 @@
                 </div>
             </div>
         </xpath>
+		
+		<xpath expr="//table[.//t[contains(@t-foreach, 'move_line_ids_without_package')]]//thead/tr" position="inside">
+			<th><strong>Net Weight</strong></th>
+			<th><strong>Gross Weight</strong></th>
+		</xpath>
+			<!-- Extender las filas de la tabla específica para añadir los pesos neto y bruto -->
+		<xpath expr="//table[.//t[contains(@t-foreach, 'move_line_ids_without_package')]]//tbody/tr" position="inside">
+			<td>
+				<span t-esc="ml.qty_done * ml.product_id.weight_net"/>
+			</td>
+			<td>
+				<span t-esc="ml.qty_done * ml.product_id.weight"/>
+			</td>
+		</xpath>
     </template>
 </odoo>
