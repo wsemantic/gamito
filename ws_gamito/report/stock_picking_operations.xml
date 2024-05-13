@@ -49,7 +49,11 @@
 		<xpath expr="//th[@name='th_serial_number']/strong" position="replace">
             <strong>Lote</strong>
         </xpath>
-		
+	
+		<xpath expr="//th[@name='th_from']" position="attributes">
+			<attribute name="t-if">False</attribute>
+		</xpath>
+			
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//thead/tr" position="inside">		
 			<th name="th_bultos"><strong>Bultos</strong></th>			
 		</xpath>
