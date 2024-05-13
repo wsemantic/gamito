@@ -27,19 +27,19 @@
 
         <xpath expr="//table[last()]" position="after">
             <div class="row mt-4">
-                <div class="col-6">
+                <div class="col-3">
                     <strong>Total Peso Neto:</strong>
                     <span t-esc="total_net_weight / 1000"/> Kg
                 </div>
-                <div class="col-6">
+                <div class="col-3">
                     <strong>Total Peso Bruto:</strong>
                     <span t-esc="total_weight  / 1000"/> Kg
                 </div>
-                <div class="col-6">
+                <div class="col-3">
                     <strong>Total Bultos:</strong>
                     <span t-esc="total_bulto"/>
                 </div>
-                <div class="col-6">
+                <div class="col-3">
                     <strong>Total Palets:</strong>
                     <span t-esc="total_palet"/>
                 </div>				
