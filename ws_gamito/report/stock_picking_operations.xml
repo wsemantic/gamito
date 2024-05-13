@@ -47,11 +47,11 @@
         </xpath>
 		
 		<xpath expr="//th[@name='th_serial_number']/strong" position="replace">
-            <strong>Lote</strong>
+            <strong>Lote Cod.Barr.</strong>
         </xpath>
 	
 		<xpath expr="//th[@name='th_barcode']/strong" position="replace">
-            <strong>Product</strong>
+            <strong>EAN13</strong>
         </xpath>
 		
 		<xpath expr="//div[@t-field='ml.product_id.barcode']" position="attributes">
