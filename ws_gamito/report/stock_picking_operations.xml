@@ -50,6 +50,14 @@
             <strong>Lote</strong>
         </xpath>
 	
+		<xpath expr="//th[@name='th_barcode']/strong" position="replace">
+            <strong>Product</strong>
+        </xpath>
+		
+		<xpath expr="//div[@t-field='ml.product_id.barcode']" position="attributes">
+			<attribute name="t-options=">{'widget': 'barcode', 'humanreadable': 1, 'width': 400, 'height': 100, 'quiet': 0, 'img_style': 'height:35px;'}"">False</attribute>
+		</xpath>
+		
 		<xpath expr="//th[@name='th_from']" position="attributes">
 			<attribute name="t-if">False</attribute>
 		</xpath>
