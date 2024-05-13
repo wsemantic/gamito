@@ -53,7 +53,7 @@
 		<xpath expr="//th[@name='th_from']" position="attributes">
 			<attribute name="t-if">False</attribute>
 		</xpath>
-		<xpath expr="//td[@t-if='o.picking_type_id.code != &quot;outgoing&quot;' and @groups='stock.group_stock_multi_locations']" position="attributes">
+		<xpath expr="//td[contains(@t-if,'o.picking_type_id.code')]" position="attributes">
 			<attribute name="t-if">False</attribute>
 		</xpath>
 			
