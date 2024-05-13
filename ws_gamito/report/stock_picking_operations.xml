@@ -55,7 +55,7 @@
         </xpath>
 		
 		<xpath expr="//div[@t-field='ml.product_id.barcode']" position="attributes">
-			<attribute name="t-options">{'widget': 'barcode', 'humanreadable': 1, 'width': 400, 'height': 100, 'quiet': 0, 'img_style': 'height:35px;'}"">False</attribute>
+			<attribute name="t-options">{'widget': 'barcode', 'humanreadable': 1, 'width': 400, 'height': 100, 'quiet': 0, 'img_style': 'height:35px;'}</attribute>
 		</xpath>
 		
 		<xpath expr="//th[@name='th_from']" position="attributes">
