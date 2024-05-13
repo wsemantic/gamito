@@ -47,7 +47,7 @@
         </xpath>
 		
 		<xpath expr="//th[@name='th_serial_number']/strong" position="replace">
-            <strong>Lote Cod.Barr.</strong>
+            <strong>Lote codigo</strong>
         </xpath>
 	
 		<xpath expr="//th[@name='th_barcode']/strong" position="replace">
