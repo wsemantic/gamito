@@ -4,12 +4,23 @@
         <xpath expr="//t[@t-call='web.external_layout']" position="before">
             <t t-set="total_net_weight" t-value="0"/>
             <t t-set="total_weight" t-value="0"/>
+			<t t-set="total_bulto" t-value="0"/>
+			<t t-set="total_palet" t-value="0"/>
             <t t-foreach="o.move_ids" t-as="move">
                 <t t-foreach="move.move_line_ids" t-as="move_line">
                     <t t-set="product_net_weight" t-value="move_line.product_id.product_tmpl_id.net_weight or 0"/>
+					<t t-set="total_net_weight" t-value="total_net_weight + product_net_weight * move_line.qty_done"/>
+										
                     <t t-set="product_weight" t-value="move_line.product_id.product_tmpl_id.weight or 0"/>
-                    <t t-set="total_net_weight" t-value="total_net_weight + product_net_weight * move_line.qty_done"/>
                     <t t-set="total_weight" t-value="total_weight + product_weight * move_line.qty_done"/>
+					
+					<t t-if="move_line.product_id.product_tmpl_id.packaging_ids.qty &gt; 0">
+						<t t-set="total_bulto" t-value="total_bulto + move_line.qty_done / move_line.product_id.product_tmpl_id.packaging_ids.qty"/>
+					</t>
+                   			
+					<t t-if="move_line.product_id.product_tmpl_id.packaging_ids.ws_cajas_por_bulto &gt; 0">
+						<t t-set="total_palet" t-value="total_palet + move_line.qty_done / move_line.product_id.product_tmpl_id.packaging_ids.ws_cajas_por_bulto"/>
+					</t>
                 </t>
             </t>
         </xpath>
@@ -24,13 +35,25 @@
                     <strong>Total Peso Bruto:</strong>
                     <span t-esc="total_weight  / 1000"/> Kg
                 </div>
+                <div class="col-6">
+                    <strong>Total Bultos:</strong>
+                    <span t-esc="total_bulto"/>
+                </div>
+                <div class="col-6">
+                    <strong>Total Palets:</strong>
+                    <span t-esc="total_palet"/>
+                </div>				
             </div>
         </xpath>
 		
+		<xpath expr="//th[@name='th_serial_number']/strong" position="replace">
+            <strong>Lote</strong>
+        </xpath>
+		
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//thead/tr" position="inside">		
-			<th name="th_pesoneto"><strong>Bultos</strong></th>			
+			<th name="th_bultos"><strong>Bultos</strong></th>			
 		</xpath>
-			<!-- Extender las filas de la tabla específica para añadir los pesos neto y bruto -->
+			<!-- Extender las filas de la tabla específica para añadir los bultoso -->
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//tbody/t/tr" position="inside">
 			<td>
 				<span t-esc="ml.qty_done / ml.product_id.product_tmpl_id.packaging_ids.qty"/>
