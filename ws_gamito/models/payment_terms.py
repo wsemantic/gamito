@@ -4,10 +4,14 @@ from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
 
-class AccountPaymentTerm(models.Model):
-    _inherit = "account.payment.term"
+
+class AccountPaymentTermLine(models.Model):
+    _inherit = "account.payment.term.line"
 
     is_annual = fields.Boolean(string='Is Annual', default=False)
+    
+class AccountPaymentTerm(models.Model):
+    _inherit = "account.payment.term"   
     
 
     def _compute_terms(self, date_ref, currency, company, tax_amount, tax_amount_currency, sign, untaxed_amount, untaxed_amount_currency):
