@@ -29,7 +29,7 @@ class AccountPaymentTerm(models.Model):
                 if annual_date < invoice_datetime:
                     annual_date = annual_date.replace(year=annual_date.year + 1)
 
-                result = [(fields.Date.to_string(annual_date), untaxed_amount)]
+                result = [{'date': fields.Date.to_string(annual_date), 'amount': untaxed_amount}]
                 break
 
         return result
