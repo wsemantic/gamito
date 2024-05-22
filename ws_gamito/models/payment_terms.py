@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 _logger = logging.getLogger(__name__)
 
 class AccountPaymentTerm(models.Model):
-    _name = "account.payment.term"
+    _inherit = "account.payment.term"
 
     is_annual = fields.Boolean(string='Is Annual', default=False)
     
