@@ -22,14 +22,15 @@ class AccountPaymentTerm(models.Model):
             _logger.info(f'WSEM itera linea')
             if line.is_annual:
                 _logger.info(f'WSEM es anual')
-                invoice_date = fields.Date.from_string(date_ref)
-                invoice_datetime = datetime.combine(invoice_date, datetime.min.time())
-                annual_date = datetime(invoice_datetime.year, line.months, line.days)
+                for term in result:
+                    invoice_date = fields.Date.from_string(date_ref)
+                    invoice_datetime = datetime.combine(invoice_date, datetime.min.time())
+                    annual_date = datetime(invoice_datetime.year, line.months, line.days)
 
-                if annual_date < invoice_datetime:
-                    annual_date = annual_date.replace(year=annual_date.year + 1)
+                    if annual_date < invoice_datetime:
+                        annual_date = annual_date.replace(year=annual_date.year + 1)
 
-                result = [{'date': fields.Date.to_string(annual_date), 'amount': untaxed_amount}]
+                    term['date'] = fields.Date.to_string(annual_date)
                 break
 
         return result
