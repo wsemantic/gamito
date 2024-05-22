@@ -1,5 +1,8 @@
+import logging
 from odoo import fields, models
 from datetime import datetime, timedelta
+
+_logger = logging.getLogger(__name__)
 
 class AccountPaymentTermLine(models.Model):
     _inherit = 'account.payment.term.line'
@@ -8,10 +11,13 @@ class AccountPaymentTermLine(models.Model):
     
 
     def _compute_terms(self, date_ref, currency, company, tax_amount, tax_amount_currency, sign, untaxed_amount, untaxed_amount_currency):
+        _logger.info(f'WSEM Entra compute terms')
         result = super(AccountPaymentTerm, self)._compute_terms(date_ref, currency, company, tax_amount, tax_amount_currency, sign, untaxed_amount, untaxed_amount_currency)
 
         for line in self.line_ids:
+            _logger.info(f'WSEM itera linea')
             if line.is_annual:
+                _logger.info(f'WSEM es anual')
                 invoice_date = fields.Date.from_string(date_ref)
                 annual_date = datetime(invoice_date.year, line.months, line.days)
 
