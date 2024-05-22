@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
 
-class AccountPaymentTermLine(models.Model):
-    _inherit = 'account.payment.term.line'
+class AccountPaymentTerm(models.Model):
+    _name = "account.payment.term"
 
     is_annual = fields.Boolean(string='Is Annual', default=False)
     
