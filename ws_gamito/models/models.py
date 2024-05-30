@@ -152,11 +152,13 @@ class StockLot(models.Model):
     @api.model
     def create(self, vals):
         product_id = vals.get('product_id', False)
+         _logger.info('WSEM creandose lote')
         if product_id:
             product = self.env['product.product'].browse(product_id)
             # Verificar si el producto tiene una ruta de fabricación
             manufacture_route = self.env.ref('mrp.route_warehouse0_manufacture')  # Asegúrate de que este es el ID correcto de la ruta de fabricación en tu base de datos
             if manufacture_route in product.route_ids:
+                _logger.info('WSEM Ruta Fabricacion')
                 # Generar el nombre del lote usando la referencia del producto y la fecha actual
                 date_now = datetime.now()
                 formatted_date = date_now.strftime("%y%W%w")
