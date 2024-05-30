@@ -152,7 +152,7 @@ class StockLot(models.Model):
     @api.model
     def create(self, vals):
         product_id = vals.get('product_id', False)
-         _logger.info('WSEM creandose lote')
+        _logger.info('WSEM creandose lote')
         if product_id:
             product = self.env['product.product'].browse(product_id)
             # Verificar si el producto tiene una ruta de fabricación
