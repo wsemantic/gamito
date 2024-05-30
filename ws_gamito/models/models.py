@@ -155,7 +155,7 @@ class StockLot(models.Model):
         product_id =  lot.product_id.id
         _logger.info(f'WSEM creandose lote {product_id}')
         if product_id:
-            _logger.info(f'WSEM Existe producto {product_id.name}')
+            _logger.info(f'WSEM Existe producto {lot.product_id.name}')
             product = self.env['product.product'].browse(product_id)
             # Verificar si el producto tiene una ruta de fabricación
             manufacture_route = self.env.ref('mrp.route_warehouse0_manufacture')  # Asegúrate de que este es el ID correcto de la ruta de fabricación en tu base de datos
