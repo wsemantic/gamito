@@ -152,7 +152,7 @@ class StockLot(models.Model):
     @api.model
     def create(self, vals):
         lot = super(StockLot, self).create(vals)
-        product_id =  lot.product_id
+        product_id =  lot.product_id.id
         _logger.info(f'WSEM creandose lote {product_id}')
         if product_id:
             _logger.info(f'WSEM Existe producto {product_id.name}')
