@@ -159,12 +159,13 @@ class StockLot(models.Model):
     def create(self, vals):                
         new_lot_name=False
         expiration_date=False
+        lot_name=vals.get('name', False)
                 
         lot = super(StockLot, self).create(vals)
         product = lot.product_id  # Obtener el objeto producto directamente del lote
         
-        _logger.info(f'WSEM create LOTE :{product.name}')
-        if not product.name:
+        _logger.info(f'WSEM create LOTE :{lot_name}')
+        if not lot_name:
             date_now = datetime.now()
             formatted_date = date_now.strftime("%y%W%w")
             product_ref = product.default_code or 'NO_REF'
