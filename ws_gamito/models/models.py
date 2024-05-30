@@ -180,14 +180,14 @@ class StockLot(models.Model):
 
     @api.model
     def create(self, vals):
-        _logger.info(f'WSEM creandose lote con valores: {vals}')
+        _logger.info(f'WSEM create creandose lote con valores: {vals}')
         existing_lot = self._process_product_logic(vals)
         if existing_lot:
             return existing_lot
         return super(StockLot, self).create(vals)
 
     def write(self, vals):
-        _logger.info(f'WSEM actualizando lote con valores: {vals}')
+        _logger.info(f'WSEM write actualizando lote con valores: {vals}')
         self._process_product_logic(vals)
         return super(StockLot, self).write(vals)
                 
@@ -232,7 +232,7 @@ class StockMoveCustom(models.Model):
         
     def write(self, vals):
         # Si se modifica el campo `lot_ids`
-        _logger.info(f'WSEM write de lote')         
+        _logger.info(f'WSEM write de StockMove')         
         if vals.get('move_line_ids'):
             _logger.info(f'WSEM existe campo move_line_ids')
             for command in vals['move_line_ids']:
