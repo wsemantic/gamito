@@ -160,8 +160,8 @@ class StockLot(models.Model):
         new_lot_name=False
         expiration_date=False
         lot_name=vals.get('name', False)
-        product_id = vals.get('product_id', False)
-        creado_desde_produccion= product_id=True
+        
+        creado_desde_produccion= 'product_id' in vals
                       
         lot = super(StockLot, self).create(vals)
         product = lot.product_id  # Obtener el objeto producto directamente del lote
