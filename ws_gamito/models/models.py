@@ -152,7 +152,7 @@ class StockLot(models.Model):
     @api.model
     def create(self, vals):
         product_id = vals.get('product_id', False)
-        _logger.info(f''WSEM creandose lote {product_id}')
+        _logger.info(f'WSEM creandose lote {product_id}')
         if product_id:
             _logger.info(f'WSEM Existe producto {product_id.name}')
             product = self.env['product.product'].browse(product_id)
