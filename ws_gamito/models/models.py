@@ -187,7 +187,8 @@ class StockLot(models.Model):
                 else:
                     # Si no existe, asignar el nuevo nombre y continuar con la creación
                     _logger.info(f'WSEM creando lote :{new_lot_name}')
-                    lot.name = new_lot_name
+                    if not lot.name:
+                        lot.name= new_lot_name
                     lot.expiration_date = expiration_date
         
         return lot
