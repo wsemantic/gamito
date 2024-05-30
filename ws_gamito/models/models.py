@@ -156,19 +156,45 @@ class StockLot(models.Model):
     _inherit = 'stock.lot'
 
     @api.model
-    def create(self, vals):
-        # Crear el registro del lote normalmente
+    def create(self, vals):                
+        new_lot_name=False
+        expiration_date=False
+                
         lot = super(StockLot, self).create(vals)
-        
         product = lot.product_id  # Obtener el objeto producto directamente del lote
+            
+        if not product.name:
+            date_now = datetime.now()
+            formatted_date = date_now.strftime("%y%W%w")
+            product_ref = product.default_code or 'NO_REF'
+            new_lot_name=f"{formatted_date}"
+            existing_lot = self.env['stock.lot'].search([('name', '=', new_lot_name), ('product_id', '=', product.id)], limit=1)
+            if existing_lot:
+                # Si existe, usar el lote existente
+                _logger.info(f'WSEM ya existía el lote :{new_lot_name}')
+                return existing_lot                                                    
+                               
+        lot.expiration_date = datetime.now() + timedelta(days=450)
+        
+        if new_lot_name:
+            _logger.info(f'WSEM asignando nombre lote :{new_lot_name}')
+            lot.name= new_lot_name  
+                         
+         
+
+    def set_lote_semana(self,vals)
+        manufacture_route = self.env.ref('mrp.route_warehouse0_manufacture')  # Asegúrate de que este es el ID correcto de la ruta de fabricación en tu base de datos
+        if manufacture_route in product.route_ids:
+        
+        
         _logger.info(f'WSEM creandose lote con product_id: {product.id}')
         
         if product:
             _logger.info(f'WSEM Existe producto {product.name}')
             
             # Verificar si el producto tiene una ruta de fabricación
-            manufacture_route = self.env.ref('mrp.route_warehouse0_manufacture')  # Asegúrate de que este es el ID correcto de la ruta de fabricación en tu base de datos
-            if manufacture_route in product.route_ids:
+            
+            
                 _logger.info('WSEM Ruta Fabricacion')
                 
                 # Generar el nombre del lote usando la referencia del producto y la fecha actual
@@ -180,21 +206,18 @@ class StockLot(models.Model):
                 if not lot.name:
                     new_lot_name = f"{formatted_date}"
                     _logger.info(f'WSEM asignando nombre lote :{new_lot_name}')
-                    lot.name= new_lot_name
-                
-                expiration_date = date_now + timedelta(days=450)
-
-                # Buscar un lote existente con el mismo nombre
-                existing_lot = self.env['stock.lot'].search([('name', '=', new_lot_name), ('product_id', '=', product.id)], limit=1)
-                if existing_lot:
-                    # Si existe, usar el lote existente
-                    _logger.info(f'WSEM ya existía el lote :{new_lot_name}')
-                    return existing_lot
-                else:
-                    # Si no existe, asignar el nuevo nombre y continuar con la creación
-                    _logger.info(f'WSEM creando lote {lot.name}')                    
-                    lot.expiration_date = expiration_date
-        
+                    lot.name= new_lot_name                
+                    expiration_date = date_now + timedelta(days=450)
+                    # Buscar un lote existente con el mismo nombre
+                    existing_lot = self.env['stock.lot'].search([('name', '=', new_lot_name), ('product_id', '=', product.id)], limit=1)
+                    if existing_lot:
+                        # Si existe, usar el lote existente
+                        _logger.info(f'WSEM ya existía el lote :{new_lot_name}')
+                        return existing_lot
+                    else:
+                        # Si no existe, asignar el nuevo nombre y continuar con la creación
+                        _logger.info(f'WSEM creando lote {lot.name}')                    
+                        lot.expiration_date = expiration_date        
         return lot
 
                 
