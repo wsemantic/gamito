@@ -149,13 +149,10 @@ class PurchaseOrderLineCustom(models.Model):
 class StockLot(models.Model):
     _inherit = 'stock.lot'
 
-    @api.model
-    def create(self, vals):
+    def _process_product_logic(self, vals):
         product_id = vals.get('product_id', False)
-        _logger.info(f'WSEM creandose lote {product_id}')
-        _logger.info(f'WSEM creando lote con valores: {vals}')
         if product_id:
-            _logger.info(f'WSEM Existe producto {product_id.name}')
+            _logger.info(f'WSEM Existe producto {product_id}')
             product = self.env['product.product'].browse(product_id)
             # Verificar si el producto tiene una ruta de fabricación
             manufacture_route = self.env.ref('mrp.route_warehouse0_manufacture')  # Asegúrate de que este es el ID correcto de la ruta de fabricación en tu base de datos
@@ -179,7 +176,20 @@ class StockLot(models.Model):
                     _logger.info(f'WSEM creando lote :{new_lot_name}')
                     vals['name'] = new_lot_name
                     vals['expiration_date'] = expiration_date
+        return None
+
+    @api.model
+    def create(self, vals):
+        _logger.info(f'WSEM creandose lote con valores: {vals}')
+        existing_lot = self._process_product_logic(vals)
+        if existing_lot:
+            return existing_lot
         return super(StockLot, self).create(vals)
+
+    def write(self, vals):
+        _logger.info(f'WSEM actualizando lote con valores: {vals}')
+        self._process_product_logic(vals)
+        return super(StockLot, self).write(vals)
                 
 
 #removal estrategia least_fifo
