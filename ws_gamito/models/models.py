@@ -160,16 +160,9 @@ class StockLot(models.Model):
         new_lot_name=False
         expiration_date=False
         lot_name=vals.get('name', False)
-            
-        existing_lot = self.env['stock.lot'].search([('name', '=', lot_name), ('product_id', '=', product.id)], limit=1)            
-        if existing_lot:
-            # Si existe, usar el lote existente
-            _logger.info(f'WSEM ya existía el lote :{new_lot_name}')
-            return existing_lot  
-                        
         product_id = vals.get('product_id', False)
         creado_desde_produccion= product_id=True
-        
+                      
         lot = super(StockLot, self).create(vals)
         product = lot.product_id  # Obtener el objeto producto directamente del lote
         
