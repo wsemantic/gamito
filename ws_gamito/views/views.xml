@@ -76,25 +76,6 @@
 		</field>
 	</record>
 		  
-    <!-- Acción del servidor para imprimir el albarán -->
-    <record id="action_print_delivery_button" model="ir.actions.server">
-        <field name="name">Print Delivery Order</field>
-        <field name="model_id" ref="sale.model_sale_order"/>
-        <field name="binding_model_id" ref="sale.model_sale_order"/>
-        <field name="state">code</field>
-        <field name="code">action = model.action_print_delivery()</field>
-    </record>
-
-    <!-- Informe para imprimir el albarán desde la orden de venta -->
-    <record id="report_sale_order_delivery" model="ir.actions.report">
-        <field name="name">sale.order.delivery</field>
-        <field name="model">sale.order</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">stock.report_deliveryslip</field>
-        <field name="binding_model_id" ref="sale.model_sale_order"/>
-        <field name="binding_type">report</field>
-        <field name="context">{'active_model': 'sale.order'}</field>
-    </record>
 
 
 		
