@@ -83,20 +83,7 @@ class SaleOrder(models.Model):
                 ], limit=1)
                 if new_warehouse:
                     _logger.info("WSEM 4- Almacen nuevo %s ",new_warehouse.name)   
-                    self.warehouse_id = new_warehouse.id
-                    
-    def get_delivery_slip_id(self):
-        picking = self.picking_ids.filtered(lambda x: x.picking_type_id.code == 'outgoing' and x.state == 'done')
-        if picking:
-            return picking[0].id
-        return None
-
-    def action_print_delivery(self):
-        self.ensure_one()
-        delivery_ids = self.picking_ids.filtered(lambda p: p.state != 'cancel')
-        if not delivery_ids:
-            raise UserError(_('There are no delivery orders associated with this sale order.'))
-        return self.env.ref('stock.action_report_delivery').report_action(delivery_ids)
+                    self.warehouse_id = new_warehouse.id                   
         
                     
 

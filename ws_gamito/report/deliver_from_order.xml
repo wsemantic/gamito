@@ -1,31 +1,22 @@
 <odoo>
-	<!--<template id="report_sale_order_deliveryslip">
-		<t t-call="web.html_container">
-			<t t-foreach="docs" t-as="order">
-				<t t-set="picking_ids" t-value="order.picking_ids.filtered(lambda x: x.picking_type_id.code == 'outgoing' and x.state == 'done')"/>
-				<t t-foreach="picking_ids" t-as="o">
-					<t t-call="stock.report_delivery_document" t-lang="o.partner_id.lang or o.env.lang"/>
-				</t>
-			</t>
-		</t>
-	</template>-->
 	<template id="report_sale_order_deliveryslip">
 		<t t-call="web.html_container">
 			<t t-if="not docs">
-				<t t-debug="'gamito: Docs está vacío o es nulo'"/>
+				<div class="alert alert-info">
+					<span>Docs está vacío o es nulo</span>
+				</div>
 			</t>
 			<t t-else="">
 				<t t-foreach="docs" t-as="order">
-					<t t-set="picking_ids" t-value="order.picking_ids"/><!--.filtered(lambda x: x.picking_type_id.code == 'outgoing' and x.state == 'done')"/>-->
-					<t t-debug="'gamito: Picking IDs: %s' % picking_ids"/>
+					<t t-set="picking_ids" t-value="order.picking_ids.filtered(lambda x: x.state != 'cancel')"/>
 					<t t-if="picking_ids">
 						<t t-set="docs" t-value="picking_ids"/>
-						<t t-debug="'gamito: Docs después del procesamiento: %s' % docs"/>
 						<t t-call="stock.report_deliveryslip"/>
 					</t>
 					<t t-else="">
-						<p>No hay albaranes relacionados para el pedido de venta: <t t-esc="order.name"/></p>
-						<t t-debug="'gamito: No hay albaranes relacionados para el pedido de venta: %s' % order.name"/>
+						<div class="alert alert-warning">
+							<span>No hay albaranes relacionados para el pedido de venta: <t t-esc="order.name"/></span>
+						</div>
 					</t>
 				</t>
 			</t>
