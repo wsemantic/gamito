@@ -76,26 +76,34 @@
 		</field>
 	</record>
 		  
-	<record id="action_report_delivery_note" model="ir.actions.report">
-            <field name="name">Imprimir Albarán</field>
-            <field name="model">stock.picking</field>
-            <field name="report_type">qweb-pdf</field>
-            <field name="report_name">nombre_modulo.report_delivery_document_inherited</field>
-            <field name="report_file">nombre_modulo.report_delivery_document_inherited</field>
-            <field name="binding_model_id" ref="stock.model_stock_picking"/>
-            <field name="binding_type">report</field>
+    <record id="action_print_delivery_button" model="ir.actions.server">
+        <field name="name">Print Delivery Order</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_print_delivery()</field>
     </record>
 
-    <record id="view_sales_order_tree_inherit" model="ir.ui.view">
-        <field name="name">sale.order.tree.inherit</field>
+    <!-- Modificar la vista de formulario para añadir la opción de imprimir -->
+    <record id="sale_order_print_delivery_form_action" model="ir.ui.view">
+        <field name="name">sale.order.print.delivery.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header//button[@name='action_print_quotation']/../.." position="inside">
+                <button name="%(action_print_delivery_button)d" type="action" string="Print Delivery Order" class="btn-secondary" icon="fa-print"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Modificar la vista de árbol para añadir la opción de imprimir -->
+    <record id="sale_order_print_delivery_tree_action" model="ir.ui.view">
+        <field name="name">sale.order.print.delivery.tree</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//tree" position="inside">
-                <field name="picking_ids" invisible="1"/>
-                <button name="%(action_report_delivery_note)d" type="action" string="Imprimir Albarán"
-                        attrs="{'invisible': [('picking_ids', '=', [])]}"
-                        context="{'default_picking_id': picking_ids[0].id}"/>
+            <xpath expr="//header//button[@name='action_print_quotation']/../.." position="inside">
+                <button name="%(action_print_delivery_button)d" type="action" string="Print Delivery Order" class="btn-secondary" icon="fa-print"/>
             </xpath>
         </field>
     </record>
