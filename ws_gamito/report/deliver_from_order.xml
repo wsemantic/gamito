@@ -15,5 +15,6 @@
         <field name="report_name">stock.report_deliveryslip</field>
         <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
+		<field name="print_report_name">Nota de pedido</field>
     </record>
 </odoo>
