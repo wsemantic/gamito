@@ -16,7 +16,7 @@
 			</t>
 			<t t-else="">
 				<t t-foreach="docs" t-as="order">
-					<t t-set="picking_ids" t-value="order.picking_ids.filtered(lambda x: x.picking_type_id.code == 'outgoing' and x.state == 'done')"/>
+					<t t-set="picking_ids" t-value="order.picking_ids"/><!--.filtered(lambda x: x.picking_type_id.code == 'outgoing' and x.state == 'done')"/>-->
 					<t t-debug="'gamito: Picking IDs: %s' % picking_ids"/>
 					<t t-if="picking_ids">
 						<t t-set="docs" t-value="picking_ids"/>
