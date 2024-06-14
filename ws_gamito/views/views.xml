@@ -84,12 +84,12 @@
         <field name="code">action = model.action_print_delivery()</field>
     </record>
 
-    <record id="sale_order_print_delivery_action" model="ir.ui.view">
+	<record id="sale_order_print_delivery_action" model="ir.ui.view">
         <field name="name">sale.order.print.delivery</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//header/button[@name='action_confirm']" position="after">
+            <xpath expr="//header/button[@name='action_rfq_send']/../.." position="inside">
                 <button name="%(action_print_delivery_button)d" type="action" string="Print Delivery Order" class="btn-primary"/>
             </xpath>
         </field>

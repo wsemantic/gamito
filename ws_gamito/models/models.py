@@ -89,10 +89,9 @@ class SaleOrder(models.Model):
     def action_print_delivery(self):
         self.ensure_one()
         delivery_ids = self.picking_ids.filtered(lambda p: p.state != 'cancel')
-        if delivery_ids:
-            return self.env.ref('stock.action_report_delivery').report_action(delivery_ids)
-        else:
-            return False
+        if not delivery_ids:
+            raise UserError(_('There are no delivery orders associated with this sale order.'))
+        return self.env.ref('stock.action_report_delivery').report_action(delivery_ids)
                     
 
 class SaleOrderLineCustom(models.Model):
