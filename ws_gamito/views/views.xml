@@ -76,6 +76,7 @@
 		</field>
 	</record>
 		  
+    <!-- Acción del servidor para imprimir el albarán -->
     <record id="action_print_delivery_button" model="ir.actions.server">
         <field name="name">Print Delivery Order</field>
         <field name="model_id" ref="sale.model_sale_order"/>
@@ -84,29 +85,17 @@
         <field name="code">action = model.action_print_delivery()</field>
     </record>
 
-    <!-- Modificar la vista de formulario para añadir la opción de imprimir -->
-    <record id="sale_order_print_delivery_form_action" model="ir.ui.view">
-        <field name="name">sale.order.print.delivery.form</field>
+    <!-- Informe para imprimir el albarán desde la orden de venta -->
+    <record id="report_sale_order_delivery" model="ir.actions.report">
+        <field name="name">sale.order.delivery</field>
         <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//header//button[@name='action_print_quotation']/../.." position="inside">
-                <button name="%(action_print_delivery_button)d" type="action" string="Print Delivery Order" class="btn-secondary" icon="fa-print"/>
-            </xpath>
-        </field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">stock.report_deliveryslip</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="context">{'active_model': 'sale.order'}</field>
     </record>
 
-    <!-- Modificar la vista de árbol para añadir la opción de imprimir -->
-    <record id="sale_order_print_delivery_tree_action" model="ir.ui.view">
-        <field name="name">sale.order.print.delivery.tree</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_tree"/>
-        <field name="arch" type="xml">
-            <xpath expr="//header//button[@name='action_print_quotation']/../.." position="inside">
-                <button name="%(action_print_delivery_button)d" type="action" string="Print Delivery Order" class="btn-secondary" icon="fa-print"/>
-            </xpath>
-        </field>
-    </record>
 
 		
 	<!--<record id="action_order_custom_logic" model="ir.actions.server">
