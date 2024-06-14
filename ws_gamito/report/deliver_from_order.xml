@@ -13,9 +13,14 @@
 		<t t-call="web.html_container">
 			<t t-foreach="docs" t-as="order">
 				<t t-set="picking_ids" t-value="order.picking_ids.filtered(lambda x: x.picking_type_id.code == 'outgoing' and x.state == 'done')"/>
+				<t t-log="'Picking IDs: %s' % picking_ids"/>
 				<t t-if="picking_ids">
 					<t t-set="docs" t-value="picking_ids"/>
+					<t t-log="'Docs: %s' % docs"/>
 					<t t-call="stock.report_deliveryslip"/>
+				</t>
+				<t t-else="">
+					<t t-log="'No hay albaranes relacionados para el pedido de venta: %s' % order.name"/>
 				</t>
 			</t>
 		</t>
