@@ -76,11 +76,10 @@
 		</field>
 	</record>
 		  
-	<record id="action_print_delivery_button" model="ir.actions.server">
+    <record id="action_print_delivery_button" model="ir.actions.server">
         <field name="name">Print Delivery Order</field>
         <field name="model_id" ref="sale.model_sale_order"/>
         <field name="binding_model_id" ref="sale.model_sale_order"/>
-        <field name="binding_type">form</field>
         <field name="state">code</field>
         <field name="code">action = model.action_print_delivery()</field>
     </record>
@@ -90,11 +89,11 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='action_confirm']" position="after">
+            <xpath expr="//header/button[@name='action_confirm']" position="after">
                 <button name="%(action_print_delivery_button)d" type="action" string="Print Delivery Order" class="btn-primary"/>
             </xpath>
         </field>
-    </record>	  
+    </record>
 	
 		
 	<!--<record id="action_order_custom_logic" model="ir.actions.server">
