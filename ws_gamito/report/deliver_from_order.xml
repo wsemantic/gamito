@@ -1,5 +1,4 @@
 <odoo>
-    <!-- Acción del servidor para imprimir el albarán -->
     <record id="action_print_delivery_button" model="ir.actions.server">
         <field name="name">Print Delivery Order</field>
         <field name="model_id" ref="sale.model_sale_order"/>
@@ -15,7 +14,7 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">stock.report_deliveryslip</field>
         <field name="binding_model_id" ref="sale.model_sale_order"/>
-        <field name="binding_type">report</field>
-        <field name="context">{'active_model': 'sale.order'}</field>
+        <field name="binding_type">report"/>
+    </record>
     </record>
 </odoo>
