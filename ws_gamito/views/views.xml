@@ -76,6 +76,21 @@
 		</field>
 	</record>
 		  
+    <record id="action_print_delivery_button" model="ir.actions.server">
+        <field name="name">Print Delivery Order</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_print_delivery()</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="sale_order_action_print_delivery" model="ir.values">
+        <field name="name">Print Delivery Order</field>
+        <field name="model">sale.order</field>
+        <field name="key2">client_action_multi</field>
+        <field name="value" eval="ir_actions_server,action_print_delivery_button"/>
+    </record>		  
 	
 		
 	<!--<record id="action_order_custom_logic" model="ir.actions.server">

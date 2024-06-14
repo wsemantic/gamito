@@ -84,6 +84,16 @@ class SaleOrder(models.Model):
                 if new_warehouse:
                     _logger.info("WSEM 4- Almacen nuevo %s ",new_warehouse.name)   
                     self.warehouse_id = new_warehouse.id
+                    
+
+    def action_print_delivery(self):
+        self.ensure_one()
+        delivery_ids = self.picking_ids.filtered(lambda p: p.state != 'cancel')
+        if delivery_ids:
+            return self.env.ref('stock.action_report_delivery').report_action(delivery_ids)
+        else:
+            return False
+                    
 
 class SaleOrderLineCustom(models.Model):
     _inherit = 'sale.order.line' 
@@ -161,13 +171,13 @@ class StockLot(models.Model):
         expiration_date=False
         lot_name=vals.get('name', False)
         
-        creado_desde_produccion= 'product_id' in vals
+        creado_desde_boton_action_generate_serie= 'product_id' in vals
                       
         lot = super(StockLot, self).create(vals)
         product = lot.product_id  # Obtener el objeto producto directamente del lote
         
-        _logger.info(f'WSEM create LOTE, name:{lot_name} creado_desde_produccion:{creado_desde_produccion}')
-        if creado_desde_produccion:
+        _logger.info(f'WSEM create LOTE, name:{lot_name} creado_desde_boton_action_generate_serie:{creado_desde_boton_action_generate_serie}')
+        if creado_desde_boton_action_generate_serie:
             date_now = datetime.now()
             formatted_date = date_now.strftime("%y%W%w")
             product_ref = product.default_code or 'NO_REF'
