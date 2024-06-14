@@ -1,21 +1,23 @@
 <odoo>
-    <record id="action_print_delivery_button" model="ir.actions.server">
-        <field name="name">Print Delivery Order</field>
-        <field name="model_id" ref="sale.model_sale_order"/>
-        <field name="binding_model_id" ref="sale.model_sale_order"/>
-        <field name="state">code</field>
-        <field name="code">action = model.action_print_delivery()</field>
-    </record>
-
-    <!-- Informe para imprimir el albarán desde la orden de venta -->
-	<record id="report_sale_order_delivery" model="ir.actions.report">
-        <field name="name">sale.report_deliveryslip</field>
-        <field name="model">sale.order</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">stock.report_deliveryslip</field>
-        <field name="report_file">stock.report_deliveryslip</field>
-        <field name="binding_model_id" ref="sale.model_sale_order"/>
-        <field name="binding_type">report</field>
-        <field name="print_report_name">'Delivery Order - %s' % (object.name)</field>
-    </record>
+	<template id="report_sale_order_deliveryslip">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="order">
+				<t t-set="picking_ids" t-value="order.picking_ids.filtered(lambda x: x.picking_type_id.code == 'outgoing' and x.state == 'done')"/>
+				<t t-foreach="picking_ids" t-as="o">
+					<t t-call="stock.report_delivery_document" t-lang="o.partner_id.lang or o.env.lang"/>
+				</t>
+			</t>
+		</t>
+	</template>
+	
+	<record id="action_report_sale_order_deliveryslip" model="ir.actions.report">
+		<field name="name">Imprimir Albarán</field>
+		<field name="model">sale.order</field>
+		<field name="report_type">qweb-pdf</field>
+		<field name="report_name">ws_gamito.report_sale_order_deliveryslip</field>
+		<field name="report_file">ws_gamito.report_sale_order_deliveryslip</field>
+		<field name="binding_model_id" ref="sale.model_sale_order"/>
+		<field name="binding_type">report</field>
+		<field name="groups_id" eval="[(4, ref('base.group_user'))]"/>
+	</record>
 </odoo>
