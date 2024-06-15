@@ -45,18 +45,11 @@
             </div>
         </xpath>
         
-        <xpath expr="//table[@name='stock_move_table']/thead/tr" position="inside">
-            <th name="th_lote_code"><strong>Lote codigo</strong></th>
-            <th name="th_ean13"><strong>EAN13</strong></th>
+        <xpath expr="//table[@name='stock_move_table']/thead/tr" position="inside">                        
             <th name="th_bultos"><strong>Bultos</strong></th>           
         </xpath>
         <xpath expr="//table[@name='stock_move_table']/tbody/tr" position="inside">
             <tr t-foreach="move.move_line_ids" t-as="ml">
-                <td><span t-field="ml.lot_id.name"/></td>
-                <td>
-                    <div t-field="ml.product_id.barcode" 
-                         t-options="{'widget': 'barcode', 'humanreadable': 1, 'width': 400, 'height': 100, 'quiet': 0, 'img_style': 'height:35px;'}"/>
-                </td>
                 <td>
                     <span t-esc="ml.qty_done / ml.product_id.product_tmpl_id.packaging_ids.qty"/>
                 </td>
