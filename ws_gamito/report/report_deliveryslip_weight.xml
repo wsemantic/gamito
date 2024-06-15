@@ -7,18 +7,20 @@
             <t t-set="total_bulto" t-value="0"/>
             <t t-set="total_palet" t-value="0"/>
             <t t-foreach="o.move_ids" t-as="move">
-                <t t-set="product_net_weight" t-value="move.product_id.product_tmpl_id.net_weight or 0"/>
-                <t t-set="total_net_weight" t-value="total_net_weight + product_net_weight * move.product_uom_qty"/>
+                <t t-foreach="move.move_line_ids" t-as="move_line">
+                    <t t-set="product_net_weight" t-value="move_line.product_id.product_tmpl_id.net_weight or 0"/>
+                    <t t-set="total_net_weight" t-value="total_net_weight + product_net_weight * move_line.qty_done"/>
+                                        
+                    <t t-set="product_weight" t-value="move_line.product_id.product_tmpl_id.weight or 0"/>
+                    <t t-set="total_weight" t-value="total_weight + product_weight * move_line.qty_done"/>
+                    
+                    <t t-if="move_line.product_id.product_tmpl_id.packaging_ids.qty &gt; 0">
+                        <t t-set="total_bulto" t-value="total_bulto + move_line.qty_done / move_line.product_id.product_tmpl_id.packaging_ids.qty"/>
+                    </t>
                                     
-                <t t-set="product_weight" t-value="move.product_id.product_tmpl_id.weight or 0"/>
-                <t t-set="total_weight" t-value="total_weight + product_weight * move.product_uom_qty"/>
-                
-                <t t-if="move.product_id.product_tmpl_id.packaging_ids.qty &gt; 0">
-                    <t t-set="total_bulto" t-value="total_bulto + move.product_uom_qty / move.product_id.product_tmpl_id.packaging_ids.qty"/>
-                </t>
-                                
-                <t t-if="move.product_id.product_tmpl_id.packaging_ids.ws_cajas_por_bulto &gt; 0">
-                    <t t-set="total_palet" t-value="total_palet + move.product_uom_qty / move.product_id.product_tmpl_id.packaging_ids.ws_cajas_por_bulto"/>
+                    <t t-if="move_line.product_id.product_tmpl_id.packaging_ids.ws_cajas_por_bulto &gt; 0">
+                        <t t-set="total_palet" t-value="total_palet + move_line.qty_done / move_line.product_id.product_tmpl_id.packaging_ids.ws_cajas_por_bulto"/>
+                    </t>
                 </t>
             </t>
         </xpath>
@@ -43,13 +45,22 @@
             </div>
         </xpath>
         
-        <xpath expr="//table[@name='stock_move_table']/thead/tr" position="inside">     
+        <xpath expr="//table[@name='stock_move_table']/thead/tr" position="inside">
+            <th name="th_lote_code"><strong>Lote codigo</strong></th>
+            <th name="th_ean13"><strong>EAN13</strong></th>
             <th name="th_bultos"><strong>Bultos</strong></th>           
         </xpath>
         <xpath expr="//table[@name='stock_move_table']/tbody/tr" position="inside">
-            <td>
-                <span t-esc="move.product_uom_qty / move.product_id.product_tmpl_id.packaging_ids.qty"/>
-            </td>
+            <tr t-foreach="move.move_line_ids" t-as="ml">
+                <td><span t-field="ml.lot_id.name"/></td>
+                <td>
+                    <div t-field="ml.product_id.barcode" 
+                         t-options="{'widget': 'barcode', 'humanreadable': 1, 'width': 400, 'height': 100, 'quiet': 0, 'img_style': 'height:35px;'}"/>
+                </td>
+                <td>
+                    <span t-esc="ml.qty_done / ml.product_id.product_tmpl_id.packaging_ids.qty"/>
+                </td>
+            </tr>
         </xpath>
     </template>
 </odoo>
