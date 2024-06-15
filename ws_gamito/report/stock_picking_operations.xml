@@ -37,7 +37,7 @@
                 </div>
                 <div class="col-3">
                     <strong>Total Bultos:</strong>
-                    <span t-esc="float_round(total_bulto, precision_digits=2)" />
+                    <span t-esc="'{:.1f}'.format(total_bulto)" />
                 </div>
                 <div class="col-3">
                     <strong>Total Palets:</strong>
