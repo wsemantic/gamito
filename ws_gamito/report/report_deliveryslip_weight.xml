@@ -7,7 +7,7 @@
             <t t-set="total_bulto" t-value="0"/>
             <t t-set="total_palet" t-value="0"/>
             <t t-foreach="o.move_ids" t-as="move">
-                <t t-foreach="move.move_line_ids" t-as="move_line">
+                <t t-foreach="move.move_ids" t-as="move_line">
                     <t t-set="product_net_weight" t-value="move_line.product_id.product_tmpl_id.net_weight or 0"/>
                     <t t-set="total_net_weight" t-value="total_net_weight + product_net_weight * move_line.product_uom_qty"/>
                                         
