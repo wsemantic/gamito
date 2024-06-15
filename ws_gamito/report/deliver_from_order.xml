@@ -24,7 +24,7 @@
 	</template>
 
 	<record id="action_report_sale_order_deliveryslip" model="ir.actions.report">
-		<field name="name">Imprimir Albarán</field>
+		<field name="name">Nota de pedido</field>
 		<field name="model">sale.order</field>
 		<field name="report_type">qweb-pdf</field>
 		<field name="report_name">ws_gamito.report_sale_order_deliveryslip</field>
