@@ -45,15 +45,13 @@
             </div>
         </xpath>
         
-        <xpath expr="//table[@name='stock_move_table']/thead/tr" position="inside">                        
+        <xpath expr="//table[@name='stock_move_table']/thead/tr" position="inside">
             <th name="th_bultos"><strong>Bultos</strong></th>           
         </xpath>
         <xpath expr="//table[@name='stock_move_table']/tbody/tr" position="inside">
-            <tr t-foreach="move.move_line_ids" t-as="ml">
-                <td>
-                    <span t-esc="ml.qty_done / ml.product_id.product_tmpl_id.packaging_ids.qty"/>
-                </td>
-            </tr>
+            <td>
+                <span t-esc="move.product_uom_qty / move.product_id.product_tmpl_id.packaging_ids.qty"/>
+            </td>
         </xpath>
     </template>
 </odoo>
