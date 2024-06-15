@@ -34,11 +34,11 @@
                 </div>
                 <div class="col-3">
                     <strong>Total Bultos:</strong>
-                    <span t-esc="round(total_bulto)"/>
+                    <span t-esc="round(total_bulto+0.5)"/>
                 </div>
                 <div class="col-3">
                     <strong>Total Palets:</strong>
-                    <span t-esc="round(total_palet)"/>
+                    <span t-esc="round(total_palet+0.5)"/>
                 </div>              
             </div>
         </xpath>
@@ -48,7 +48,7 @@
         </xpath>
         <xpath expr="//table[@name='stock_move_table']/tbody/tr" position="inside">
             <td>
-                <span t-esc="move.product_uom_qty / move.product_id.product_tmpl_id.packaging_ids.qty"/>
+                <span t-esc="round(move.product_uom_qty / move.product_id.product_tmpl_id.packaging_ids.qty,1)"/>
             </td>
         </xpath>
     </template>
