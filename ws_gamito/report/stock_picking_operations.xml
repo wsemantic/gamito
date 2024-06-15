@@ -37,11 +37,11 @@
                 </div>
                 <div class="col-3">
                     <strong>Total Bultos:</strong>
-                    <span t-esc="format_float(total_bulto,1)"/>
+                    <span t-esc="total_bulto" t-options="{'widget': 'float', 'precision': 1}"/>
                 </div>
                 <div class="col-3">
                     <strong>Total Palets:</strong>
-                    <span t-esc="format_float(total_palet,1)"/>
+                    <span t-esc="total_palet" t-options="{'widget': 'float', 'precision': 1}"/>
                 </div>				
             </div>
         </xpath>
