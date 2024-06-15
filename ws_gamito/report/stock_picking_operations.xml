@@ -36,12 +36,12 @@
                     <span t-esc="total_weight  / 1000"/> Kg
                 </div>
                 <div class="col-3">
-                    <strong>Total Bultosf:</strong>
-                    <span t-esc="'{:.1f}'.format(total_bulto)" />
+                    <strong>Total Bultos:</strong>
+                    <span t-esc="total_bulto"/>
                 </div>
                 <div class="col-3">
                     <strong>Total Palets:</strong>
-                    <span t-esc="float_round(total_palet, precision_digits=2)"/>
+                    <span t-esc="total_palet"/>
                 </div>				
             </div>
         </xpath>
@@ -71,7 +71,7 @@
 			<!-- Extender las filas de la tabla específica para añadir los bultoso -->
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//tbody/t/tr" position="inside">
 			<td>
-				<span t-esc="format_float(ml.qty_done / ml.product_id.product_tmpl_id.packaging_ids.qty)"/>
+				<span t-esc="ml.qty_done / ml.product_id.product_tmpl_id.packaging_ids.qty"/>
 			</td>
 		</xpath>
     </template>
