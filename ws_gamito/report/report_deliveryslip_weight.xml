@@ -38,7 +38,7 @@
                 </div>
                 <div class="col-3">
                     <strong>Total Palets:</strong>
-                    <span t-esc="math.ceil(total_palet"/>
+                    <span t-esc="math.ceil(total_palet)"/>
                 </div>              
             </div>
         </xpath>
