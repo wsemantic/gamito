@@ -34,11 +34,11 @@
                 </div>
                 <div class="col-3">
                     <strong>Total Bultos:</strong>
-                    <span t-esc="Math.ceil(total_bulto)"/>
+                    <span t-esc="math.ceil(total_bulto)"/>
                 </div>
                 <div class="col-3">
                     <strong>Total Palets:</strong>
-                    <span t-esc="Math.ceil(total_palet"/>
+                    <span t-esc="math.ceil(total_palet"/>
                 </div>              
             </div>
         </xpath>
