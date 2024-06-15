@@ -36,7 +36,7 @@
                     <span t-esc="total_weight  / 1000"/> Kg
                 </div>
                 <div class="col-3">
-                    <strong>Total Bultos:</strong>
+                    <strong>Total Bultosf:</strong>
                     <span t-esc="'{:.1f}'.format(total_bulto)" />
                 </div>
                 <div class="col-3">
