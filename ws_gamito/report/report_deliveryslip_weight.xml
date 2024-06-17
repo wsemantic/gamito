@@ -18,7 +18,7 @@
 				</t>
 								
 				<t t-if="move_line.product_id.product_tmpl_id.packaging_ids.ws_cajas_por_bulto &gt; 0">
-					<t t-set="total_palet" t-value="total_palet + move_line.product_uom_qty / move_line.product_id.product_tmpl_id.packaging_ids.ws_cajas_por_bulto"/>
+					<t t-set="total_palet" t-value="total_palet + move_line.product_uom_qty / (move_line.product_id.product_tmpl_id.packaging_ids.qty*move_line.product_id.product_tmpl_id.packaging_ids.ws_cajas_por_bulto)"/>
 				</t>
             </t>
         </xpath>
