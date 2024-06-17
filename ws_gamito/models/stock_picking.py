@@ -7,7 +7,6 @@ class StockPicking(models.Model):
     ws_bulto_total = fields.Float(string='Total Bultos', compute='_compute_totals', store=True)
     ws_palet_total = fields.Float(string='Total Palets', compute='_compute_totals', store=True)
 
-    @api.multi
     @api.depends('move_ids', 'move_ids.product_id', 'move_ids.product_uom_qty', 'move_ids.sale_line_id.product_packaging_qty', 'move_ids.sale_line_id.product_packaging_id.ws_cajas_por_bulto')
     def _compute_totals(self):
         for picking in self:
