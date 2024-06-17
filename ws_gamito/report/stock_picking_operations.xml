@@ -29,19 +29,19 @@
             <div class="row mt-4">
                 <div class="col-3">
                     <strong>Total Peso Neto:</strong>
-                    <span t-esc="total_net_weight / 1000"/> Kg
+                    <span t-esc="round(total_net_weight / 1000,2)"/> Kg
                 </div>
                 <div class="col-3">
                     <strong>Total Peso Bruto:</strong>
-                    <span t-esc="total_weight  / 1000"/> Kg
+                    <span t-esc="round(total_weight  / 1000,2)"/> Kg
                 </div>
                 <div class="col-3">
                     <strong>Total Bultos:</strong>
-                    <span t-esc="total_bulto"/>
+                    <span t-esc="round(total_bulto+0.5)"/>
                 </div>
                 <div class="col-3">
                     <strong>Total Palets:</strong>
-                    <span t-esc="total_palet"/>
+                    <span t-esc="round(total_palet+0.5)"/>
                 </div>				
             </div>
         </xpath>
