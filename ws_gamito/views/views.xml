@@ -81,7 +81,7 @@
 		<field name="model">stock.picking</field>
 		<field name="inherit_id" ref="stock.view_picking_form"/>
 		<field name="arch" type="xml">
-			<xpath expr="//group[@name='other_infos']" position="before">
+			<xpath expr="//label[@name='weight']" position="before">
 				<field name="ws_bulto_total" />
 				<field name="ws_palet_total" />
 				<!--<label for="ws_bulto_total" string="Bultos totales"/>
