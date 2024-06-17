@@ -83,7 +83,7 @@
 		<field name="arch" type="xml">
 			<!-- Insertamos los nuevos campos personalizados en el grupo 'other_infos' de la pestaña 'Additional Info' -->
 			<xpath expr="//page[@name='extra']/group/group[@name='other_infos']" position="inside">
-				<group string="Custom Fields">
+				<group string="Embalaje">
 					<field name="ws_bulto_total"/>
 					<field name="ws_palet_total"/>
 				</group>
