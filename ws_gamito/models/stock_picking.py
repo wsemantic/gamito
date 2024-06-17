@@ -4,8 +4,8 @@ from odoo import models, fields, api
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
    
-    ws_bulto_total = fields.Float(string='Total Bultos', compute='_compute_totals', store=True)
-    ws_palet_total = fields.Float(string='Total Palets', compute='_compute_totals', store=True)
+    ws_bulto_total = fields.Float(string='Total Bultos', compute='_compute_totals', store=True, readonly=False)
+    ws_palet_total = fields.Float(string='Total Palets', compute='_compute_totals', store=True, readonly=False)
 
     @api.depends('move_ids', 'move_ids.product_id', 'move_ids.product_uom_qty', 'move_ids.sale_line_id.product_packaging_qty', 'move_ids.sale_line_id.product_packaging_id.ws_cajas_por_bulto')
     def _compute_totals(self):
