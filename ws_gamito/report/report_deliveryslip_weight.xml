@@ -33,8 +33,8 @@
                     <span t-esc="round(total_weight  / 1000,2)"/> Kg
                 </div>
                 <div class="col-3">
-                    <strong>Total Bultos:</strong>
-                    <span t-esc="round(total_bulto+0.5)"/>
+                    <strong>Bultos totales:</strong>
+                    <span t-esc="round(o.ws_bulto_total)"/>
                 </div>
                 <div class="col-3">
                     <strong>Total Palets:</strong>
