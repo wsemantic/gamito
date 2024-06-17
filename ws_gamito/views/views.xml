@@ -75,7 +75,7 @@
 			</xpath>
 		</field>
 	</record>
-	<!--	  
+		  
 	<record id="view_picking_form_inherit" model="ir.ui.view">
 		<field name="name">stock.picking.form.inherit</field>
 		<field name="model">stock.picking</field>
@@ -86,7 +86,7 @@
 				<field name="ws_palet_total"/>
 			</xpath>
 		</field>
-	</record>-->
+	</record>
 
 		
 	<!--<record id="action_order_custom_logic" model="ir.actions.server">
