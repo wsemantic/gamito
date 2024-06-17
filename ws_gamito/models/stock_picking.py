@@ -18,5 +18,5 @@ class StockPicking(models.Model):
                 if move_line.sale_line_id.product_packaging_id.ws_cajas_por_bulto > 0:
                     total_palet += move_line.sale_line_id.product_packaging_qty / move_line.sale_line_id.product_packaging_id.ws_cajas_por_bulto
 
-            picking.ws_bulto_total = total_bulto
-            picking.ws_palet_total = total_palet
+            picking.ws_bulto_total = math.ceil(total_bulto)
+            picking.ws_palet_total =  math.ceil(total_palet)
