@@ -1,5 +1,4 @@
 import logging
-from .stock_picking import StockPicking
 from odoo import models, fields, api
 
 class StockPicking(models.Model):
