@@ -75,14 +75,15 @@
 			</xpath>
 		</field>
 	</record>
-		  
-	<record id="view_picking_form_inherit_delivery" model="ir.ui.view">
-		<field name="name">stock.picking.form.inherit.delivery</field>
+	
+	<record id="view_picking_withcarrier_out_form_custom" model="ir.ui.view">
+		<field name="name">delivery.view_picking_withcarrier_out_form.custom</field>
 		<field name="model">stock.picking</field>
 		<field name="inherit_id" ref="delivery.view_picking_withcarrier_out_form"/>
 		<field name="arch" type="xml">
-			<xpath expr="//label[@for='weight']" position="before">
-				<group>
+			<!-- Insertamos los nuevos campos personalizados en el grupo carrier_data -->
+			<xpath expr="//group[@name='carrier_data']" position="inside">
+				<group string="Custom Fields">
 					<field name="ws_bulto_total"/>
 					<field name="ws_palet_total"/>
 				</group>
