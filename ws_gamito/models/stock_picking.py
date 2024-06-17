@@ -4,9 +4,7 @@ from odoo import models, fields, api
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    ws_bulto_total = fields.Float(string='Total Bultos')
-    ws_palet_total = fields.Float(string='Total Palets')
-    
+   
     ws_bulto_total = fields.Float(string='Total Bultos', compute='_compute_totals', store=True)
     ws_palet_total = fields.Float(string='Total Palets', compute='_compute_totals', store=True)
 
