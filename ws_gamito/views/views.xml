@@ -76,22 +76,16 @@
 		</field>
 	</record>
 		  
-	<record id="view_picking_form_inherit" model="ir.ui.view">
-		<field name="name">stock.picking.form.inherit</field>
+	<record id="view_picking_form_inherit_delivery" model="ir.ui.view">
+		<field name="name">stock.picking.form.inherit.delivery</field>
 		<field name="model">stock.picking</field>
 		<field name="inherit_id" ref="delivery.view_picking_withcarrier_out_form"/>
 		<field name="arch" type="xml">
 			<xpath expr="//label[@for='weight']" position="before">
-				<field name="ws_bulto_total" />
-				<field name="ws_palet_total" />
-				<!--<label for="ws_bulto_total" string="Bultos totales"/>
-				<div>
-					<field name="ws_bulto_total" />
-				</div>
-				<label for="ws_palet_total" string="Palet totales"/>
-				<div>
-					<field name="ws_palet_total" />
-				</div>-->
+				<group>
+					<field name="ws_bulto_total"/>
+					<field name="ws_palet_total"/>
+				</group>
 			</xpath>
 		</field>
 	</record>
