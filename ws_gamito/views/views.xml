@@ -84,11 +84,11 @@
 			<xpath expr="//group[@name='other_infos']" position="before">
 				<label for="ws_bulto_total" string="Bultos totales"/>
 				<div>
-					<field name="ws_bulto_total" class="oe_inline"/>
+					<field name="ws_bulto_total" />
 				</div>
 				<label for="ws_palet_total" string="Palet totales"/>
 				<div>
-					<field name="ws_palet_total" class="oe_inline"/>
+					<field name="ws_palet_total" />
 				</div>
 			</xpath>
 		</field>
