@@ -25,7 +25,7 @@
 		
 		<xpath expr="//div[@name='div_sched_date']" position="before">
             <div t-if="o.sale_id.commitment_date" class="col-auto" name="div_commitment_date">
-                <strong>Delivery Date:</strong>
+                <strong>Fecha Entrega:</strong>
                 <p t-field="o.sale_id.commitment_date"/>
             </div>
         </xpath>
