@@ -22,6 +22,14 @@
 				</t>
             </t>
         </xpath>
+		
+		<xpath expr="//div[@name='div_sched_date']" position="before">
+            <div t-if="o.commitment_date" class="col-auto" name="div_commitment_date">
+                <strong>Delivery Date:</strong>
+                <p t-field="o.commitment_date"/>
+            </div>
+        </xpath>
+		
         <xpath expr="//div[hasclass('page')]" position="inside">
             <div class="row mt-4">
                 <div class="col-3">
