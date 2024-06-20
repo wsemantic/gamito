@@ -9,47 +9,50 @@ class MrpDateGrouping(models.TransientModel):
     _name = 'mrp.date.grouping'
     _description = 'Plan Production'
 
-    daysgroup = fields.Integer(string='Number of Days to Group', default=7, required=True)
-    ngroups = fields.Integer(string='Number of Groups to Plan', default=2, required=True)
+    daysgroup = fields.Integer(string='Number of Days to Group', default=1, required=True)
+    ngroups = fields.Integer(string='Number of Groups to Plan', default=1, required=True)
 
     def mrp_planning(self):
         sale_orders = self.env['sale.order'].browse(self._context.get('active_ids'))
-        sale_orders = sale_orders.sorted(key=lambda r: r.commitment_date if r.commitment_date else r.create_date)
+        sale_orders = sorted(sale_orders, key=lambda r: (
+            r.commitment_date.date() if r.commitment_date else r.create_date.date(),
+            r.tag_ids[0].name if r.tag_ids else ''
+        ))
 
         current_group = []
         
-        start_dates={}
-        self.find_max_reserved_date_for_work_centers(sale_orders,start_dates,fields.Datetime.now())
+        start_dates={} #key producto valor fecha
+        start_gr_date = None
+        group_end_date = None
+            
         end_dates=defaultdict(lambda: fields.Datetime.now())
         planned_groups=0
+        current_tag = None                
+        self.find_max_reserved_date_for_work_centers(sale_orders,start_dates,fields.Datetime.now())
         
         _logger.info("WSEM Inicio:")
         for index, order in enumerate(sale_orders):
             es_ultima_iteracion = (index == len(sale_orders) - 1)
-            current_group.append(order)
-            _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)}")
-            #products_demand se redefine actualizado con cada nueva orden
-            products_demand, product_tags = self._products_demand(current_group)
-            
-            self._calculate_lead_times_by_phase(products_demand, start_dates,end_dates)
-            order.commitment_date = self.max_reserved_date_for_order(order, end_dates)
-            
-            start_gr_date= min(start_dates.values())
-            group_end_date = max(end_dates.values())
-            
-            _logger.info(f"WSEM fecha grupo : {group_end_date.strftime('%Y-%m-%d %H:%M:%S')}")
+            order_tag = order.tag_ids[0].name if order.tag_ids else None
+        
+            if current_tag is None or current_tag == order_tag:
+                current_group.append(order)
+                _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)}")
+                #products_demand se redefine actualizado con cada nueva orden añadida al grupo, por tanto va aumentando
+                products_demand, product_tags = self._products_demand(current_group)
+                
+                self._calculate_lead_times_by_phase(products_demand, start_dates,end_dates)
+                order.commitment_date = self.max_reserved_date_for_order(order, end_dates)
+                
+                start_gr_date= min(start_dates.values())
+                group_end_date = max(end_dates.values())
+                
+                _logger.info(f"WSEM fecha grupo : {group_end_date.strftime('%Y-%m-%d %H:%M:%S')}")
 
-            if group_end_date >= start_gr_date + timedelta(days=self.daysgroup) or es_ultima_iteracion:
-                #TODO partir ordenes si se pasa de fecha
-                #if group_end_date >= start_gr_date and not len(current_group) == 1:
-                #    _logger.info("WSEM superada fecha grupo")
-                #    # Elimino grupo que se pasa y actualizo datos
-                #    current_group.pop()
-                #    products_demand = self._products_demand(current_group)
-                #    start_dates, end_dates = self._calculate_lead_times_by_phase(products_demand, start_dates)
-                #    group_end_date = max(end_dates.values())
-                #else:
-                #    _logger.info("WSEM fin de grupo ")                
+            if current_tag != order_tag or \
+               group_end_date >= start_gr_date + timedelta(days=self.daysgroup) or \
+               es_ultima_iteracion:              
+                
                 _logger.info("WSEM fin de grupo ")                
                 planned_groups+=1
                 self._create_production_orders(products_demand, product_tags, start_dates, end_dates)
@@ -106,10 +109,10 @@ class MrpDateGrouping(models.TransientModel):
 
     def _calculate_lead_times_by_phase(self, products_demand, start_dates, end_dates):
         
-        workcenter_sched=defaultdict(lambda: fields.Datetime.now())
+        workcenter_sched=defaultdict(lambda: fields.Datetime.now()) #key workcenter id valor el tiempo para producir teniendo en cuenta capacidad en paralelo
         workcenter_of_products={}
         
-        #calcular fechas de finalziacion por centro de trabajo, y la fecha start es la final del mismo centro para la fase anterior        
+        #calcular fechas de finalizacion por centro de trabajo, y la fecha start es la final del mismo centro para la fase anterior        
 
         for product in products_demand:
             #start basado en ordenes existentes o bacth anteriores, antes de ejecutarse por primera vez este batch
@@ -126,9 +129,6 @@ class MrpDateGrouping(models.TransientModel):
             end_date = start_dates[product.id] + timedelta(days=incr_lead_time/1440.0)
             end_dates[product.id] = end_date                    
                     
-        else:
-            _logger.info(f"WSEM no hay fases" )
-
         return end_dates
 
     def _get_leadtime(self, workcenter_sched, workcenter_of_products, product ):
@@ -143,9 +143,11 @@ class MrpDateGrouping(models.TransientModel):
         
         for order in sale_orders:
             for line in order.order_line:
-                product = line.product_id                                                                                                                                                                                                                                                                                                       
+                product = line.product_id              
+                #la demanda de productos se origina por las ordenes de venta y por consumos de ingredientes
                 products_demand[product] = products_demand.get(product,0)+line.product_uom_qty 
-                self._products_demand_bomlines(products_demand,product,line.product_uom_qty)     
+                #añado los ingredientes  al catalogo de demandas, recursivamente
+                self._products_demand_bomlines(products_demand,product,line.product_uom_qty)   
                 # Capturar la primera etiqueta encontrada para el producto
                 if product not in product_tags:
                     tag = order.tag_ids.filtered(lambda t: t.name.strip())
