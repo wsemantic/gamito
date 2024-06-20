@@ -167,7 +167,7 @@ class MrpDateGrouping(models.TransientModel):
             products_demand[line.product_id] = products_demand.get(line.product_id,0)+root_quantity*line.product_qty
             if product not in product_tags:
                 product_tags[product] = tag
-            self._products_demand_bomlines(products_demand, line.product_id, root_quantity*line.product_qty)
+            self._products_demand_bomlines(products_demand, line.product_id,  product_tags, tag, root_quantity*line.product_qty)
 
     def _get_bom_phases(self, bom):
         phases = set()
