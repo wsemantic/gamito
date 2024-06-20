@@ -36,6 +36,7 @@ class MrpDateGrouping(models.TransientModel):
             order_tag = order.tag_ids[0].name if order.tag_ids else None
         
             if current_tag is None or current_tag == order_tag:
+                current_tag = order_tag                       
                 current_group.append(order)
                 _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)}")
                 #products_demand se redefine actualizado con cada nueva orden añadida al grupo, por tanto va aumentando
@@ -62,6 +63,9 @@ class MrpDateGrouping(models.TransientModel):
                     break
 
                 current_group = []
+                current_tag = None
+                start_gr_date = None
+                group_end_date = None                                  
                 self.find_max_reserved_date_for_work_centers(sale_orders,start_dates,fields.Datetime.now())
             
             
@@ -146,20 +150,23 @@ class MrpDateGrouping(models.TransientModel):
                 product = line.product_id              
                 #la demanda de productos se origina por las ordenes de venta y por consumos de ingredientes
                 products_demand[product] = products_demand.get(product,0)+line.product_uom_qty 
+                
+                tag_arr = order.tag_ids.filtered(lambda t: t.name.strip())
+                tag=''
+                if tag_arr:
+                    tag=tag_arr[0].name.strip()
+                    product_tags[product] =tag 
                 #añado los ingredientes  al catalogo de demandas, recursivamente
-                self._products_demand_bomlines(products_demand,product,line.product_uom_qty)   
-                # Capturar la primera etiqueta encontrada para el producto
-                if product not in product_tags:
-                    tag = order.tag_ids.filtered(lambda t: t.name.strip())
-                    if tag:
-                        product_tags[product] = tag[0].name.strip()                                                                       
+                self._products_demand_bomlines(products_demand,product,product_tags, tag,line.product_uom_qty)                                                                         
 
         return products_demand, product_tags
 
-    def _products_demand_bomlines(self, products_demand, product, root_quantity):
+    def _products_demand_bomlines(self, products_demand, product, product_tags, tag, root_quantity):
         bom = self.env['mrp.bom']._bom_find(product)[product]            
         for line in bom.bom_line_ids:
             products_demand[line.product_id] = products_demand.get(line.product_id,0)+root_quantity*line.product_qty
+            if component not in product_tags:
+                product_tags[component] = tag
             self._products_demand_bomlines(products_demand, line.product_id, root_quantity*line.product_qty)
 
     def _get_bom_phases(self, bom):
