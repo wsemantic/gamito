@@ -73,7 +73,9 @@
 			<!-- Extender las filas de la tabla específica para añadir los bultoso -->
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//tbody/t/tr" position="inside">
 			<td>
-				<span t-esc="ml.qty_done / ml.product_id.product_tmpl_id.packaging_ids.qty"/>
+				
+				<span t-if ="ml.product_id.product_tmpl_id.packaging_ids.qty != 0" t-esc="ml.qty_done / ml.product_id.product_tmpl_id.packaging_ids.qty"/>
+				<span t-if="ml.product_id.product_tmpl_id.packaging_ids.qty == 0">N/A</span>
 			</td>
 		</xpath>
     </template>
