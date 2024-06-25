@@ -34,6 +34,7 @@ class MrpDateGrouping(models.TransientModel):
         _logger.info("WSEM Inicio:")
         for index, order in enumerate(sale_orders):
             es_ultima_iteracion = (index == len(sale_orders) - 1)
+            _logger.info(f"WSEM itera order indice {index} numero ordenes {len(sale_orders)} es ultima {es_ultima_iteracion}")
             order_tag = order.tag_ids[0].name if order.tag_ids else None
         
             if current_tag is None or current_tag == order_tag:
