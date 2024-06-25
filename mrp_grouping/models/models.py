@@ -327,4 +327,6 @@ class MrpDateGrouping(models.TransientModel):
     def _generate_default_name(self, product, language):
         default_code = product.default_code or ''
         name_idioma = product.with_context(lang=language).name or product.name
-        return f"[{default_code}] {name_idioma}"
+        dn= f"[{default_code}] {name_idioma}"
+        _logger.info(f"WSEM generando: {dn}")
+        return dn
