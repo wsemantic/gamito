@@ -53,7 +53,7 @@
             </div>
         </xpath>
         
-		<xpath expr="//table[@t-if='o.state!='done'']//tbody/tr/td/span[@t-field='move.product_id']" position="replace">
+		<xpath expr="//table[contains(@t-if, 'o.state!=') and contains(@t-if, 'done')]//tbody/tr/td/span[@t-field='move.product_id']" position="replace">
 			<span t-field="move.sale_line_id.name"/>
 		</xpath>
 		
