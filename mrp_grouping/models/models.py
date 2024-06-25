@@ -167,8 +167,11 @@ class MrpDateGrouping(models.TransientModel):
     def _products_demand_bomlines(self, products_demand, productkey, product_tags, tag, root_quantity):
         pro_name,product=productkey
         bom = self.env['mrp.bom']._bom_find(product)[product]            
+        user_language = self.env.user.lang
+        
         for line in bom.bom_line_ids:
-            sub_productkey= (line.name, line.product_id) 
+            linname= self._generate_default_name(line.product_id,user_language)
+            sub_productkey= (linname, line.product_id) 
             products_demand[sub_productkey] = products_demand.get(sub_productkey,0)+root_quantity*line.product_qty
             if sub_productkey not in product_tags:
                 product_tags[sub_productkey] = tag
@@ -192,6 +195,7 @@ class MrpDateGrouping(models.TransientModel):
         
         proname,product=productkey
         bom = self.env['mrp.bom']._bom_find(product)[product]
+        user_language = self.env.user.lang
         
         if bom:
             for operation in bom.operation_ids:
@@ -204,7 +208,9 @@ class MrpDateGrouping(models.TransientModel):
                 _logger.info(f"WSEM cycle t:{cycle_time} leadtime:{workcenter_sched[workcenter.id]}")               
 
             for line in bom.bom_line_ids:
-                self._calculate_product_lead_time(line.product_id,workcenter_sched,workcenter_of_products,products_demand)
+                linname= self._generate_default_name(line.product_id,user_language)
+                sub_productkey= (linname, line.product_id)
+                self._calculate_product_lead_time(sub_productkey,workcenter_sched,workcenter_of_products,products_demand)
                 _logger.info("WSEM añadido extra")
 
     def _create_production_orders(self, products_demand, product_tags, start_dates, end_dates):
@@ -318,3 +324,7 @@ class MrpDateGrouping(models.TransientModel):
 
         return True
  
+    def _generate_default_name(self, product, language):
+        default_code = product.default_code or ''
+        name_idioma = product.with_context(lang=language).name or product.name
+        return f"[{default_code}] {name_idioma}"
