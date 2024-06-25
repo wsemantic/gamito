@@ -53,6 +53,10 @@
             </div>
         </xpath>
         
+		<xpath expr="//table[@t-if=\"o.state!='done'\"]//tbody//tr//td/span[@t-field='move.product_id']" position="replace">
+			<span t-field="move.sale_line_id.name"/>
+		</xpath>
+		
         <xpath expr="//table[@name='stock_move_table']/thead/tr" position="inside">
             <th name="th_bultos"><strong>Bultos</strong></th>           
         </xpath>
