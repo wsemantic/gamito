@@ -229,6 +229,7 @@ class MrpDateGrouping(models.TransientModel):
         
         for productkey, quantity in products_demand.items():
             proname,product=productkey
+            _logger.info(f"WSEM crea ordenes itera {proname} qty:{quantity}")
             bom = self.env['mrp.bom']._bom_find(product)[product]
             if not bom:
                 _logger.info(f"WSEM No se encontró BOM para el producto {product.display_name}. Se omite la creación de la orden de producción.")
