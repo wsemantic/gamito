@@ -168,10 +168,11 @@ class MrpDateGrouping(models.TransientModel):
         pro_name,product=productkey
         bom = self.env['mrp.bom']._bom_find(product)[product]            
         for line in bom.bom_line_ids:
-            products_demand[line.product_id] = products_demand.get(line.product_id,0)+root_quantity*line.product_qty
-            if productkey not in product_tags:
-                product_tags[productkey] = tag
-            self._products_demand_bomlines(products_demand, line.product_id,  product_tags, tag, root_quantity*line.product_qty)
+            sub_productkey= (line.name, line.product_id) 
+            products_demand[sub_productkey] = products_demand.get(sub_productkey,0)+root_quantity*line.product_qty
+            if sub_productkey not in product_tags:
+                product_tags[sub_productkey] = tag
+            self._products_demand_bomlines(products_demand, sub_productkey,  product_tags, tag, root_quantity*line.product_qty)
 
     def _get_bom_phases(self, bom):
         phases = set()
