@@ -55,7 +55,7 @@ class MrpDateGrouping(models.TransientModel):
                group_end_date >= start_gr_date + timedelta(days=self.daysgroup) or \
                es_ultima_iteracion:              
                 
-                _logger.info(f""WSEM fin de grupo curr tag {current_tag != order_tag} order tag {current_tag != order_tag} diferente:{current_tag != order_tag}")                
+                _logger.info(f"WSEM fin de grupo curr tag {current_tag != order_tag} order tag {current_tag != order_tag} diferente:{current_tag != order_tag}")                
                 planned_groups+=1
                 self._create_production_orders(products_demand, product_tags, start_dates, end_dates)
 
