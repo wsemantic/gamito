@@ -200,7 +200,8 @@ class MrpDateGrouping(models.TransientModel):
         if bom:
             for operation in bom.operation_ids:
                 workcenter = operation.workcenter_id
-                cycle_time = sum(wc_line.time_cycle for wc_line in workcenter.routing_line_ids)
+                cycle_time = operation.time_cycle
+                
                 if productkey not in products_demand:
                     _logger.info(f"WSEM error falta:{proname}") 
                 workcenter_sched[workcenter.id]=workcenter_sched.get(workcenter.id,0.0)+products_demand[productkey]*cycle_time / workcenter.default_capacity       
