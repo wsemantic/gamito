@@ -39,7 +39,7 @@ class MrpDateGrouping(models.TransientModel):
             if current_tag is None or current_tag == order_tag:
                 current_tag = order_tag                       
                 current_group.append(order)
-                _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)}")
+                _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)} order tag:{current_tag}")
                 #products_demand se redefine actualizado con cada nueva orden añadida al grupo, por tanto va aumentando
                 products_demand, product_tags = self._products_demand(current_group)
                 
@@ -55,7 +55,7 @@ class MrpDateGrouping(models.TransientModel):
                group_end_date >= start_gr_date + timedelta(days=self.daysgroup) or \
                es_ultima_iteracion:              
                 
-                _logger.info(f"WSEM fin de grupo curr tag {current_tag != order_tag} order tag {current_tag != order_tag} diferente:{current_tag != order_tag}")                
+                _logger.info(f"WSEM fin de grupo, order tag: {order_tag} diferente:{current_tag != order_tag}")                
                 planned_groups+=1
                 self._create_production_orders(products_demand, product_tags, start_dates, end_dates)
 
