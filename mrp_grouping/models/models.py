@@ -9,8 +9,8 @@ class MrpDateGrouping(models.TransientModel):
     _name = 'mrp.date.grouping'
     _description = 'Plan Production'
 
-    daysgroup = fields.Integer(string='Number of Days to Group', default=1, required=True)
-    ngroups = fields.Integer(string='Number of Groups to Plan', default=1, required=True)
+    daysgroup = fields.Integer(string='Numero de dias Grupo', default=1, required=True)
+    ngroups = fields.Integer(string='Numero de grupos a planificar', default=1, required=True)
 
     def mrp_planning(self):
         sale_orders = self.env['sale.order'].browse(self._context.get('active_ids'))
@@ -28,7 +28,7 @@ class MrpDateGrouping(models.TransientModel):
             
         end_dates=defaultdict(lambda: fields.Datetime.now()) #key product.id int
         planned_groups=0
-        current_tag = None                
+        current_tag = None
         self.find_max_reserved_date_for_work_centers(sale_orders,start_dates,fields.Datetime.now())
         
         _logger.info("WSEM Inicio:")
