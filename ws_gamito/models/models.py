@@ -263,5 +263,5 @@ class MrpProduction(models.Model):
         if self.product_id.tracking == 'serial':
             self._set_qty_producing()
         
-        _logger.info(f'WSEM asignando nombre lote :{new_lot_name}')
+        _logger.info(f'WSEM v2 asignando nombre lote :{new_lot_name}')
         return self.lot_producing_id
