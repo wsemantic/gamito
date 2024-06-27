@@ -35,7 +35,7 @@ class MrpDateGrouping(models.TransientModel):
         for index, order in enumerate(sale_orders):
             es_ultima_iteracion = (index == len(sale_orders) - 1)
             _logger.info(f"WSEM itera order indice {index} numero ordenes {len(sale_orders)} es ultima {es_ultima_iteracion}")
-            order_tag = order.tag_ids[0].name if order.tag_ids else None
+            order_tag = order.tag_ids[0].name if order.tag_ids else ""
         
             if current_tag is None or current_tag == order_tag:
                 current_tag = order_tag                       
@@ -159,7 +159,7 @@ class MrpDateGrouping(models.TransientModel):
                 tag=''
                 if tag_arr:
                     tag=tag_arr[0].name.strip()
-                    product_tags[productkey] =tag 
+                product_tags[productkey] =tag 
                 #añado los ingredientes  al catalogo de demandas, recursivamente
                 self._products_demand_bomlines(products_demand,productkey,product_tags, tag,line.product_uom_qty)                                                                         
 
