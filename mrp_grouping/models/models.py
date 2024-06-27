@@ -10,7 +10,7 @@ class MrpDateGrouping(models.TransientModel):
     _description = 'Plan Production'
 
     daysgroup = fields.Integer(string='Numero de dias Grupo', default=1, required=True)
-    ngroups = fields.Integer(string='Numero de grupos a planificar', default=1, required=True)
+    ngroups = fields.Integer(string='Numero de grupos a planificar', default=10, required=True)
 
     def mrp_planning(self):
         sale_orders = self.env['sale.order'].browse(self._context.get('active_ids'))
