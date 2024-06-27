@@ -168,7 +168,7 @@ class StockLot(models.Model):
         lot = super(StockLot, self).create(vals)
         product = lot.product_id  # Obtener el objeto producto directamente del lote
         
-        production_id = context.get('default_production_id')
+        production_id = self.env.context.get('default_production_id')
         
         # Registrar el valor de default_production_id, ya sea que esté presente o no
         if production_id:
