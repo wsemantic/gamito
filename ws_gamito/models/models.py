@@ -250,7 +250,7 @@ class MrpProduction(models.Model):
         existing_lot = self.env['stock.lot'].search([('name', '=', new_lot_name), ('product_id', '=', product.id)], limit=1)
         if existing_lot:
             # Si existe, usar el lote existente
-            _logger.info(f'WSEM ya existía el lote :{new_lot_name}')
+            _logger.info(f'WSEM v2 ya existía el lote :{new_lot_name}')
             self.lot_producing_id = existing_lot
             return existing_lot
         
