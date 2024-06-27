@@ -154,49 +154,6 @@ from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
 
-class StockLot(models.Model):
-    _inherit = 'stock.lot'
-
-    @api.model
-    def create(self, vals):                
-        new_lot_name=False
-        expiration_date=False
-        lot_name=vals.get('name', False)
-        
-        creado_desde_boton_action_generate_serie= 'product_id' in vals
-                      
-        lot = super(StockLot, self).create(vals)
-        product = lot.product_id  # Obtener el objeto producto directamente del lote
-        
-        production_id = self.env.context.get('default_production_id')
-        
-        # Registrar el valor de default_production_id, ya sea que esté presente o no
-        if production_id:
-            _logger.info('WSEM default_production_id: %s', production_id)
-        else:
-            _logger.info('WSEM default_production_id is not set or is None')
-            
-        
-        _logger.info(f'WSEM create LOTE, name:{lot_name} creado_desde_boton_action_generate_serie:{creado_desde_boton_action_generate_serie}')
-        if creado_desde_boton_action_generate_serie:
-            date_now = datetime.now()
-            formatted_date = date_now.strftime("%y%W%w")
-            product_ref = product.default_code or 'NO_REF'
-            new_lot_name=f"{formatted_date}"
-            existing_lot = self.env['stock.lot'].search([('name', '=', new_lot_name), ('product_id', '=', product.id)], limit=1)
-            if existing_lot:
-                # Si existe, usar el lote existente
-                _logger.info(f'WSEM ya existía el lote :{new_lot_name}')
-                return existing_lot                                                    
-                               
-        lot.expiration_date = datetime.now() + timedelta(days=450)
-        
-        if new_lot_name:
-            _logger.info(f'WSEM asignando nombre lote :{new_lot_name}')
-            lot.name= new_lot_name                                    
-
-        return lot
-
                 
 
 #removal estrategia least_fifo
@@ -275,3 +232,36 @@ class StockMoveCustom(models.Model):
 
         return res
         
+class MrpProduction(models.Model):
+    _inherit = 'mrp.production'
+    def action_generate_serial(self):
+        self.ensure_one()
+        
+        # Crear los valores del lote
+        lot_vals = self._prepare_stock_lot_values()
+        
+        # Personalización del nombre del lote
+        product = self.product_id
+        date_now = datetime.now()
+        formatted_date = date_now.strftime("%y%W%w")
+        product_ref = product.default_code or 'NO_REF'
+        new_lot_name = f"{formatted_date}"
+        
+        existing_lot = self.env['stock.lot'].search([('name', '=', new_lot_name), ('product_id', '=', product.id)], limit=1)
+        if existing_lot:
+            # Si existe, usar el lote existente
+            _logger.info(f'WSEM ya existía el lote :{new_lot_name}')
+            self.lot_producing_id = existing_lot
+            return existing_lot
+        
+        # Si no existe, crear un nuevo lote
+        lot_vals['name'] = new_lot_name
+        lot_vals['expiration_date'] = date_now + timedelta(days=450)
+        
+        self.lot_producing_id = self.env['stock.lot'].create(lot_vals)
+        
+        if self.product_id.tracking == 'serial':
+            self._set_qty_producing()
+        
+        _logger.info(f'WSEM asignando nombre lote :{new_lot_name}')
+        return self.lot_producing_id
