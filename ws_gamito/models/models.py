@@ -168,6 +168,15 @@ class StockLot(models.Model):
         lot = super(StockLot, self).create(vals)
         product = lot.product_id  # Obtener el objeto producto directamente del lote
         
+        production_id = context.get('default_production_id')
+        
+        # Registrar el valor de default_production_id, ya sea que esté presente o no
+        if production_id:
+            _logger.debug('WSEM default_production_id: %s', production_id)
+        else:
+            _logger.debug('WSEM default_production_id is not set or is None')
+            
+        
         _logger.info(f'WSEM create LOTE, name:{lot_name} creado_desde_boton_action_generate_serie:{creado_desde_boton_action_generate_serie}')
         if creado_desde_boton_action_generate_serie:
             date_now = datetime.now()
