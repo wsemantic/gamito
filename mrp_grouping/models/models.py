@@ -45,7 +45,7 @@ class MrpDateGrouping(models.TransientModel):
                 products_demand, product_tags = self._products_demand(current_group)
                 
                 self._calculate_lead_times_by_phase(products_demand, start_dates,end_dates)
-                order.commitment_date = self.max_reserved_date_for_order(order, end_dates)
+                order.expected_date = self.max_reserved_date_for_order(order, end_dates)
                 
                 start_gr_date= min(start_dates.values())
                 group_end_date = max(end_dates.values())
@@ -152,8 +152,19 @@ class MrpDateGrouping(models.TransientModel):
         for order in sale_orders:
             for line in order.order_line:
                 productkey= (line.name, line.product_id)             
+                
+                # Agregar mensajes de depuración
+                if productkey in products_demand:
+                    _logger.info(f"WSEM Clave encontrada: {productkey}, demanda previa: {products_demand[productkey]}")
+                else:
+                    _logger.info(f"WSEM Clave nueva: {productkey}")
+
                 #la demanda de productos se origina por las ordenes de venta y por consumos de ingredientes
-                products_demand[productkey] = products_demand.get(productkey,0)+line.product_uom_qty 
+                prev_demand=products_demand.get(productkey,0)
+                products_demand[productkey] = prev_demand+line.product_uom_qty 
+
+                # Verificar la nueva demanda
+                _logger.info(f"Actualizado products_demand[{productkey}] = {products_demand[productkey]}")                                                    
                 
                 tag_arr = order.tag_ids.filtered(lambda t: t.name.strip())
                 tag=''
