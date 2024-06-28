@@ -2,6 +2,7 @@ from odoo import api, fields, models
 
 from collections import defaultdict
 from datetime import timedelta
+import math
 import logging
 _logger = logging.getLogger(__name__)
 
