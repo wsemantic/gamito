@@ -26,7 +26,7 @@
                 <form string="Plan Production">
                     <group>
                         <field name="daysgroup"/>
-                        <field name="ngroups"/>
+                        <!--<field name="ngroups"/>-->
                     </group>
                     <footer>
                         <button name="mrp_planning" type="object" string="Plan" class="btn-primary"/>
