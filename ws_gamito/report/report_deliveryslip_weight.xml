@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <template id="report_delivery_document_inherited" inherit_id="stock.report_delivery_document">
+    <template id="report_delivery_document_inherited" inherit_id="stock.report_delivery_document"><!-- en addon stock/report/report_deliveryslip.xml -->
+
         <xpath expr="//t[@t-call='web.external_layout']" position="before">
             <t t-set="total_net_weight" t-value="0"/>
             <t t-set="total_weight" t-value="0"/>
