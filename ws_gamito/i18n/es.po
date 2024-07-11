@@ -11,4 +11,4 @@ msgstr ""
 #. module: stock
 #: model:ir.actions.report,name:stock.action_report_delivery
 msgid "Delivery Slip"
-msgstr "Albarán"
+msgstr "Nota Pedido"
