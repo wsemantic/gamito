@@ -9,8 +9,6 @@ msgstr ""
 
 
 #. module: stock
-#: model_terms:ir.ui.view,arch_db:stock.view_move_search
-
-
-msgid "Picking"
-msgstr "Nota pedido"
+#: model:ir.actions.report,name:stock.action_report_delivery
+msgid "Delivery Slip"
+msgstr "Albarán"
