@@ -4,3 +4,4 @@ from . import models
 from . import mrpproduction
 from . import fifo
 from . import product
+from . import stock_picking

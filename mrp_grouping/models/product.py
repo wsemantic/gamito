@@ -1,5 +1,4 @@
 import logging
-from .discount_mixin import DiscountMixin
 
 from odoo import models, fields, api
 from datetime import datetime, timedelta

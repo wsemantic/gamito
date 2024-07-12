@@ -18,7 +18,6 @@
     # for the full list
     'category': 'Uncategorized',
     'version': '16.0.0.10',
-    'post_init_hook': 'post_init_ws',
 
     # any module necessary for this one to work correctly
     'depends': ['stock','sale'], 

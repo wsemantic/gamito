@@ -19,8 +19,10 @@
     'category': 'Uncategorized',
     'version': '16.0.0.3',
 
+    'post_init_hook': 'post_init_ws',
+    
     # any module necessary for this one to work correctly
-    'depends': ['stock','sale','mrp'], 
+    'depends': ['stock','sale','mrp','sale_stock'], 
 
     # always loaded
     'data': [

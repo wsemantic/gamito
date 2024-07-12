@@ -2,6 +2,56 @@
 <odoo>
     <data>
 		
+	<record id="view_product_packaging_form_inherit" model="ir.ui.view">
+      <field name="name">product.packaging.form.inherit</field>
+      <field name="model">product.packaging</field>
+      <field name="inherit_id" ref="product.product_packaging_form_view"/> <!-- se localiza en menu tecnico views, campo External Id, y si no en la tabla .. FROM ir_model_data WHERE model='ir.ui.view' AND res_id=ID_DE_TU_VISTA; 
+																				Mas facil, se accede al formulario, se da a Edit View, y se muesrta en External ID-->
+	  <field name="arch" type="xml">
+		<xpath expr="//field[@name='barcode']" position="before">
+			<field name="ws_cajas_por_bulto"/>
+		</xpath>
+	   </field>
+    </record>
+	
+	<record id="view_ws_product_template_form_inherit" model="ir.ui.view">
+      <field name="name">ws.product.template.form.inherit</field>
+      <field name="model">product.template</field>
+      <field name="inherit_id" ref="product.product_template_only_form_view"/> <!-- se localiza en menu tecnico views, campo External Id, y si no en la tabla .. FROM ir_model_data WHERE model='ir.ui.view' AND res_id=ID_DE_TU_VISTA; 
+																				Mas facil, se accede al formulario, se da a Edit View, y se muesrta en External ID-->
+	  <field name="arch" type="xml">
+		<xpath expr="//field[@name='barcode']" position="before">
+			<field name="ws_punto_verde"/>
+		</xpath>
+	   </field>
+    </record>
+	
+	<record id="view_stock_quant_tree_wsem" model="ir.ui.view">
+            <field name="name">stock.view_stock_quant_tree.wsem</field>
+            <field name="model">stock.quant</field>
+            <field name="inherit_id" ref="stock.view_stock_quant_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_uom_id']" position="after">
+                    <field name="en_consumo_desde"/>
+                </xpath>
+            </field>
+    </record>
+	
+	<record id="action_stock_quant_wsem_report" model="ir.actions.act_window">
+		<field name="name">Stock por lotes</field>
+		<field name="res_model">stock.quant</field>
+		<field name="view_mode">tree,form</field>
+		<field name="domain">[('location_id.usage', '=', 'internal')]</field>
+		<field name="context">{}</field>
+		<field name="view_id" ref="mrp_grouping.view_stock_quant_tree_wsem"/>
+	</record>
+	
+	
+	<menuitem id="menu_stock_quant_tree_wsem"
+          name="Stocks por lotes"
+          parent="stock.menu_warehouse_report"
+          action="action_stock_quant_wsem_report"/>
+		  
 		<record model="ir.actions.server" id="server_action_open_mrp_date_grouping_form">
 			<field name="name">Planifica produccion</field>
 			<field name="model_id" ref="sale.model_sale_order"/>
@@ -16,6 +66,21 @@
 				}
 			</field>
 		</record>
+
+	<record id="view_picking_form_custom" model="ir.ui.view">
+		<field name="name">stock.picking.form.custom</field>
+		<field name="model">stock.picking</field>
+		<field name="inherit_id" ref="stock.view_picking_form"/>
+		<field name="arch" type="xml">
+			<!-- Insertamos los nuevos campos personalizados en el grupo 'other_infos' de la pestaña 'Additional Info' -->
+			<xpath expr="//page[@name='extra']/group/group[@name='other_infos']" position="inside">
+				<group string="Embalaje">
+					<field name="ws_bulto_total"/>
+					<field name="ws_palet_total"/>
+				</group>
+			</xpath>
+		</field>
+	</record>
 
 
         <!-- Transient model form view -->

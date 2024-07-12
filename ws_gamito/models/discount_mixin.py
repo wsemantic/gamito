@@ -58,6 +58,8 @@ class DiscountMixin:
                     discount_line_updated = True
                             
                 # Actualizar la base antes de descuento acumulada
+                # Notar que si la linea anterior era descuento, debe haberse actualizado price_subtotal en el write de cuando fue modificada, 
+                # ahora se actualiza de nuevo el descuento pero no afecta al calculo del subtotal que debe tenerlo previamente reflejado
                 base_before_discount += subtotal_linea
                 
         # Si la línea de descuento no se actualizó en sorted_lines, forzar su actualización
@@ -72,10 +74,14 @@ class DiscountMixin:
                 _logger.info(f'WSEM descuento Porc {discount_percentage}')
                 if discount_percentage:
                     precio_lin_desc = -(base_before_discount * (discount_percentage / 100.0))
-                    line.write({
-                        'product_uom_qty': 1,
+                    values_to_update = {
                         'price_unit': precio_lin_desc,
-                    })
+                    }
+                    if 'product_uom_qty' in line._fields:
+                        values_to_update['product_uom_qty'] = 1
+                
+                    line.write(values_to_update)
+                    
                     return True
         return False
      
