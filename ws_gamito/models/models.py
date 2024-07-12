@@ -70,9 +70,10 @@ class InvoiceLineCustom(models.Model):
     _inherit = 'account.move.line'
 
     def create(self, vals_list):
+        _logger.info(f'WSEM Descuentos factura ini')
         lines = super(InvoiceLineCustom, self).create(vals_list)
         for line in lines:
-            _logger.info(f'WSEM Logica personalizada después de crear una línea de la factura. move {line.move_id.id}')
+            _logger.info(f'WSEM Descuentos factura. move {line.move_id.id}')
             if line.move_id and not line._context.get('avoid_recursion'):
                 line = line.with_context(avoid_recursion=True)
                 DiscountMixin.update_discount_lines(line.move_id, line)
@@ -80,7 +81,7 @@ class InvoiceLineCustom(models.Model):
 
     def write(self, values):       
         result = super(InvoiceLineCustom, self).write(values)
-        _logger.info(f'WSEM Logica personalizada después de actualizar las líneas de la factura. move {self.move_id.id}')
+        _logger.info(f'WSEM Descuentos Factura Write linea {self.move_id.id}')
         if self.move_id and not self._context.get('avoid_recursion'):
             _logger.info("WSEM Existe factura.")
             self = self.with_context(avoid_recursion=True)
