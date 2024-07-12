@@ -45,8 +45,8 @@ class DiscountMixin:
             subtotal_linea=line.price_subtotal            
             if es_real:
                 _logger.info(f'WSEM si es real pro name: {line.product_id.name}')
-                DiscountMixin.update_discount_line(line, base_before_discount)
-                if discount_line and line == discount_line:
+                updated=DiscountMixin.update_discount_line(line, base_before_discount)
+                if updated and discount_line and line == discount_line:
                     discount_line_updated = True
                             
                 # Actualizar la base antes de descuento acumulada
@@ -61,12 +61,15 @@ class DiscountMixin:
         if line.product_id.name == 'DESCUENTO':
             if line.name:
                 discount_percentage = DiscountMixin.extract_discount_percentage(line.name)
+                _logger.info(f'WSEM descuento Porc {discount_percentage}')
                 if discount_percentage:
                     precio_lin_desc = -(base_before_discount * (discount_percentage / 100.0))
                     line.write({
                         'product_uom_qty': 1,
                         'price_unit': precio_lin_desc,
                     })
+                    return true
+        return false
      
     @staticmethod      
     def extract_discount_percentage(description):
