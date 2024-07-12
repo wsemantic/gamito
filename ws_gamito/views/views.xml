@@ -15,14 +15,14 @@
 		</field>
 	</record>
 
-        <record id="view_payments_tree_custom" model="ir.ui.view">
+ <record id="view_payments_tree_custom" model="ir.ui.view">
             <field name="name">view.payments.tree.custom</field>
             <field name="model">account.move.line</field>
             <field name="inherit_id" ref="account_due_list.view_payments_tree"/>
             <field name="arch" type="xml">
                 <!-- Añadimos el campo acc_number después del campo partner_id -->
                 <xpath expr="//tree/field[@name='partner_id']" position="after">
-                    <field name="partner_bank_id.acc_number" string="Account Number"/>
+                    <field name="move_id.partner_bank_id.acc_number" string="Account Number"/>
                 </xpath>
             </field>
         </record>
