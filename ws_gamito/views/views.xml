@@ -22,7 +22,7 @@
             <field name="arch" type="xml">
                 <!-- Añadimos el campo acc_number después del campo partner_id -->
                 <xpath expr="//tree/field[@name='partner_id']" position="after">
-                    <field name="partner_id.partner_bank_id.acc_number" string="Account Number"/>
+                    <field name="partner_id.bank_ids.acc_number" string="Account Number"/>
                 </xpath>
             </field>
         </record>
