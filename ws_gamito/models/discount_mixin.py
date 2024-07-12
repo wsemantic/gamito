@@ -71,7 +71,7 @@ class DiscountMixin:
     @staticmethod      
     def extract_discount_percentage(description):
         # Extraer el porcentaje de descuento de la descripción, esperando la sintaxis "DESCUENTO X%"
-        match = re.search(r'^(?:DESCUENTO\s+)?(\d+(?:\.\d+)?)%', description)
+        match = re.search(r'^(?:\w+\s+){0,2}(\d+)%\s*\w*$', description)
         if match:
             return float(match.group(1))
         return None
