@@ -68,8 +68,8 @@ class DiscountMixin:
                         'product_uom_qty': 1,
                         'price_unit': precio_lin_desc,
                     })
-                    return true
-        return false
+                    return True
+        return False
      
     @staticmethod      
     def extract_discount_percentage(description):
