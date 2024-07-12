@@ -32,7 +32,15 @@ class DiscountMixin:
     def update_discount_lines(order, discount_line):
         # Ordenar las líneas por secuencia u otro criterio apropiado        
 
-        sorted_lines = order.order_line.sorted(key=lambda l: l.sequence)
+        if hasattr(order, 'order_line'):
+            lines = order.order_line
+        elif hasattr(order, 'invoice_line_ids'):
+            lines = order.invoice_line_ids
+        else:
+            _logger.warning(f'WSEM No se pudo determinar las líneas del objeto {order}')
+            return
+
+        sorted_lines = lines.sorted(key=lambda l: l.sequence)
 
 
         base_before_discount = 0.0

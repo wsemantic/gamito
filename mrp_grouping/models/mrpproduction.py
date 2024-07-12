@@ -30,3 +30,35 @@ class MrpProduction(models.Model):
     def _onchange_product_qty(self):
         if self.product_qty and self.bom_id:
             self.ws_multiplos = self.product_qty / self.bom_id.product_qty             
+            
+    def action_generate_serial(self):
+        self.ensure_one()
+        
+        # Crear los valores del lote
+        lot_vals = self._prepare_stock_lot_values()
+        
+        # Personalización del nombre del lote
+        product = self.product_id
+        date_now = datetime.now()
+        formatted_date = date_now.strftime("%y%W%w")
+        product_ref = product.default_code or 'NO_REF'
+        new_lot_name = f"{formatted_date}"
+        
+        existing_lot = self.env['stock.lot'].search([('name', '=', new_lot_name), ('product_id', '=', product.id)], limit=1)
+        if existing_lot:
+            # Si existe, usar el lote existente
+            _logger.info(f'WSEM v2 ya existía el lote :{new_lot_name}')
+            self.lot_producing_id = existing_lot
+            return existing_lot
+        
+        # Si no existe, crear un nuevo lote
+        lot_vals['name'] = new_lot_name
+        lot_vals['expiration_date'] = date_now + timedelta(days=450)
+        
+        self.lot_producing_id = self.env['stock.lot'].create(lot_vals)
+        
+        if self.product_id.tracking == 'serial':
+            self._set_qty_producing()
+        
+        _logger.info(f'WSEM v2 asignando nombre lote :{new_lot_name}')
+        return self.lot_producing_id
