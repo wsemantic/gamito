@@ -4,6 +4,20 @@ import re
 
 _logger = logging.getLogger(__name__)
 
+class ResPartnerDiscount(models.Model):
+    _name = 'res.partner.discount'
+    _description = 'Customer Discount'
+
+    name = fields.Char(string='Discount Name', required=True)
+    discount_percent = fields.Float(string='Discount Percent', required=True)
+    partner_id = fields.Many2one('res.partner', string='Customer', ondelete='cascade')
+
+
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
+
+    discount_ids = fields.One2many('res.partner.discount', 'partner_id', string='Discounts')
+    
 class DiscountMixin:
 
 #DESCUENTOS GLOBALES  

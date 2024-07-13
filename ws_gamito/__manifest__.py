@@ -26,6 +26,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
+        'views/descuentos.xml',
         'views/templates.xml',
         'report/report_deliveryslip_weight.xml',
         'report/stock_picking_operations.xml',
