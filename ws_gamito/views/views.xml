@@ -27,6 +27,23 @@
             </field>
         </record>
 		
+		<!-- modo de pago en factura-->
+		 <template id="report_invoice_document_custom" inherit_id="account.report_invoice_document">
+            <!-- Agregar Modo de Pago en la sección de pagos superiores -->
+            <xpath expr="//div[@id='total']//table[@class='table table-sm table-borderless']/..//*[contains(text(), 'Paid on')]" position="before">
+                <div t-if="o.payment_mode_id">
+                    <strong>Modo de Pago:</strong> <span t-esc="o.payment_mode_id.name"/>
+                </div>
+            </xpath>
+
+            <!-- Agregar Modo de Pago en la sección de términos de pago -->
+            <xpath expr="//p[@name='payment_communication']" position="before">
+                <div t-if="o.payment_mode_id">
+                    <strong>Modo de Pago:</strong> <span t-esc="o.payment_mode_id.name"/>
+                </div>
+            </xpath>
+        </template>
+		
 	<!--<record id="action_order_custom_logic" model="ir.actions.server">
 		<field name="name">Optimizar planificacion</field>
 		<field name="model_id" ref="sale.model_sale_order"/>
