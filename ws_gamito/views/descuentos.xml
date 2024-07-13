@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <notebook position="inside">
-                <page string="Discounts">
+                <page string="Descuentos">
                     <field name="discount_ids">
                         <tree editable="bottom">
                             <field name="name"/>
