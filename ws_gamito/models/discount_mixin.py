@@ -6,17 +6,17 @@ _logger = logging.getLogger(__name__)
 
 class ResPartnerDiscount(models.Model):
     _name = 'res.partner.discount'
-    _description = 'Customer Discount'
+    _description = 'DESCUENTOS'
 
-    name = fields.Char(string='Discount Name', required=True)
-    discount_percent = fields.Float(string='Discount Percent', required=True)
+    name = fields.Char(string='Nombre', required=True)
+    discount_percent = fields.Float(string='Porcentaje', required=True)
     partner_id = fields.Many2one('res.partner', string='Customer', ondelete='cascade')
 
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    discount_ids = fields.One2many('res.partner.discount', 'partner_id', string='Discounts')
+    discount_ids = fields.One2many('res.partner.discount', 'partner_id', string='Descuentos')
     
 class DiscountMixin:
 
