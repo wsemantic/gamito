@@ -14,11 +14,11 @@
                     <t t-set="product_weight" t-value="move_line.product_id.product_tmpl_id.weight or 0"/>
                     <t t-set="total_weight" t-value="total_weight + product_weight * move_line.qty_done"/>
 					
-					<t t-if="move_line.product_id.product_tmpl_id.packaging_ids.qty &gt; 0">
+					<t t-if="move_line.product_packaging_id.qty &gt; 0">
 						<t t-set="total_bulto" t-value="total_bulto + move.sale_line_id.product_packaging_qty"/>
 					</t>
                    			
-					<t t-if="move_line.product_id.product_tmpl_id.packaging_ids.ws_cajas_por_bulto &gt; 0">
+					<t t-if="move_line.product_packaging_id.ws_cajas_por_bulto &gt; 0">
 						<t t-set="total_palet" t-value="total_palet + move.sale_line_id.product_packaging_qty/move.sale_line_id.product_packaging_id.ws_cajas_por_bulto"/>
 					</t>
                 </t>
@@ -78,8 +78,8 @@
 			<!-- Extender las filas de la tabla específica para añadir los bultoso -->
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//tbody/t/tr" position="inside">
 			<td>				
-				<span t-if ="ml.product_id.product_tmpl_id.packaging_ids.qty != 0" t-esc="ml.qty_done / ml.product_id.product_tmpl_id.packaging_ids.qty"/>
-				<span t-if="ml.product_id.product_tmpl_id.packaging_ids.qty == 0">N/A</span>
+				<span t-if ="ml.product_packaging_id.qty != 0" t-esc="ml.qty_done / ml.product_packaging_id.qty"/>
+				<span t-if="ml.product_packaging_id.qty == 0">N/A</span>
 			</td>
 		</xpath>
     </template>
