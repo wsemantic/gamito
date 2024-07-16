@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api
 import logging
 import re
 
@@ -15,9 +15,149 @@ class ResPartnerDiscount(models.Model):
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
-
     discount_ids = fields.One2many('res.partner.discount', 'partner_id', string='Descuentos')
     
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
+
+    @api.model
+    def create(self, vals):
+        order = super(SaleOrder, self).create(vals)
+        DiscountMixin._apply_discounts(order)
+        return order
+
+    def write(self, vals):      
+        res = super(SaleOrder, self).write(vals)
+        _logger.info(f'WSEM ORDER write descuentos llamado')
+        DiscountMixin._apply_discounts(self)
+        return res    
+        
+class AccountMove(models.Model):
+    _inherit = 'account.move'
+    discounts_initialized = fields.Boolean(string='Discounts Initialized', default=False)
+    
+    @api.model
+    def create(self, vals):
+        move = super(AccountMove, self).create(vals)
+        #DiscountMixin._apply_discounts(move)
+        return move
+
+    def write(self, vals):
+        if self.env.context.get('prevent_recursion'):
+            return super(AccountMove, self).write(vals)
+        self = self.with_context(prevent_recursion=True)            
+        res = super(AccountMove, self).write(vals)
+        if not self.discounts_initialized:
+            self._initialize_discount_ids()
+        DiscountMixin._apply_discounts(self)
+        return res                              
+        
+    def _initialize_discount_ids(self):    
+        if self.discounts_initialized:
+            return
+        partner_id = self.partner_id.id if self.partner_id else None
+        if not partner_id:
+            _logger.info("WSEM No partner found for record")
+            return
+
+        discounts = self.env['res.partner.discount'].search([('partner_id', '=', partner_id)])
+        if not discounts:
+            _logger.info("No discounts found for partner")
+            return
+
+        for line in self.invoice_line_ids:
+            if not line.discount_id:
+                matching_discount = discounts.filtered(lambda d: line.name.startswith(d.name))
+                if matching_discount:
+                    line.discount_id = matching_discount[0].id
+                    _logger.info(f"WSEM Assigned discount {matching_discount[0].name} to line {line.name}")
+        self.discounts_initialized = True
+                    
+#DESCUENTOS EN PEDIDOS VENTAS Y COMPRAS                    
+class SaleOrderLineCustom(models.Model):
+    _inherit = 'sale.order.line' 
+    discount_id = fields.Many2one('res.partner.discount', string='Discount ID')
+
+    '''def create(self, vals_list):
+        # Llama al método super() para ejecutar la lógica original de create        
+        
+        lines = super(SaleOrderLineCustom, self).create(vals_list)
+
+        # Lógica personalizada después de la creación
+        for line in lines:
+            line_is_descuento=DiscountMixin.ws_is_desc(line)
+            _logger.info(f'WSEM Descuentos pedido create. order {line.order_id.id}')
+            if line.order_id and not line._context.get('avoid_recursion'):
+                line = line.with_context(avoid_recursion=True)
+                DiscountMixin.update_discount_lines(line.order_id, line if line_is_descuento else None)
+
+        return lines    
+        
+    def write(self, values):       
+        # Llama al método super() para ejecutar la lógica original de write
+        result = super(SaleOrderLineCustom, self).write(values)        
+        
+        # Lógica personalizada después de la actualización
+        _logger.info(f'WSEM Descuentos pedido write order {self.order_id.id}')
+        if self.order_id and not self._context.get('avoid_recursion'):
+            self = self.with_context(avoid_recursion=True)
+            DiscountMixin.update_discount_lines(self.order_id,None)
+            
+        return result
+        '''
+
+class PurchaseOrderLineCustom(models.Model):
+    _inherit = 'purchase.order.line'                            
+        
+    def create(self, vals_list):
+        # Llama al método super() para ejecutar la lógica original de create
+        lines = super(PurchaseOrderLineCustom, self).create(vals_list)
+
+        # Lógica personalizada después de la creación
+        for line in lines:
+            _logger.info(f'WSEM Logica personalizada compras después de crear una línea del pedido. order {line.order_id.id}')
+            if line.order_id and not line._context.get('avoid_recursion'):
+                line = line.with_context(avoid_recursion=True)
+                DiscountMixin.update_discount_lines(line.order_id, line)
+
+        return lines 
+        
+    def write(self, values):       
+        # Llama al método super() para ejecutar la lógica original de write
+        result = super(PurchaseOrderLineCustom, self).write(values)
+
+        # Lógica personalizada después de la actualización
+        _logger.info(f'WSEM Logica personalizada compras después de actualizar las líneas del pedido. order {self.order_id.id}')
+        if self.order_id and not self._context.get('avoid_recursion'):
+            _logger.info("WSEM Existe orden.")
+            self = self.with_context(avoid_recursion=True)
+            DiscountMixin.update_discount_lines(self.order_id,None)
+            
+        return result               
+
+class InvoiceLineCustom(models.Model):
+    _inherit = 'account.move.line'
+    discount_id = fields.Many2one('res.partner.discount', string='Discount ID')
+
+    def create(self, vals_list):
+        _logger.info(f'WSEM Descuentos factura ini')
+        lines = super(InvoiceLineCustom, self).create(vals_list)
+        for line in lines:
+            _logger.info(f'WSEM Descuentos factura. move {line.move_id.id}')
+            if line.move_id and not line._context.get('avoid_recursion'):
+                line = line.with_context(avoid_recursion=True)
+                DiscountMixin.update_discount_lines(line.move_id, line)
+        return lines
+
+    def write(self, values):       
+        result = super(InvoiceLineCustom, self).write(values)
+        _logger.info(f'WSEM Descuentos Factura Write linea {self.move_id.id}')
+        if self.move_id and not self._context.get('avoid_recursion'):
+            _logger.info("WSEM Existe factura.")
+            self = self.with_context(avoid_recursion=True)
+            DiscountMixin.update_discount_lines(self.move_id, None)
+        return result
+
 class DiscountMixin:
 
 #DESCUENTOS GLOBALES  
@@ -106,3 +246,58 @@ class DiscountMixin:
         if match:
             return float(match.group(1))
         return None
+        
+    def _apply_discounts(record):
+        discount_product = record.env['product.product'].search([('name', '=', 'DESCUENTO')], limit=1) # Asumiendo que tienes un producto llamado 'Descuento'
+        if not discount_product:
+            _logger.info(f'WSEM no hay descuentos')
+            return  # No hacer nada si el producto no existe
+
+        lines = None
+        line_model = None
+        partner_id = None
+        move_type = None
+
+        if hasattr(record, 'order_line'):
+            _logger.info(f'WSEM es clase pedido')
+            lines = record.order_line
+            line_model = record.env['sale.order.line']
+            partner_id = record.partner_id.id
+
+        elif hasattr(record, 'invoice_line_ids'):
+            lines = record.invoice_line_ids
+            line_model = record.env['account.move.line']
+            partner_id = record.partner_id.id
+            move_type = record.move_type
+            if move_type not in ['out_invoice', 'out_refund']:
+                _logger.info("Skipping record as move_type is not 'out_invoice' or 'out_refund'")
+                return
+
+        if lines and partner_id > 0:
+            _logger.info(f'WSEM hay partner')
+            discounts = record.env['res.partner.discount'].search([('partner_id', '=', partner_id)])
+            if not discounts:
+                _logger.info(f'WSEM not hay descuentos partner')
+                return  # Si no hay descuentos, saltar al siguiente registro
+
+            # Obtener la secuencia más alta de las líneas existentes
+            max_sequence = max(lines.mapped('sequence'), default=0)
+
+            # Crear nuevas líneas de descuento
+            for discount in discounts:
+                
+                existing_line = lines.filtered(lambda l: l.discount_id.id == discount.id)
+                _logger.info(f'WSEM itera descuentos {existing_line} cond {bool(existing_line)}')
+                if not existing_line:
+                    _logger.info(f'WSEM creando linea')
+                    max_sequence += 1
+                    line_model.create({
+                        'order_id' if hasattr(record, 'order_line') else 'move_id': record.id,
+                        'product_id': discount_product.id,
+                        'name': f"{discount.name} {discount.discount_percent}%",
+                        'discount_id': discount.id,
+                        'price_unit': 0.0,
+                        'product_uom_qty' if hasattr(record, 'order_line') else 'quantity': 1,
+                        'sequence': max_sequence,
+                    })
+            DiscountMixin.update_discount_lines(record,None)
