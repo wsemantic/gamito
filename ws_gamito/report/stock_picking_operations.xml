@@ -89,15 +89,15 @@
                 <div class="col-5" name="div_incoming_address">
                     <t t-set="show_partner" t-value="False" />
                     <div t-if="o.picking_type_id.code=='incoming' and o.partner_id">
-                        <span><strong>Vendor Address:</strong></span>
+                        <span><strong t-translation="off">Vendor Address:</strong></span>
                         <t t-set="show_partner" t-value="True" />
                     </div>
                     <div t-if="o.picking_type_id.code=='internal' and o.partner_id">
-                        <span><strong>Warehouse Address:</strong></span>
+                        <span><strong t-translation="off">Warehouse Address:</strong></span>
                         <t t-set="show_partner" t-value="True" />
                     </div>
                     <div t-if="o.picking_type_id.code=='outgoing' and o.partner_id and o.partner_id != o.partner_id.commercial_partner_id">
-                        <span><strong>Customer Address:</strong></span>
+                        <span><strong t-translation="off">Customer Address:</strong></span>
                         <t t-set="show_partner" t-value="True" />
                     </div>
                     <div t-if="show_partner" name="partner_header">
@@ -107,12 +107,12 @@
                 </div>
                 <div class="col-6 offset-1" name="div_outgoing_address">
                     <div t-if="o.should_print_delivery_address()">
-                        <span><strong>Delivery Address:</strong></span>
+                        <span><strong t-translation="off">Delivery Address:</strong></span>
                         <div t-field="o.move_ids[0].partner_id"
                             t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
                     </div>
                     <div t-elif="o.picking_type_id.code != 'internal' and o.picking_type_id.warehouse_id.partner_id">
-                        <span><strong>Warehouse Address:</strong></span>
+                        <span><strong t-translation="off">Warehouse Address:</strong></span>
                         <div t-field="o.picking_type_id.warehouse_id.partner_id"
                             t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
                     </div>
