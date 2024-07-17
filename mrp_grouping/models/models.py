@@ -177,19 +177,54 @@ class MrpDateGrouping(models.TransientModel):
 
         return products_demand, product_tags
 
-    def _products_demand_bomlines(self, products_demand, productkey, product_tags, tag, root_quantity):
-        pro_name,product=productkey
-        bom = self.env['mrp.bom']._bom_find(product)[product]     
-        _logger.info(f"WSEM bom line {product.name}")    
-        user_language = self.env.user.lang
-        
-        for line in bom.bom_line_ids:
-            linname= self._generate_default_name(line.product_id,user_language)
-            sub_productkey= (linname, line.product_id) 
-            products_demand[sub_productkey] = products_demand.get(sub_productkey,0)+root_quantity*line.product_qty
-            if sub_productkey not in product_tags:
-                product_tags[sub_productkey] = tag
-            self._products_demand_bomlines(products_demand, sub_productkey,  product_tags, tag, root_quantity*line.product_qty)
+    def _products_demand_bomlines(self, products_demand, productkey, product_tags, tag, root_quantity, visited=None):
+        pro_name, product = productkey
+
+        # Inicializar el conjunto de productos visitados si no se ha hecho
+        if visited is None:
+            visited = set()
+
+        # Verificar si el producto ya ha sido visitado
+        if product in visited:
+            raise UserError(f"Recursividad detectada: el producto {product.display_name} se encuentra a sí mismo en su BOM.")
+
+        # Añadir el producto actual al conjunto de visitados
+        visited.add(product)
+
+        try:
+            # Encontrar el BOM asociado al producto
+            bom_dict = self.env['mrp.bom']._bom_find(product)
+
+            # Verificar que el BOM se encontró y contiene el producto como clave
+            if not bom_dict or product not in bom_dict:
+                return  # Salir si no se encuentra el BOM correcto
+
+            # Obtener el BOM específico del producto
+            bom = bom_dict[product]
+
+            user_language = self.env.user.lang
+
+            # Iterar sobre las líneas del BOM para calcular la demanda
+            for line in bom.bom_line_ids:
+                linname = self._generate_default_name(line.product_id, user_language)
+                sub_productkey = (linname, line.product_id)
+
+                # Actualizar la cantidad demandada del subproducto
+                if sub_productkey not in products_demand:
+                    products_demand[sub_productkey] = 0
+
+                products_demand[sub_productkey] += root_quantity * line.product_qty
+
+                # Asignar la etiqueta al subproducto si no está ya asignada
+                if sub_productkey not in product_tags:
+                    product_tags[sub_productkey] = tag
+
+                # Llamada recursiva para procesar subproductos
+                self._products_demand_bomlines(products_demand, sub_productkey, product_tags, tag, root_quantity * line.product_qty, visited)
+        finally:
+            # Eliminar el producto del conjunto de visitados al salir de la recursión
+            visited.remove(product)
+
 
     def _get_bom_phases(self, bom):
         phases = set()
