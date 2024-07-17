@@ -1,17 +1,12 @@
 <odoo>
     <data>
-		<template id="contact_inherit" inherit_id="base.contact">
-			<!--<xpath expr="//div[span[@itemprop='vatID']]" position="inside">
-				<span t-if="object.ref"> - Ref: <span t-esc="object.ref"/></span>
-			</xpath>-->
-			 <xpath expr="//address/div[last()]" position="after">
-                <!-- Agregar el campo ref dentro del mismo div que los otros campos -->
-                <div t-if="object.ref">                 
-                    <span>
-                        Ref: <span t-esc="object.ref"/>
-                    </span>
+        <template id="contact_inherit" inherit_id="base.contact">
+            <!-- Insertar el campo ref después del último div hijo dentro de address -->
+            <xpath expr="//address/div[last()]" position="after">
+                <div t-if="object.ref">
+                    Ref: <span t-esc="object.ref"/>
                 </div>
-            </xpath>			
-		</template>
+            </xpath>
+        </template>
     </data>
 </odoo>
