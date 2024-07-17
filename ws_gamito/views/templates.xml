@@ -4,7 +4,7 @@
 			<!--<xpath expr="//div[span[@itemprop='vatID']]" position="inside">
 				<span t-if="object.ref"> - Ref: <span t-esc="object.ref"/></span>
 			</xpath>-->
-			<xpath expr="//div[@itemprop='address']" position="inside">
+			 <xpath expr="//address/div[last()]" position="after">
                 <!-- Agregar el campo ref dentro del mismo div que los otros campos -->
                 <div t-if="object.ref">                 
                     <span>
