@@ -102,19 +102,19 @@
                     </div>
                     <div t-if="show_partner" name="partner_header">
                         <div t-field="o.partner_id.commercial_partner_id"
-                             t-options='{"widget": "contact", "fields": ["address", "name", "phone", "vat","ref"], "no_marker": True, "phone_icons": True}'/>
+                             t-options='{"widget": "contact", "fields": ["address", "name", "phone", "vat"], "no_marker": True, "phone_icons": True}'/>
                     </div>
                 </div>
                 <div class="col-6 offset-1" name="div_outgoing_address">
                     <div t-if="o.should_print_delivery_address()">
                         <span><strong t-translation="off">Direccion Envio:</strong></span>
                         <div t-field="o.move_ids[0].partner_id"
-                            t-options='{"widget": "contact", "fields": ["address", "name", "phone","ref"], "no_marker": True, "phone_icons": True}'/>
+                            t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
                     </div>
                     <div t-elif="o.picking_type_id.code != 'internal' and o.picking_type_id.warehouse_id.partner_id">
                         <span><strong t-translation="off">Warehouse Address:</strong></span>
                         <div t-field="o.picking_type_id.warehouse_id.partner_id"
-                            t-options='{"widget": "contact", "fields": ["address", "name", "phone","ref"], "no_marker": True, "phone_icons": True}'/>
+                            t-options='{"widget": "contact", "fields": ["address", "name", "phone"], "no_marker": True, "phone_icons": True}'/>
                     </div>
                 </div>
             </div>
