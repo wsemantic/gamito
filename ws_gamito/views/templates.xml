@@ -4,7 +4,7 @@
             <!-- Insertar el campo ref después del último div hijo dentro de address -->
             <xpath expr="//address/div[last()]" position="after">
                 <div t-if="object.ref">
-                    Ref: <span t-esc="object.ref"/>
+                    Cod.Cliente <span t-esc="object.ref"/>
                 </div>
             </xpath>
         </template>
