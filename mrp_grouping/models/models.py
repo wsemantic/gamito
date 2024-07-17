@@ -179,7 +179,8 @@ class MrpDateGrouping(models.TransientModel):
 
     def _products_demand_bomlines(self, products_demand, productkey, product_tags, tag, root_quantity):
         pro_name,product=productkey
-        bom = self.env['mrp.bom']._bom_find(product)[product]            
+        bom = self.env['mrp.bom']._bom_find(product)[product]     
+        _logger.info(f"WSEM bom line {product.name}")    
         user_language = self.env.user.lang
         
         for line in bom.bom_line_ids:
