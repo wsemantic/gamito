@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 
 from collections import defaultdict
 from datetime import timedelta
