@@ -7,7 +7,7 @@
 			<xpath expr="//div[@itemprop='address']" position="inside">
                 <!-- Agregar el campo ref dentro del mismo div que los otros campos -->
                 <div t-if="object.ref and 'ref' in fields">
-                    <i class="fa fa-code fa-fw" role="img" aria-label="Reference" title="Reference"/>
+                 
                     <span t-esc="object.ref"/>
                 </div>
             </xpath>			
