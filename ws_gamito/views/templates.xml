@@ -4,7 +4,7 @@
 			<xpath expr="//div[span[@itemprop='vatID']]" position="inside">
 				<span t-if="object.ref"> - Ref: <span t-esc="object.ref"/></span>
 			</xpath>
-			 <xpath expr="//div[@itemprop='address']" position="after">
+			 <xpath expr="//div[@itemprop='address']" position="inside">
                 <!-- Agregar el campo ref después de la dirección -->
                 <div t-if="object.ref and 'ref' in fields">
                     <i class="fa fa-code fa-fw" role="img" aria-label="Reference" title="Reference"/>
