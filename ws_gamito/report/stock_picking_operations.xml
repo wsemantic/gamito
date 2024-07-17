@@ -84,7 +84,7 @@
 		</xpath>
 		
 
-      <!--  <xpath expr="//div[@class='row'][1]" position="replace">
+      <xpath expr="//div[@class='row'][1]" position="replace">
             <div class="row">
                 <div class="col-5" name="div_incoming_address">
                     <t t-set="show_partner" t-value="False" />
@@ -118,7 +118,7 @@
                     </div>
                 </div>
             </div>
-        </xpath>-->
+        </xpath>
 
     </template>
 </odoo>
