@@ -14,7 +14,7 @@
 				<t t-set="product_weight" t-value="move_line.product_id.product_tmpl_id.weight or 0"/>
 				<t t-set="total_weight" t-value="total_weight + product_weight * move_line.product_uom_qty"/>
 				
-				<t t-if="move_line.product_packaging_id &gt; 0">
+				<t t-if="move_line.product_packaging_id.qty &gt; 0">
 					<t t-set="total_bulto" t-value="total_bulto + move_line.product_uom_qty/move_line.product_packaging_id.qty"/>
 				</t>
 								
