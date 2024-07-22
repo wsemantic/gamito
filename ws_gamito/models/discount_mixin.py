@@ -151,11 +151,12 @@ class InvoiceLineCustom(models.Model):
 
     def write(self, values):       
         result = super(InvoiceLineCustom, self).write(values)
-        _logger.info(f'WSEM Descuentos Factura Write linea {self.move_id.id}')
-        if self.move_id and not self._context.get('avoid_recursion'):
-            _logger.info("WSEM Existe factura.")
-            self = self.with_context(avoid_recursion=True)
-            DiscountMixin.update_discount_lines(self.move_id, None)
+        for record in self:
+            _logger.info(f'WSEM Descuentos Factura Write linea {record.move_id.id}')
+            if record.move_id and not record._context.get('avoid_recursion'):
+                _logger.info("WSEM Existe factura.")
+                record = record.with_context(avoid_recursion=True)
+                DiscountMixin.update_discount_lines(record.move_id, None)
         return result
 
 class DiscountMixin:
