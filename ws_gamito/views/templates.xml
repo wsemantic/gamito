@@ -1,12 +1,17 @@
 <odoo>
     <data>
         <template id="contact_inherit" inherit_id="base.contact">
+			<!-- en odoo/odoo/addons/base/views/ir_qweb_widget_templates.xml -->
             <!-- Insertar el campo ref después del último div hijo dentro de address -->
             <xpath expr="//address/div[last()]" position="after">
                 <div t-if="object.ref">
                     Cod.Clien. <span t-esc="object.ref"/>
                 </div>
-            </xpath>
+            </xpath>            
+            <xpath expr="//t[@t-name='base.contact']/div[@t-if='mobile and \'mobile\' in fields']" position="attributes">
+                <!-- Replace the t-if attribute to change the condition -->
+                <attribute name="t-if">mobile and 'phone' in fields</attribute>
+            </xpath>			
         </template>
     </data>
 </odoo>
