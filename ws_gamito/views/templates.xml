@@ -8,7 +8,7 @@
                     Cod.Clien. <span t-esc="object.ref"/>
                 </div>
             </xpath>            
-            <xpath expr="//template[@id='contact']//div[starts-with(@t-if, 'mobile')]" position="attributes">
+            <xpath expr="//address/div[starts-with(@t-if, 'mobile')]" position="attributes">
                 <!-- Replace the t-if attribute to change the condition -->
                 <attribute name="t-if">mobile and 'phone' in fields</attribute>
             </xpath>		
