@@ -7,13 +7,13 @@
                 <div t-if="object.ref">
                     Cod.Clien. <span t-esc="object.ref"/>
                 </div>
-            </xpath>    
-            <xpath expr="//address//div[starts-with(@t-if, 'phone')]" position="attributes">
-                <!-- Replace the t-if attribute to change the condition -->
+            </xpath>  
+
+			<!-- imprimir siempre los dos telefonos -->			
+            <xpath expr="//address//div[starts-with(@t-if, 'phone')]" position="attributes">                
                 <attribute name="t-if">phone and ('phone' in fields or 'mobile' in fields)</attribute>
             </xpath>			
             <xpath expr="//address//div[starts-with(@t-if, 'mobile')]" position="attributes">
-                <!-- Replace the t-if attribute to change the condition -->
                 <attribute name="t-if">mobile and ('phone' in fields or 'mobile' in fields)</attribute>
             </xpath>		
         </template>
