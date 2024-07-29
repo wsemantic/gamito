@@ -6,6 +6,7 @@
             <t t-set="total_weight" t-value="0"/>
 			<t t-set="total_bulto" t-value="0"/>
 			<t t-set="total_palet" t-value="0"/>
+			<t t-set="total_unidades" t-value="0"/>
             <t t-foreach="o.move_ids" t-as="move">
                 <t t-foreach="move.move_line_ids" t-as="move_line">
                     <t t-set="product_net_weight" t-value="move_line.product_id.product_tmpl_id.net_weight or 0"/>
@@ -21,6 +22,9 @@
 					<t t-if="move.product_packaging_id.ws_cajas_por_bulto &gt; 0">
 						<t t-set="total_palet" t-value="total_palet + move_line.qty_done/(move.product_packaging_id.qty*move.product_packaging_id.ws_cajas_por_bulto)"/>
 					</t>
+					<t t-if="move_line.qty_done &gt; 0">
+						<t t-set="total_unidades" t-value="total_unidades + move_line.qty_done"/>
+					</t>					
                 </t>
             </t>
         </xpath>
@@ -44,7 +48,11 @@
                     <strong>Total Palets:</strong>                    
 					<span t-if="o.ws_palet_total > 0" t-esc="round(o.ws_palet_total, 2)"/>
 					<span t-else="" t-esc="round(total_palet + 0.5)"/>					
-                </div>				
+                </div>	
+                <div class="col-3">
+                    <strong>Total Unidades:</strong>                    					
+					<span t-esc="round(total_unidades + 0.5)"/>					
+                </div>					
             </div>
         </xpath>
 		
