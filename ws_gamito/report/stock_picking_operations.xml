@@ -32,11 +32,11 @@
         <xpath expr="//table[last()]" position="after">
             <div class="row mt-5">
                 <div class="col-2">
-                    <strong>Total Peso Neto:</strong>
+                    <strong>T. Peso Neto:</strong>
                     <span t-esc="round(total_net_weight / 1000,2)"/> Kg
                 </div>
                 <div class="col-2">
-                    <strong>Total Peso Bruto:</strong>
+                    <strong>T. Peso Bruto:</strong>
                     <span t-esc="round(total_weight  / 1000,2)"/> Kg
                 </div>
                 <div class="col-2">
