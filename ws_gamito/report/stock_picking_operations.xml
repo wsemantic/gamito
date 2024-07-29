@@ -31,25 +31,25 @@
 
         <xpath expr="//table[last()]" position="after">
             <div class="row mt-5">
-                <div class="col-5">
+                <div class="col-2">
                     <strong>Total Peso Neto:</strong>
                     <span t-esc="round(total_net_weight / 1000,2)"/> Kg
                 </div>
-                <div class="col-5">
+                <div class="col-2">
                     <strong>Total Peso Bruto:</strong>
                     <span t-esc="round(total_weight  / 1000,2)"/> Kg
                 </div>
-                <div class="col-5">
+                <div class="col-2">
                     <strong>Total Bultos:</strong>
 					<span t-if="o.ws_bulto_total > 0" t-esc="round(o.ws_bulto_total, 2)"/>
 					<span t-else="" t-esc="round(total_bulto + 0.5)"/>
                 </div>
-                <div class="col-5">
+                <div class="col-2">
                     <strong>Total Palets:</strong>                    
 					<span t-if="o.ws_palet_total > 0" t-esc="round(o.ws_palet_total, 2)"/>
 					<span t-else="" t-esc="round(total_palet + 0.5)"/>					
                 </div>	
-                <div class="col-5">
+                <div class="col-2">
                     <strong>Total Unidades:</strong>                    					
 					<span t-esc="round(total_unidades + 0.5)"/>					
                 </div>					
