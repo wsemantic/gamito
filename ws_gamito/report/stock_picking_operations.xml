@@ -30,7 +30,7 @@
         </xpath>
 
         <xpath expr="//table[last()]" position="after">
-            <div class="row mt-4">
+            <div class="row mt-5">
                 <div class="col-5">
                     <strong>Total Peso Neto:</strong>
                     <span t-esc="round(total_net_weight / 1000,2)"/> Kg
