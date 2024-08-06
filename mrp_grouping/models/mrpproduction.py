@@ -39,7 +39,7 @@ class MrpProduction(models.Model):
         
         # Personalización del nombre del lote
         product = self.product_id
-        date_now = datetime.now()
+        date_now = fields.Datetime.now()
         formatted_date = date_now.strftime("%y%W%w")
         product_ref = product.default_code or 'NO_REF'
         new_lot_name = f"{formatted_date}"
