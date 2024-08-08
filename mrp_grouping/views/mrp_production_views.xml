@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_uom_id']" position="after">
                 <field name="wsem_packaging_id" optional="show"/>
-				<field name="wsem_packaging_id.qty" string="Cantidad por bulto" optional="show"/>
+				<field name="packaging_qty" string="Cantidad por bulto" optional="show"/>
             </xpath>
         </field>
     </record>

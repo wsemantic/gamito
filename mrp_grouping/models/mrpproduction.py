@@ -15,6 +15,12 @@ class MrpProduction(models.Model):
         help='Select the packaging for the production order'
     )
     
+    packaging_qty = fields.Float(
+        string='Cantidad por bulto',
+        related='wsem_packaging_id.qty',
+        readonly=True
+    )
+    
     @api.depends('workorder_ids')
     def _compute_wsem_workcenter(self):
         for production in self:
