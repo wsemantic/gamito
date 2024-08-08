@@ -28,7 +28,6 @@
         'views/views.xml',
         'views/descuentos.xml',
         'views/templates.xml',
-        'views/mrp_production_views.xml',
         'report/report_deliveryslip_weight.xml',
         'report/stock_picking_operations.xml',
         'report/deliver_from_order.xml',
