@@ -9,7 +9,12 @@ class MrpProduction(models.Model):
 
     ws_multiplos	= fields.Float('Multiplos', default=1.0)
     wsem_workcenter = fields.Many2one('mrp.workcenter', string='Centro',compute='_compute_wsem_workcenter', store=True)
-
+    wsem_packaging_id = fields.Many2one(
+        'product.packaging',
+        string='Envasado',
+        help='Select the packaging for the production order'
+    )
+    
     @api.depends('workorder_ids')
     def _compute_wsem_workcenter(self):
         for production in self:
