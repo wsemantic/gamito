@@ -8,13 +8,18 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 
+
 #. module: stock
 #: model:ir.actions.report,name:stock.action_report_delivery
 msgid "Delivery Slip"
 msgstr "Nota Pedido"
 
+#. module: stock
+#: model:stock.picking,name:stock.scheduled_date
 msgid "Scheduled Date"
 msgstr "Fecha Entrega"
 
+#. module: stock
+#: model:stock.picking,name:stock.date_done
 msgid "Date of Transfer"
 msgstr "Fecha Albaran"
