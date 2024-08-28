@@ -65,7 +65,13 @@ class MrpProduction(models.Model):
         
         # Si no existe, crear un nuevo lote
         lot_vals['name'] = new_lot_name
-        lot_vals['expiration_date'] = date_now + timedelta(days=450)
+        
+        # Calculando el 31 de diciembre del próximo año
+        current_year = date_now.year
+        next_year = current_year + 1
+        expiration_date = datetime(next_year, 12, 31)
+        
+        lot_vals['expiration_date'] = expiration_date
         
         self.lot_producing_id = self.env['stock.lot'].create(lot_vals)
         
