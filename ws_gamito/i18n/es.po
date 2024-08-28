@@ -15,7 +15,7 @@ msgid "Delivery Slip"
 msgstr "Nota Pedido"
 
 #. module: stock
-#: model:stock.picking,name:stock.scheduled_date
+#: model:ir.model.fields,field_description:stock.field_stock_picking__scheduled_date
 msgid "Scheduled Date"
 msgstr "Fecha Entrega"
 
