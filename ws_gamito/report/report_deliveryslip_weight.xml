@@ -35,11 +35,11 @@
             <div class="row mt-4">
                 <div class="col-3">
                     <strong>Total Peso Neto:</strong>
-                    <span t-esc="round(total_net_weight / 1000,2)"/> Kg
+                    <span t-esc="round(total_net_weight,2)"/> Kg
                 </div>
                 <div class="col-3">
                     <strong>Total Peso Bruto:</strong>
-                    <span t-esc="round(total_weight  / 1000,2)"/> Kg
+                    <span t-esc="round(total_weight,2)"/> Kg
                 </div>
                 <div class="col-3">
                     <strong>Bultos totales:</strong>                    
