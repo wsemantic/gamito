@@ -16,5 +16,5 @@ msgstr "Nota Pedido"
 msgid "Scheduled Date"
 msgstr "Fecha Entrega"
 
-msgid "Date Done"
+msgid "Date of Transfer"
 msgstr "Fecha Albaran"
