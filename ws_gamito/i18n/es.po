@@ -24,3 +24,8 @@ msgstr "Fecha Entrega"
 #: model_terms:ir.ui.view,arch_db:stock.vpicktree
 msgid "Effective Date"
 msgstr "Fecha Albarán"
+
+#. module: stock
+#: model_terms:ir.ui.view,arch_db:stock.report_picking
+msgid "<strong>Scheduled Date:</strong>"
+msgstr "<strong>Fecha de Entrega:</strong>"
