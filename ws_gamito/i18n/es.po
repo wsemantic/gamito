@@ -20,6 +20,7 @@ msgid "Scheduled Date"
 msgstr "Fecha Entrega"
 
 #. module: stock
-#: model:ir.model.fields,field_description:stock.field_stock_picking__date_done
-msgid "Date of Transfer"
-msgstr "Fecha Albaran"
+#: model_terms:ir.ui.view,arch_db:stock.view_picking_form
+#: model_terms:ir.ui.view,arch_db:stock.vpicktree
+msgid "Effective Date"
+msgstr "Fecha Albarán"
