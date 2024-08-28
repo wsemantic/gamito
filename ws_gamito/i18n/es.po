@@ -12,3 +12,9 @@ msgstr ""
 #: model:ir.actions.report,name:stock.action_report_delivery
 msgid "Delivery Slip"
 msgstr "Nota Pedido"
+
+msgid "Scheduled Date"
+msgstr "Fecha Entrega"
+
+msgid "Date Done"
+msgstr "Fecha Albaran (envío)"
