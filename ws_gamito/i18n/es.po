@@ -17,4 +17,4 @@ msgid "Scheduled Date"
 msgstr "Fecha Entrega"
 
 msgid "Date Done"
-msgstr "Fecha Albaran (envío)"
+msgstr "Fecha Albaran"
