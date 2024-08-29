@@ -26,6 +26,18 @@
 	   </field>
     </record>	
 	
+	
+	<record id="view_stock_vpicktree_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.tree.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+			<xpath expr="//field[@name='scheduled_date']" position="attributes">
+				<attribute name="widget" />
+			</xpath>
+        </field>
+    </record>
+	
 	<record id="view_ws_product_template_form_inherit" model="ir.ui.view">
       <field name="name">ws.product.template.form.inherit</field>
       <field name="model">product.template</field>
