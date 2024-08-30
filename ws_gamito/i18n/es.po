@@ -29,3 +29,14 @@ msgstr "Fecha Albarán"
 #: model_terms:ir.ui.view,arch_db:stock.report_picking
 msgid "<strong>Scheduled Date:</strong>"
 msgstr "<strong>Fecha de Entrega:</strong>"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_product__barcode
+#: model:ir.model.fields,field_description:product.field_product_template__barcode
+msgid "Barcode"
+msgstr "EAN13"
+
+#. module: product
+#: model:ir.model.fields,field_description:product.field_product_packaging__barcode
+msgid "Barcode"
+msgstr "DUM14"
