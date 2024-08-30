@@ -81,10 +81,14 @@
 		</xpath>
 			
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//thead/tr" position="inside">		
-			<th name="th_bultos"><strong>Bultos</strong></th>			
+			<th name="th_unid_bultos"><strong>Unid.Bultos</strong></th>	
+			<th name="th_bultos"><strong>Bultos</strong></th>						
 		</xpath>
-			<!-- Extender las filas de la tabla específica para añadir los bultoso -->
+			<!-- Extender las filas de la tabla específica para añadir los bultos -->
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//tbody/t/tr" position="inside">
+			<td>								
+				<span t-esc="ml.move_id.product_packaging_id.qty"/>
+			</td>
 			<td>				
 				<span t-if ="ml.move_id.product_packaging_id.qty != 0" t-esc="round(ml.qty_done / ml.move_id.product_packaging_id.qty)"/>
 				<span t-if="ml.move_id.product_packaging_id.qty == 0">N/A</span>
