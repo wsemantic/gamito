@@ -95,6 +95,11 @@
 			</td>
 		</xpath>
 		
+		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//tbody/t/tr/td[2]/span" position="attributes">
+                <!-- Alinear el contenido a la derecha -->
+                <attribute name="class">text-right</attribute>               
+        </xpath>
+		
 
 	  <!-- invertir posicion direccion envio a la derecha-->
       <xpath expr="//div[@class='row'][1]" position="replace">
