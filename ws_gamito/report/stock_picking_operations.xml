@@ -95,7 +95,7 @@
 			</td>
 		</xpath>
 		
-		<xpath expr="//table[hasclass('table-sm')]/tbody/tr/td[2]" position="attributes">
+		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//tbody/t/tr/td[2]" position="attributes">
              <attribute name="t-attf-style">text-align: right !important; {{ style or '' }}</attribute>
         </xpath>
 
