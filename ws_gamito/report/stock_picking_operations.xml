@@ -65,6 +65,10 @@
             <strong>Lote codigo</strong>
         </xpath>
 	
+		<xpath expr="//th[@name='th_serial_number']" position="after">
+            <th name="th_caducidad"><strong>Caducidad</strong></th>	
+        </xpath>
+		
 		<xpath expr="//th[@name='th_barcode']/strong" position="replace">
             <strong>EAN13</strong>
         </xpath>
@@ -84,7 +88,13 @@
 			<th name="th_unid_bultos"><strong>Unid.Bultos</strong></th>	
 			<th name="th_bultos"><strong>Bultos</strong></th>						
 		</xpath>
-			<!-- Extender las filas de la tabla específica para añadir los bultos -->
+			<!-- Extender las filas de la tabla específica para añadir los bultos -->			
+		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//tbody/t/tr/td[@t-if='has_serial_number']" position="after">		
+		      <td class=" text-center h6">
+                    <div t-esc="ml.lot_id.expiration_date"/>
+              </td>
+		</xpath>
+											
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//tbody/t/tr" position="inside">
 			<td>								
 				<span t-esc="ml.move_id.product_packaging_id.qty"/>
