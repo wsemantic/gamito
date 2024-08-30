@@ -21,3 +21,22 @@ class StockPicking(models.Model):
 
             picking.ws_bulto_total = math.ceil(total_bulto)
             picking.ws_palet_total =  math.ceil(total_palet)
+            
+            
+    @api.model
+    def create(self, vals):
+        if vals.get('company_id'):
+            # Accede directamente a la compañía utilizando browse
+            _logger.info(f"WSEM StockPicking tiene company")
+            company_b = self.env['res.company'].browse(vals['company_id'])
+            
+            # Comprueba si es la compañía B
+            if company_b.name == 'Test':
+                _logger.info(f"WSEM es Test")
+                # Cambia la compañía a Company A
+                company_a = self.env['res.company'].search([('name', '=', 'Mantecados Gamito Hermanos S.L')], limit=1)
+                if company_a:
+                    _logger.info(f"WSEM capturada Gamito")
+                    vals['company_id'] = company_a.id
+
+        return super(StockPicking, self).create(vals)
