@@ -96,7 +96,7 @@
 		</xpath>
 		
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//tbody/t/tr/td[2]" position="attributes">
-             <attribute name="t-attf-style">text-align: right !important; {{ style or '' }}</attribute>
+             <attribute name="t-attf-style">text-align: right</attribute>
         </xpath>
 
 	  <!-- invertir posicion direccion envio a la derecha-->
