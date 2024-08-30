@@ -96,7 +96,7 @@
 		</xpath>
 		
 		<xpath expr="//table[hasclass('table-sm')]/tbody/tr/td[2]" position="attributes">
-            <attribute name="style">text-align: right;</attribute>
+             <attribute name="class">text-end</attribute>
         </xpath>
 
 	  <!-- invertir posicion direccion envio a la derecha-->
