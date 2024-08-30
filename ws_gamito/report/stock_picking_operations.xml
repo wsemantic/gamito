@@ -91,7 +91,7 @@
 			<!-- Extender las filas de la tabla específica para añadir los bultos -->			
 		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']//tbody/t/tr/td[@t-if='has_serial_number']" position="after">		
 		      <td class=" text-center h6">
-                    <div t-esc="ml.lot_id.expiration_date"/>
+                    <div t-esc="ml.lot_id.expiration_date" t-options='{"widget": "date"}'/>
               </td>
 		</xpath>
 											
