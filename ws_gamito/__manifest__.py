@@ -28,10 +28,12 @@
         'views/views.xml',
         'views/descuentos.xml',
         'views/templates.xml',
+        'views/sale_report_view.xml',
         'report/report_deliveryslip_weight.xml',
         'report/stock_picking_operations.xml',
         'report/deliver_from_order.xml',
         'data/ws_gamito_data.xml',
+        
     ],
     # only loaded in demonstration mode
     'demo': [
