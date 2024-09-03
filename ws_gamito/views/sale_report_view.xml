@@ -15,7 +15,7 @@
             </xpath>
 
             <!-- Modifica el bloque condicional para mostrar la dirección de facturación solo cuando sea diferente -->
-            <xpath expr="//t[starts-with(@t-if, 'doc.partner_shipping_id == doc.partner_invoice_id')]" position="replace">
+            <xpath expr="//t[starts-with(@t-if, 'doc.partner_shipping_id')]" position="replace">
                 <t t-if="doc.partner_shipping_id != doc.partner_invoice_id">
                     <!-- Mostrar la dirección de facturación a la izquierda si es diferente de la dirección de envío -->
                     <t t-set="information_block">
