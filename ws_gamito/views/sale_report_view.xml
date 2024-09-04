@@ -6,9 +6,12 @@
 
             <!-- Modifica el bloque donde se muestra la dirección -->
             <xpath expr="//t[@t-set='address']" position="replace">
-                <div >
-                    <p >prueba</p>
-                </div>
+                <t t-set="address">
+                    <!-- Mostrar siempre la dirección de envío a la derecha -->
+                    <div t-field="doc.partner_shipping_id"
+                        t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />
+                    <p t-if="doc.partner_shipping_id.vat"><t t-out="doc.company_id.account_fiscal_country_id.vat_label or 'Tax ID'"/>: <span t-field="doc.partner_shipping_id.vat"/></p>
+                </t>
             </xpath>
 
             <!-- Modifica el bloque condicional para mostrar la dirección de facturación solo cuando sea diferente -->
