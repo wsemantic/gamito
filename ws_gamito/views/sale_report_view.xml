@@ -37,8 +37,8 @@
 
             <!-- Agregar las columnas de cantidad de empaquetado y unidades por paquete en el encabezado -->
             <xpath expr="//thead/tr" position="inside">
-                <th class="text-end">Packaging Quantity</th>
-                <th class="text-end">Units per Package</th>
+                <th class="text-end">Bultos</th>
+                <th class="text-end">Unid/Bulto</th>
             </xpath>
 
             <!-- Agregar las columnas de cantidad de empaquetado y unidades por paquete en las líneas -->
