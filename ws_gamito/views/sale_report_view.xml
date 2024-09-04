@@ -6,7 +6,9 @@
 
             <!-- Modifica el bloque donde se muestra la dirección -->
             <xpath expr="//t[@t-set='address']" position="replace">
-
+                <div >
+                    <p >prueba</p>
+                </div>
             </xpath>
 
             <!-- Modifica el bloque condicional para mostrar la dirección de facturación solo cuando sea diferente -->
