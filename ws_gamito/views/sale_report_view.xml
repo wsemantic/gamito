@@ -29,6 +29,29 @@
                     </t>
                 </t>
             </xpath>
+			
+			<!-- Cambiar el tamaño de la letra en las líneas del pedido -->
+            <xpath expr="//table[@class='table table-sm o_main_table table-borderless']" position="attributes">
+                <attribute name="style">font-size: 12px;</attribute>
+            </xpath>
+
+            <!-- Agregar las columnas de cantidad de empaquetado y unidades por paquete en el encabezado -->
+            <xpath expr="//thead/tr" position="inside">
+                <th class="text-end">Packaging Quantity</th>
+                <th class="text-end">Units per Package</th>
+            </xpath>
+
+            <!-- Agregar las columnas de cantidad de empaquetado y unidades por paquete en las líneas -->
+            <xpath expr="//tbody[@class='sale_tbody']//tr/t[not(@t-elif)]" position="inside">
+                <!-- Columna para Cantidad de Empaquetado -->
+                <td class="text-end">
+                    <span t-field="line.product_packaging_qty"/>
+                </td>
+                <!-- Columna para Unidades por Paquete -->
+                <td class="text-end">
+                    <span t-field="line.product_packaging_id.qty"/>
+                </td>
+            </xpath>
 
         </template>
 
