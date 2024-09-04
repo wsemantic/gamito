@@ -45,11 +45,11 @@
             <xpath expr="//tbody[@class='sale_tbody']//tr/t[not(@t-elif)]" position="inside">
                 <!-- Columna para Cantidad de Empaquetado -->
                 <td class="text-end">
-                    <span t-field="round(line.product_packaging_qty)"/>
+                    <span t-field="line.product_packaging_qty" t-options='{"widget": "float", "precision": 0}'/>
                 </td>
                 <!-- Columna para Unidades por Paquete -->
                 <td class="text-end">
-                    <span t-field="round(line.product_packaging_id.qty)"/>
+                    <span t-field="line.product_packaging_id.qty" t-options='{"widget": "float", "precision": 0}'/>
                 </td>
             </xpath>
 			<!-- Redondear la cantidad a dos decimales en el campo de cantidad -->
