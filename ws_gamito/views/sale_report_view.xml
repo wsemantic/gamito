@@ -45,14 +45,23 @@
             <xpath expr="//tbody[@class='sale_tbody']//tr/t[not(@t-elif)]" position="inside">
                 <!-- Columna para Cantidad de Empaquetado -->
                 <td class="text-end">
-                    <span t-field="line.product_packaging_qty"/>
+                    <span t-field="round(line.product_packaging_qty)"/>
                 </td>
                 <!-- Columna para Unidades por Paquete -->
                 <td class="text-end">
-                    <span t-field="line.product_packaging_id.qty"/>
+                    <span t-field="round(line.product_packaging_id.qty)"/>
                 </td>
             </xpath>
+			<!-- Redondear la cantidad a dos decimales en el campo de cantidad -->
+            <xpath expr="//td[@name='td_quantity']//span[@t-field='line.product_uom_qty']" position="attributes">
+                <attribute name="t-options">{"widget": "float", "precision": 2}</attribute>
+            </xpath>
 
+            <!-- Redondear el precio unitario a dos decimales en el campo de precio -->
+            <xpath expr="//td[@name='td_priceunit']//span[@t-field='line.price_unit']" position="attributes">
+                <attribute name="t-options">{"widget": "float", "precision": 2}</attribute>
+            </xpath>
+			
         </template>
 
     </data>
