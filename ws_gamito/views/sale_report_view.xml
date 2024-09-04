@@ -1,7 +1,7 @@
 <odoo>
     <data>
 
-        <!-- Hereda la vista del reporte de pedido de ventas -->
+        <!-- Hereda la vista del reporte de pedido de ventas , original en odoo/addons/sale/report/ir_actions_report_templates.xml-->
         <template id="report_saleorder_document_custom" inherit_id="sale.report_saleorder_document">
 
             <!-- Modifica el bloque donde se muestra la dirección -->
@@ -60,7 +60,7 @@
 
             <!-- Redondear el precio unitario a dos decimales en el campo de precio -->
             <xpath expr="//td[@name='td_priceunit']//span[@t-field='line.price_unit']" position="attributes">
-                <attribute name="t-options">{"widget": "float", "precision": 2}</attribute>
+                <attribute name="t-options">{"widget": "float", "precision": 3}</attribute>
             </xpath>
 			
         </template>
