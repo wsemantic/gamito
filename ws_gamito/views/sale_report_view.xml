@@ -31,7 +31,7 @@
             </xpath>
 			
 			<!-- Cambiar el tamaño de la letra en las líneas del pedido -->
-            <xpath expr="//table[@class='table table-sm o_main_table table-borderless']" position="attributes">
+            <xpath expr="//table[@class='table table-sm o_main_table table-borderless mt-4']" position="attributes">
                 <attribute name="style">font-size: 12px;</attribute>
             </xpath>
 
