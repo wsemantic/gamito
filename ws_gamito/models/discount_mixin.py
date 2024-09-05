@@ -215,6 +215,7 @@ class DiscountMixin:
                 # Actualizar la base antes de descuento acumulada
                 # Notar que si la linea anterior era descuento, debe haberse actualizado price_subtotal en el write de cuando fue modificada, 
                 # ahora se actualiza de nuevo el descuento pero no afecta al calculo del subtotal que debe tenerlo previamente reflejado
+                #actualizo el subototal de la linea aplicando el descuento
                 subtotal_linea=line.price_subtotal
                 base_before_discount += subtotal_linea
                 
