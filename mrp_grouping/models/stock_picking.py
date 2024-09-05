@@ -15,6 +15,11 @@ class StockPicking(models.Model):
             total_palet = 0
             for move_line in picking.move_ids:
                 if move_line.sale_line_id.product_packaging_qty > 0:
+                    #cuando se valida un alabran con menos cantidad, y se dice que si a crear una entrega parcial, ODOO divide en dos, en el entregado la demanda y la qty done coincide pero no puedo tirar
+                    # de cajas en la linea de pedido que puede ser mayor
+                    # Notar que un move line puede tener diferente cantidad que el move debido a diferencia en lote, que es lo que computa en el report de operaciones, pero en el campo de totales solo 
+                    # se usa los move, es como decir que en la misma caja puede haber varios lotes
+                    
                     total_bulto += move_line.product_uom_qty/move_line.product_packaging_id.qty
                 if move_line.sale_line_id.product_packaging_id.ws_cajas_por_bulto > 0:
                     total_palet += move_line.sale_line_id.product_packaging_qty / move_line.sale_line_id.product_packaging_id.ws_cajas_por_bulto
