@@ -205,7 +205,7 @@ class DiscountMixin:
             # Si es una línea de descuento, calcular el descuento y actualizarla
             es_real=DiscountMixin.is_line_real_or_virtual(line)=='real'
             _logger.info(f'WSEM itera linea id:{line.id}, name:{line.product_id.name}, base:{base_before_discount}, seq:{line.sequence}. Es real {es_real} size lineas {len(sorted_lines)}')
-            subtotal_linea=line.price_subtotal            
+                        
             if es_real:
                 _logger.info(f'WSEM si es real pro name: {line.product_id.name}')
                 updated=DiscountMixin.update_discount_line(line, base_before_discount)
@@ -215,6 +215,7 @@ class DiscountMixin:
                 # Actualizar la base antes de descuento acumulada
                 # Notar que si la linea anterior era descuento, debe haberse actualizado price_subtotal en el write de cuando fue modificada, 
                 # ahora se actualiza de nuevo el descuento pero no afecta al calculo del subtotal que debe tenerlo previamente reflejado
+                subtotal_linea=line.price_subtotal
                 base_before_discount += subtotal_linea
                 
         # Si la línea de descuento no se actualizó en sorted_lines, forzar su actualización
