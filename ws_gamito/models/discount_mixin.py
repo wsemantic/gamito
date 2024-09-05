@@ -13,6 +13,8 @@ class ResPartnerDiscount(models.Model):
     partner_id = fields.Many2one('res.partner', string='Customer', ondelete='cascade')
 
 
+#de momento solo tiene en cuenta descuentos prefijados en partner para las ventas, solo la linea de venta (pedido y factura) memoriza el id descuento asignado desde el partner
+# para distinguir los añadidos extras en la sesion de edicion del documento, y no volverlo a añadir (no veo el conflicto, solo lo veo util por si el usuario modifica demasiado la descripcion)
 class ResPartner(models.Model):
     _inherit = 'res.partner'
     discount_ids = fields.One2many('res.partner.discount', 'partner_id', string='Descuentos')
