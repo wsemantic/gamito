@@ -39,7 +39,7 @@ class MrpDateGrouping(models.TransientModel):
             _logger.info(f"WSEM itera order indice {index} numero ordenes {len(sale_orders)} es ultima {es_ultima_iteracion}")
             order_tag = order.tag_ids[0].name if order.tag_ids else ""
             
-            if current_tag != order_tag or \
+            if current_tag and current_tag != order_tag or \
                group_end_date and group_end_date >= start_gr_date + timedelta(days=self.daysgroup) or \
                es_ultima_iteracion:              
                                 
