@@ -22,9 +22,8 @@ class MrpDateGrouping(models.TransientModel):
         ))
 
         current_group = []
-        products_demand = {}  # key product objeto
-        product_packaging = {}  # Nuevo diccionario para almacenar el envasado
-        
+        products_demand = {}  # key product objeto        
+        product_tags = {}
         start_dates = {}  # key producto valor fecha
         start_gr_date = None
         group_end_date = None
@@ -47,7 +46,7 @@ class MrpDateGrouping(models.TransientModel):
                 _logger.info(f"WSEM fin de grupo, start_date:{start_gr_date.strftime('%Y-%m-%d %H:%M:%S') if start_gr_date else 'N/A'}, fecha grupo: {group_end_date.strftime('%Y-%m-%d %H:%M:%S') if group_end_date else 'N/A'}, order tag: {order_tag}, diferente: {current_tag != order_tag}")
 
                 planned_groups += 1
-                self._create_production_orders(products_demand, product_tags, start_dates, end_dates, product_packaging)
+                self._create_production_orders(products_demand, product_tags, start_dates, end_dates)
 
                 if planned_groups > self.ngroups:
                     _logger.info("WSEM superado n grupos")
@@ -56,7 +55,8 @@ class MrpDateGrouping(models.TransientModel):
                 current_group = []
                 current_tag = None
                 start_gr_date = None
-                group_end_date = None                                  
+                group_end_date = None     
+                product_tags = {}                
                 self.find_max_reserved_date_for_work_centers(sale_orders, start_dates, fields.Datetime.now())            
         
             if current_tag is None or current_tag == order_tag:
@@ -64,7 +64,7 @@ class MrpDateGrouping(models.TransientModel):
                 current_group.append(order)
                 _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)} order tag:{current_tag}")
                                                                                                                         
-                products_demand, product_tags, product_packaging = self._products_demand(current_group)
+                products_demand = self._products_demand(current_group, product_tags)
                 
                 self._calculate_lead_times_by_phase(products_demand, start_dates, end_dates)
                 order.expected_date = self.max_reserved_date_for_order(order, end_dates)
@@ -149,10 +149,9 @@ class MrpDateGrouping(models.TransientModel):
             return 0
         return workcenter_sched.get(wid, 0)
  
-    def _products_demand(self, sale_orders):
+    def _products_demand(self, sale_orders, product_tags):
         products_demand = {}
-        product_tags = {}
-        product_packaging = {}  # Nuevo diccionario para almacenar el envasado
+                
         
         for order in sale_orders:
             for line in order.order_line:
@@ -176,17 +175,11 @@ class MrpDateGrouping(models.TransientModel):
                 if tag_arr:
                     tag = tag_arr[0].name.strip()
                 product_tags[productkey] = tag 
-                                                                                 
-                                                                                                                                                                                          
-
-                # Capturar el envasado del pedido
-                                             
-                product_packaging[productkey] = line.product_packaging_id.id if line.product_packaging_id else False
-
+                                                                                                                                                                                                                                                                                           
                 self._products_demand_bomlines(products_demand, productkey, product_tags, tag, line.product_uom_qty)                                                                         
                                       
 
-        return products_demand, product_tags, product_packaging
+        return products_demand
 
     def _products_demand_bomlines(self, products_demand, productkey, product_tags, tag, root_quantity, visited=None):
         pro_name, product, packaging = productkey
@@ -274,7 +267,7 @@ class MrpDateGrouping(models.TransientModel):
                 self._calculate_product_lead_time(sub_productkey, workcenter_sched, workcenter_of_products, products_demand)
                 _logger.info("WSEM añadido extra")
 
-    def _create_production_orders(self, products_demand, product_tags, start_dates, end_dates, product_packaging):
+    def _create_production_orders(self, products_demand, product_tags, start_dates, end_dates):
         """
         Crear órdenes de producción basadas en los productos agrupados por fase,
         considerando las cantidades acumuladas de cada producto.
@@ -314,8 +307,8 @@ class MrpDateGrouping(models.TransientModel):
             # Opcional: establecer el usuario si está disponible en el contexto/env
             
             # Agregar el envasado a la orden de producción
-            if productkey in product_packaging:
-                production_data['wsem_packaging_id'] = product_packaging[productkey]                                    
+            if packaging:
+                production_data['wsem_packaging_id'] = packaging.id                                    
             if self.env.user and self.env.user.id:
                 production_data['user_id'] = self.env.user.id
 
