@@ -24,6 +24,7 @@ class MrpDateGrouping(models.TransientModel):
         current_group = []
         products_demand = {}  # key product objeto        
         product_tags = {}
+        order_names = set()
         start_dates = {}  # key producto valor fecha
         start_gr_date = None
         group_end_date = None
@@ -38,11 +39,12 @@ class MrpDateGrouping(models.TransientModel):
             es_ultima_iteracion = (index == len(sale_orders) - 1)
             _logger.info(f"WSEM itera order indice {index} numero ordenes {len(sale_orders)} es ultima {es_ultima_iteracion}")
             order_tag = order.tag_ids[0].name if order.tag_ids else ""  
+            order_names.add(order.name)
                                               
             current_group.append(order)
             _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)} order tag:{prev_tag}")
                                                                                                                     
-            products_demand = self._products_demand(current_group, product_tags)
+            products_demand = self._products_demand(current_group, product_tags, order_names)
             
             self._calculate_lead_times_by_phase(products_demand, start_dates, end_dates)
             order.expected_date = self.max_reserved_date_for_order(order, end_dates)
@@ -59,7 +61,9 @@ class MrpDateGrouping(models.TransientModel):
                 _logger.info(f"WSEM fin de grupo, start_date:{start_gr_date.strftime('%Y-%m-%d %H:%M:%S') if start_gr_date else 'N/A'}, fecha grupo: {group_end_date.strftime('%Y-%m-%d %H:%M:%S') if group_end_date else 'N/A'}, order tag: {order_tag}, diferente: {prev_tag != order_tag}")
 
                 planned_groups += 1
-                self._create_production_orders(products_demand, product_tags, start_dates, end_dates)
+                
+                lista_ordenes = ', '.join(order_names)
+                self._create_production_orders(products_demand, product_tags, start_dates, end_dates, lista_ordenes)
 
                 if planned_groups > self.ngroups:
                     _logger.info("WSEM superado n grupos")
@@ -70,6 +74,7 @@ class MrpDateGrouping(models.TransientModel):
                 start_gr_date = None
                 group_end_date = None     
                 product_tags = {}                
+                order_names.clear()
                 self.find_max_reserved_date_for_work_centers(sale_orders, start_dates, fields.Datetime.now()) 
             else:
                 prev_tag = order_tag                
@@ -267,7 +272,7 @@ class MrpDateGrouping(models.TransientModel):
                 self._calculate_product_lead_time(sub_productkey, workcenter_sched, workcenter_of_products, products_demand)
                 _logger.info("WSEM añadido extra")
 
-    def _create_production_orders(self, products_demand, product_tags, start_dates, end_dates):
+    def _create_production_orders(self, products_demand, product_tags, start_dates, end_dates, lista_ordenes):
         """
         Crear órdenes de producción basadas en los productos agrupados por fase,
         considerando las cantidades acumuladas de cada producto.
@@ -299,6 +304,7 @@ class MrpDateGrouping(models.TransientModel):
                 'ws_multiplos':multiplos,
                 'date_planned_start': start_date_pro,
                 'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
+                'ws_ordenes':lista_ordenes,
             }
 
              # Agregar la etiqueta como origen si se encontró para el producto
