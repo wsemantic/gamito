@@ -9,6 +9,7 @@
                 <field name="wsem_packaging_id" optional="show"/>
 				<field name="packaging_qty" string="Cantidad por bulto" optional="show"/>
 				<field name="ws_multiplos"/>
+				<field name="ws_ordenes"/>
             </xpath>
 			<xpath expr="//field[@name='date_deadline']" position="attributes">
 				<attribute name="widget" />
