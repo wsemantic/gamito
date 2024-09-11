@@ -301,7 +301,18 @@ class MrpDateGrouping(models.TransientModel):
             end_date_pro=end_dates[productkey]
             start_date_pro=start_dates[productkey]
             multiplos=math.ceil(quantity / bom.product_qty)
-            # Preparar datos para la creación de la orden de producción            
+            # Preparar datos para la creación de la orden de producción  
+
+            # Obtener la zona horaria del usuario o usar UTC como predeterminado
+            user_tz = self.env.user.tz or 'UTC'
+            local_tz = timezone(user_tz)
+
+            # Convertir la fecha y hora a la zona horaria local del usuario
+            custom_datetime_local = self.ws_fecha_grupo.astimezone(local_tz)
+
+            # Formatear la fecha como "YYYY-MM-DD HH", omitiendo minutos y segundos
+            custom_datetime_str = custom_datetime_local.strftime('%Y-%m-%d %H')
+                
             production_data = {
                 'product_id': product.id,
                 'product_qty': multiplos*bom.product_qty,
@@ -310,7 +321,7 @@ class MrpDateGrouping(models.TransientModel):
                 'date_planned_start': start_date_pro,
                 'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
                 'ws_ordenes':lista_ordenes,
-                'ws_fecha_grupo_str':self.ws_fecha_grupo.strftime('%Y-%m-%d %H'),
+                'ws_fecha_grupo_str':custom_datetime_str,
             }
 
              # Agregar la etiqueta como origen si se encontró para el producto
