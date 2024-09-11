@@ -38,46 +38,50 @@ class MrpDateGrouping(models.TransientModel):
         for index, order in enumerate(sale_orders):
             es_ultima_iteracion = (index == len(sale_orders) - 1)
             _logger.info(f"WSEM itera order indice {index} numero ordenes {len(sale_orders)} es ultima {es_ultima_iteracion}")
-            order_tag = order.tag_ids[0].name if order.tag_ids else ""  
-            order_names.add(order.name)
-                                              
-            current_group.append(order)
-            _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)} order tag:{prev_tag}")
-                                                                                                                    
-            products_demand = self._products_demand(current_group, product_tags)
-            
-            self._calculate_lead_times_by_phase(products_demand, start_dates, end_dates)
-            order.expected_date = self.max_reserved_date_for_order(order, end_dates)
-            
-            start_gr_date = min(start_dates.values())
-            group_end_date = max(end_dates.values())
-            
-            _logger.info(f"WSEM fecha grupo : {group_end_date.strftime('%Y-%m-%d %H:%M:%S')}")
+            pendiente_procesar=true
+            while pendiente_procesar:
+                if not prev_tag or prev_tag == order_tag:
+                    pendiente_procesar=false
+                    order_tag = order.tag_ids[0].name if order.tag_ids else ""  
+                    order_names.add(order.name)
+                                                      
+                    current_group.append(order)
+                    _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)} order tag:{prev_tag}")
+                                                                                                                            
+                    products_demand = self._products_demand(current_group, product_tags)
+                    
+                    self._calculate_lead_times_by_phase(products_demand, start_dates, end_dates)
+                    order.expected_date = self.max_reserved_date_for_order(order, end_dates)
+                    
+                    start_gr_date = min(start_dates.values())
+                    group_end_date = max(end_dates.values())
+                    
+                    _logger.info(f"WSEM fecha grupo : {group_end_date.strftime('%Y-%m-%d %H:%M:%S')}")
                 
-            if prev_tag and prev_tag != order_tag or \
-               group_end_date and start_gr_date and group_end_date >= start_gr_date + timedelta(days=self.daysgroup) or \
-               es_ultima_iteracion:              
-                                
-                _logger.info(f"WSEM fin de grupo, start_date:{start_gr_date.strftime('%Y-%m-%d %H:%M:%S') if start_gr_date else 'N/A'}, fecha grupo: {group_end_date.strftime('%Y-%m-%d %H:%M:%S') if group_end_date else 'N/A'}, order tag: {order_tag}, diferente: {prev_tag != order_tag}")
+                if prev_tag and prev_tag != order_tag or \
+                   group_end_date and start_gr_date and group_end_date >= start_gr_date + timedelta(days=self.daysgroup) or \
+                   es_ultima_iteracion:              
+                                    
+                    _logger.info(f"WSEM fin de grupo, start_date:{start_gr_date.strftime('%Y-%m-%d %H:%M:%S') if start_gr_date else 'N/A'}, fecha grupo: {group_end_date.strftime('%Y-%m-%d %H:%M:%S') if group_end_date else 'N/A'}, order tag: {order_tag}, diferente: {prev_tag != order_tag}")
 
-                planned_groups += 1
-                
-                lista_ordenes = ', '.join(order_names)
-                self._create_production_orders(products_demand, product_tags, start_dates, end_dates, lista_ordenes)
+                    planned_groups += 1
+                    
+                    lista_ordenes = ', '.join(order_names)
+                    self._create_production_orders(products_demand, product_tags, start_dates, end_dates, lista_ordenes)
 
-                if planned_groups > self.ngroups:
-                    _logger.info("WSEM superado n grupos")
-                    break
+                    if planned_groups > self.ngroups:
+                        _logger.info("WSEM superado n grupos")
+                        break
 
-                current_group = []
-                prev_tag = None
-                start_gr_date = None
-                group_end_date = None     
-                product_tags = {}                
-                order_names.clear()
-                self.find_max_reserved_date_for_work_centers(sale_orders, start_dates, fields.Datetime.now()) 
-            else:
-                prev_tag = order_tag                
+                    current_group = []
+                    prev_tag = None
+                    start_gr_date = None
+                    group_end_date = None     
+                    product_tags = {}                
+                    order_names.clear()
+                    self.find_max_reserved_date_for_work_centers(sale_orders, start_dates, fields.Datetime.now()) 
+                else:
+                    prev_tag = order_tag                
             
             
     def max_reserved_date_for_order(self, orden, end_dates):
