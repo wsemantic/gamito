@@ -6,11 +6,12 @@
         <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_uom_id']" position="after">
-                <!--<field name="ws_fecha_grupo_str"/>-->
+                <field name="ws_fecha_grupo_str"/>
 				<field name="wsem_packaging_id" optional="show"/>
 				<field name="packaging_qty" string="Cantidad por bulto" optional="show"/>
 				<field name="ws_multiplos"/>
 				<field name="ws_ordenes"/>
+				<field name="wsem_workcenter" optional="show"/>
             </xpath>
 			<xpath expr="//field[@name='date_deadline']" position="attributes">
 				<attribute name="widget" />
@@ -18,4 +19,19 @@
         </field>
     </record>
 	
+
+		<record id="mrp_production_form_view_inherit" model="ir.ui.view">
+			<field name="name">mrp.production.form.inherit</field>
+			<field name="model">mrp.production</field>
+			<field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+			<field name="arch" type="xml">
+				<xpath expr="//div[@name='bom_div']" position="after">
+						<label for="ws_multiplos" name="multiplos_label"/>
+						<div class="o_row" name="multiplos_div">
+							<field name="ws_multiplos" context="{'default_product_tmpl_id': product_tmpl_id}" />
+						</div>
+				</xpath>
+			</field>
+		</record>
+		
 </odoo>
