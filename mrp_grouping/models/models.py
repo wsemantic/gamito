@@ -310,7 +310,7 @@ class MrpDateGrouping(models.TransientModel):
                 'date_planned_start': start_date_pro,
                 'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
                 'ws_ordenes':lista_ordenes,
-                'ws_fecha_grupo':self.ws_fecha_grupo,
+                'ws_fecha_grupo_str':self.ws_fecha_grupo.strftime('%Y-%m-%d %H'),
             }
 
              # Agregar la etiqueta como origen si se encontró para el producto
