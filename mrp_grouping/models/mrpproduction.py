@@ -15,6 +15,7 @@ class MrpProduction(models.Model):
         help='Select the packaging for the production order'
     )
     ws_ordenes= fields.Char(string='Ordenes')  
+    ws_fecha_grupo = fields.Datetime(string='Fecha Grupo')
     
     packaging_qty = fields.Float(
         string='Cantidad por bulto',

@@ -13,6 +13,7 @@ class MrpDateGrouping(models.TransientModel):
 
     daysgroup = fields.Integer(string='Agrupar cada produccion en dias', default=100, required=True)
     ngroups = fields.Integer(string='Numero de grupos a planificar', default=1000, required=True)
+    ws_fecha_grupo = fields.Datetime(string='Fecha Grupo')
 
     def mrp_planning(self):
         sale_orders = self.env['sale.order'].browse(self._context.get('active_ids'))
@@ -309,6 +310,7 @@ class MrpDateGrouping(models.TransientModel):
                 'date_planned_start': start_date_pro,
                 'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
                 'ws_ordenes':lista_ordenes,
+                'ws_fecha_grupo':self.ws_fecha_grupo,
             }
 
              # Agregar la etiqueta como origen si se encontró para el producto

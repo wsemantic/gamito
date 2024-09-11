@@ -115,6 +115,7 @@
                 <form string="Plan Production">
                     <group>
                         <field name="daysgroup"/>
+						<field name="ws_fecha_grupo"/>
                         <!--<field name="ngroups"/>-->
                     </group>
                     <footer>
