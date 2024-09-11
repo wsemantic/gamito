@@ -40,7 +40,7 @@ class MrpDateGrouping(models.TransientModel):
             order_tag = order.tag_ids[0].name if order.tag_ids else ""
             
             if current_tag and current_tag != order_tag or \
-               group_end_date and group_end_date >= start_gr_date + timedelta(days=self.daysgroup) or \
+               group_end_date and start_gr_date and group_end_date >= start_gr_date + timedelta(days=self.daysgroup) or \
                es_ultima_iteracion:              
                                 
                 _logger.info(f"WSEM fin de grupo, start_date:{start_gr_date.strftime('%Y-%m-%d %H:%M:%S') if start_gr_date else 'N/A'}, fecha grupo: {group_end_date.strftime('%Y-%m-%d %H:%M:%S') if group_end_date else 'N/A'}, order tag: {order_tag}, diferente: {current_tag != order_tag}")
