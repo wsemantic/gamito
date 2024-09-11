@@ -44,7 +44,7 @@ class MrpDateGrouping(models.TransientModel):
             current_group.append(order)
             _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)} order tag:{prev_tag}")
                                                                                                                     
-            products_demand = self._products_demand(current_group, product_tags, order_names)
+            products_demand = self._products_demand(current_group, product_tags)
             
             self._calculate_lead_times_by_phase(products_demand, start_dates, end_dates)
             order.expected_date = self.max_reserved_date_for_order(order, end_dates)
