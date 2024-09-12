@@ -103,7 +103,7 @@ class StockMoveCustom(models.Model):
                     vals['company_id'] = company_a.id
 
         # Crear el movimiento con los valores modificados
-        move = super(StockMove, self).create(vals)
+        move = super(StockMoveCustom, self).create(vals)
         
         _logger.info(f"Stock.move creado con ID: {move.id}, location_id: {move.location_id.id}, company_id: {move.company_id.id}")
         
