@@ -317,7 +317,12 @@ class MrpDateGrouping(models.TransientModel):
             # Formatear la fecha como "YYYY-MM-DD HH", omitiendo minutos y segundos
             custom_datetime_str = custom_datetime_local.strftime('%Y-%m-%d %H')
             
-            lista_ordenes = ', '.join(sorted(order_names[productkey]))
+            lista_ordenes=''
+            
+            if productkey in order_names and bool(order_names[productkey])
+                lista_ordenes = ', '.join(sorted(order_names[productkey]))
+            else:
+                _logger.info(f"WSEM LISTA ORDENES VACIA {productkey}")
                 
             production_data = {
                 'product_id': product.id,
