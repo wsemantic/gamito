@@ -28,7 +28,7 @@ class StockPicking(models.Model):
             picking.ws_palet_total =  math.ceil(total_palet)
             
             
-'''    @api.model
+    @api.model
     def create(self, vals):
         if vals.get('company_id'):
             # Accede directamente a la compañía utilizando browse
@@ -44,12 +44,12 @@ class StockPicking(models.Model):
                     _logger.info(f"WSEM capturada Gamito {company_a.id}")
                     
                     vals['company_id'] = company_a.id
-                    vals['location_id']=8                    
-                    vals['picking_type_id']=2
+                    #vals['location_id']=8                    
+                    #vals['picking_type_id']=2
                     #vals['warehouse_id']=1
                     _logger.info("Valores super: %s", vals)                    
         
         picking = super(StockPicking, self).create(vals)
         _logger.info(f"Albarán creado con ID: {picking.id}, Número de move_ids: {len(picking.move_ids)}")
 
-        return picking     '''            
+        return picking              

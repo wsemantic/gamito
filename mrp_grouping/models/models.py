@@ -427,7 +427,7 @@ class MrpDateGrouping(models.TransientModel):
         
         return dn
         
-class SaleOrder(models.Model):
+'''class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     def write(self, vals):
@@ -466,5 +466,5 @@ class SaleOrder(models.Model):
                         line.tax_id = [(6, 0, new_taxes)]
                 self.flush()
         # Continuar con la escritura original
-        return super(SaleOrder, self).write(vals)
+        return super(SaleOrder, self).write(vals)'''
                     
