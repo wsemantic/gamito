@@ -430,7 +430,7 @@ class MrpDateGrouping(models.TransientModel):
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-#Empresa Test
+'''#Empresa Test
     @api.onchange('company_id')
     def _onchange_company(self):
         _logger.info("WSEM 1-disparo _onchange_company")
@@ -460,5 +460,42 @@ class SaleOrder(models.Model):
                 ], limit=1)
                 if new_warehouse:
                     _logger.info("WSEM 4- Almacen nuevo %s ",new_warehouse.name)   
-                    self.warehouse_id = new_warehouse.id
+                    self.warehouse_id = new_warehouse.id'''
+    @api.multi
+    def write(self, vals):
+        # Solo actuar si la compañía es "Test"
+        if 'company_id' in vals:
+            new_company_id = vals['company_id']
+            company = self.env['res.company'].browse(new_company_id)
+
+            if company.name == "Test":
+                _logger.info("WSEM - Cambio de compañía detectado: %s", company.name)
+
+                # Actualizar almacén
+                if self.warehouse_id:
+                    _logger.info("WSEM - Almacén actual: %s", self.warehouse_id.name)
+                    new_warehouse = self.env['stock.warehouse'].search([
+                        ('company_id', '=', new_company_id)
+                    ], limit=1)
+                    if new_warehouse:
+                        _logger.info("WSEM - Nuevo almacén seleccionado: %s", new_warehouse.name)
+                        self.warehouse_id = new_warehouse.id
+
+                # Actualizar impuestos en las líneas del pedido
+                for line in self.order_line:
+                    new_taxes = []
+                    for tax in line.tax_id:
+                        new_tax = self.env['account.tax'].search([
+                            ('name', '=', tax.name),
+                            ('type_tax_use', '=', tax.type_tax_use),
+                            ('company_id', '=', new_company_id),
+                        ], limit=1)
+                        if new_tax:
+                            new_taxes.append(new_tax.id)
+                    if new_taxes:
+                        _logger.info("WSEM - Impuestos actualizados para la línea de producto: %s", line.product_id.name)
+                        line.tax_id = [(6, 0, new_taxes)]
+
+        # Continuar con la escritura original
+        return super(SaleOrder, self).write(vals)
                     
