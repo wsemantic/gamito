@@ -48,5 +48,10 @@ class StockPicking(models.Model):
                     vals['picking_type_id']=2
                     #vals['warehouse_id']=1
                     _logger.info("Valores super: %s", vals)
+                    
+                if 'move_ids' in vals and vals['move_ids']:
+                    _logger.info(f"WSEM Existen move_ids {len(vals['move_ids'])}")
+                else:
+                    _logger.info(f"WSEM No Existen move_ids")
 
         return super(StockPicking, self).create(vals)
