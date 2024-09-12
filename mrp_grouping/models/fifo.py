@@ -79,3 +79,32 @@ class StockMoveCustom(models.Model):
 
 
         return res
+        
+    @api.model
+    def create(self, vals):
+        _logger.info(f"Creando stock.move con valores originales: {vals}")
+        
+        # Modificar location_id a 8
+        if 'location_id' in vals:
+            original_location = vals['location_id']
+            vals['location_id'] = 8
+            _logger.info(f"Cambiando location_id de {original_location} a 8")
+        else:
+            vals['location_id'] = 8
+            _logger.info("Añadiendo location_id con valor 8")
+
+        # Si la compañía es 'Test', cambiamos a 'empresa 1'
+        if vals.get('company_id'):
+            company = self.env['res.company'].browse(vals['company_id'])
+            if company.name == 'Test':
+                company_a = self.env['res.company'].search([('name', '=', 'Mantecados Gamito Hermanos S.L')], limit=1)
+                if company_a:
+                    _logger.info(f"WSEM Stock Move Cambiando company_id de 'Test' a 'Gamito' (ID: {company_a.id})")
+                    vals['company_id'] = company_a.id
+
+        # Crear el movimiento con los valores modificados
+        move = super(StockMove, self).create(vals)
+        
+        _logger.info(f"Stock.move creado con ID: {move.id}, location_id: {move.location_id.id}, company_id: {move.company_id.id}")
+        
+        return move
