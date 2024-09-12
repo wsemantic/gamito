@@ -439,6 +439,7 @@ class SaleOrder(models.Model):
             if company.name == "Test":
                 _logger.info("WSEM - Cambio de compañía detectado: %s", company.name)
 
+                context = dict(self.env.context, force_company=False)
                 # Actualizar almacén
                 if self.warehouse_id:
                     _logger.info("WSEM - Almacén actual: %s", self.warehouse_id.name)
