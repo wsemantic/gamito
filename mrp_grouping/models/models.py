@@ -26,7 +26,7 @@ class MrpDateGrouping(models.TransientModel):
         current_group = []
         products_demand = {}  # key product objeto        
         product_tags = {}
-        order_names = set()
+        order_names = {}
         start_dates = {}  # key producto valor fecha
         start_gr_date = None
         group_end_date = None
@@ -50,7 +50,7 @@ class MrpDateGrouping(models.TransientModel):
                     current_group.append(order)
                     _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)} order tag:{order_tag} previo:{prev_tag}")
                                                                                                                             
-                    products_demand = self._products_demand(current_group, product_tags)
+                    products_demand = self._products_demand(current_group, product_tags, order_names, order.name)
                     
                     self._calculate_lead_times_by_phase(products_demand, start_dates, end_dates)
                     order.expected_date = self.max_reserved_date_for_order(order, end_dates)
@@ -67,9 +67,8 @@ class MrpDateGrouping(models.TransientModel):
                     _logger.info(f"WSEM fin de grupo, start_date:{start_gr_date.strftime('%Y-%m-%d %H:%M:%S') if start_gr_date else 'N/A'}, fecha grupo: {group_end_date.strftime('%Y-%m-%d %H:%M:%S') if group_end_date else 'N/A'}, order tag: {order_tag}, diferente: {prev_tag != order_tag}")
 
                     planned_groups += 1
-                    
-                    lista_ordenes = ', '.join(order_names)
-                    self._create_production_orders(products_demand, product_tags, start_dates, end_dates, lista_ordenes)
+                                        
+                    self._create_production_orders(products_demand, product_tags, start_dates, end_dates, order_names)
 
                     if planned_groups > self.ngroups:
                         _logger.info("WSEM superado n grupos")
@@ -160,14 +159,18 @@ class MrpDateGrouping(models.TransientModel):
             return 0
         return workcenter_sched.get(wid, 0)
  
-    def _products_demand(self, sale_orders, product_tags):
+    def _products_demand(self, sale_orders, product_tags, order_names_dic, ordername):
         products_demand = {}
                 
         
         for order in sale_orders:
             for line in order.order_line:
-                productkey = (line.name, line.product_id, line.product_packaging_id)             
-                
+                productkey = (line.name, line.product_id, line.product_packaging_id)     
+
+                if productkey not in order_names_dic:
+                        order_names_dic[productkey] = set()
+                    # Añadir el valor al set usando add (no necesita ser un iterable)
+                    order_names_dic[productkey].add(ordername)                                
                                                  
                 if productkey in products_demand:
                     _logger.info(f"WSEM Clave encontrada: {productkey}, demanda previa: {products_demand[productkey]}")
@@ -278,7 +281,7 @@ class MrpDateGrouping(models.TransientModel):
                 self._calculate_product_lead_time(sub_productkey, workcenter_sched, workcenter_of_products, products_demand)
                 _logger.info("WSEM añadido extra")
 
-    def _create_production_orders(self, products_demand, product_tags, start_dates, end_dates, lista_ordenes):
+    def _create_production_orders(self, products_demand, product_tags, start_dates, end_dates, order_names):
         """
         Crear órdenes de producción basadas en los productos agrupados por fase,
         considerando las cantidades acumuladas de cada producto.
@@ -313,6 +316,8 @@ class MrpDateGrouping(models.TransientModel):
 
             # Formatear la fecha como "YYYY-MM-DD HH", omitiendo minutos y segundos
             custom_datetime_str = custom_datetime_local.strftime('%Y-%m-%d %H')
+            
+            lista_ordenes = ', '.join(order_names[productkey])
                 
             production_data = {
                 'product_id': product.id,
