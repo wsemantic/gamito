@@ -46,7 +46,7 @@ class StockPicking(models.Model):
                     vals['company_id'] = company_a.id
                     vals['location_id']=8                    
                     vals['picking_type_id']=2
-                    vals['warehouse_id']=1
+                    #vals['warehouse_id']=1
                     _logger.info("Valores super: %s", vals)
 
         return super(StockPicking, self).create(vals)
