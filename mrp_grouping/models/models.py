@@ -319,7 +319,7 @@ class MrpDateGrouping(models.TransientModel):
             
             lista_ordenes=''
             
-            if productkey in order_names and bool(order_names[productkey])
+            if productkey in order_names and bool(order_names[productkey]):
                 lista_ordenes = ', '.join(sorted(order_names[productkey]))
             else:
                 _logger.info(f"WSEM LISTA ORDENES VACIA {productkey}")
