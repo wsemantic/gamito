@@ -463,7 +463,7 @@ class SaleOrder(models.Model):
                     if new_taxes:
                         _logger.info("WSEM - Impuestos actualizados para la línea de producto: %s", line.product_id.name)
                         line.tax_id = [(6, 0, new_taxes)]
-
+                self.flush()
         # Continuar con la escritura original
         return super(SaleOrder, self).write(vals)
                     
