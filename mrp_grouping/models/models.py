@@ -167,10 +167,11 @@ class MrpDateGrouping(models.TransientModel):
             for line in order.order_line:
                 productkey = (line.name, line.product_id, line.product_packaging_id)     
 
-                if productkey not in order_names_dic:
-                    order_names_dic[productkey] = set()
-                # Añadir el valor al set usando add (no necesita ser un iterable)
-                order_names_dic[productkey].add(ordername)                                
+                if order.name==ordername:
+                    if productkey not in order_names_dic:
+                        order_names_dic[productkey] = set()
+                    # Añadir el valor al set usando add (no necesita ser un iterable)
+                    order_names_dic[productkey].add(ordername)                                
                                                  
                 if productkey in products_demand:
                     _logger.info(f"WSEM Clave encontrada: {productkey}, demanda previa: {products_demand[productkey]}")
