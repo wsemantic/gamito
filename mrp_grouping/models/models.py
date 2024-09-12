@@ -430,7 +430,6 @@ class MrpDateGrouping(models.TransientModel):
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    @api.multi
     def write(self, vals):
         # Solo actuar si la compañía es "Test"
         if 'company_id' in vals:
