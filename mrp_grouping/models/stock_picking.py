@@ -27,7 +27,7 @@ class StockPicking(models.Model):
             picking.ws_bulto_total = math.ceil(total_bulto)
             picking.ws_palet_total =  math.ceil(total_palet)
             
-    '''        
+            
     @api.model
     def create(self, vals):
         if vals.get('company_id'):
@@ -49,4 +49,4 @@ class StockPicking(models.Model):
                     vals['warehouse_id']=1
                     _logger.info("Valores super: %s", vals)
 
-        return super(StockPicking, self).create(vals)'''
+        return super(StockPicking, self).create(vals)

@@ -426,7 +426,7 @@ class MrpDateGrouping(models.TransientModel):
         dn= f"[{default_code}] {name_idioma}"
         
         return dn
-        
+'''        
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
@@ -460,5 +460,5 @@ class SaleOrder(models.Model):
                 ], limit=1)
                 if new_warehouse:
                     _logger.info("WSEM 4- Almacen nuevo %s ",new_warehouse.name)   
-                    self.warehouse_id = new_warehouse.id  
+                    self.warehouse_id = new_warehouse.id  '''
                     
