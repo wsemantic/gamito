@@ -41,7 +41,7 @@ class StockPicking(models.Model):
                 # Cambia la compañía a Company A
                 company_a = self.env['res.company'].search([('name', '=', 'Mantecados Gamito Hermanos S.L')], limit=1)
                 if company_a:
-                    _logger.info(f"WSEM capturada Gamito")
+                    _logger.info(f"WSEM capturada Gamito {company_a.id}")
                     vals['company_id'] = company_a.id
 
         return super(StockPicking, self).create(vals)
