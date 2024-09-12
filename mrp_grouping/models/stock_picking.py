@@ -30,6 +30,8 @@ class StockPicking(models.Model):
             
     @api.model
     def create(self, vals):
+        original_warehouse_id=None
+        sale_order = self.env['sale.order'].search([('name', '=', vals.get('origin'))], limit=1)
         if vals.get('company_id'):
             # Accede directamente a la compañía utilizando browse
             _logger.info(f"WSEM StockPicking tiene company")
@@ -42,10 +44,18 @@ class StockPicking(models.Model):
                 company_a = self.env['res.company'].search([('name', '=', 'Mantecados Gamito Hermanos S.L')], limit=1)
                 if company_a:
                     _logger.info(f"WSEM capturada Gamito {company_a.id}")
+                    
+                    
+                    if sale_order:
+                        original_warehouse_id = sale_order.warehouse_id.id                        
+                        sale_order.write({'warehouse_id': 1})
+        
                     vals['company_id'] = company_a.id
                     vals['location_id']=8
                     vals['location_dest_id']=58
                     vals['picking_type_id']=2
                     _logger.info("Valores super: %s", vals)
 
-        return super(StockPicking, self).create(vals)
+        result= super(StockPicking, self).create(vals)
+        if original_warehouse_id:
+            sale_order.write({'warehouse_id': original_warehouse_id})
