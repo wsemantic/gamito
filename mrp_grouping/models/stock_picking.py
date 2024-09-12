@@ -44,6 +44,6 @@ class StockPicking(models.Model):
                     _logger.info(f"WSEM capturada Gamito {company_a.id}")
                     vals['company_id'] = company_a.id
                     vals['location_id']=8
-                    _logger.info("Valores de vals: %s", vals)
+                    _logger.info("Valores super: %s", vals)
 
         return super(StockPicking, self).create(vals)
