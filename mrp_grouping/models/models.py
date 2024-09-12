@@ -45,7 +45,7 @@ class MrpDateGrouping(models.TransientModel):
             while pendiente_procesar:
                 if not prev_tag or prev_tag == order_tag:
                     pendiente_procesar=None                      
-                    order_names.add(order.name)
+                    
                                                       
                     current_group.append(order)
                     _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)} order tag:{order_tag} previo:{prev_tag}")
