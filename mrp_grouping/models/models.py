@@ -168,7 +168,7 @@ class MrpDateGrouping(models.TransientModel):
                 productkey = (line.name, line.product_id, line.product_packaging_id)     
 
                 if productkey not in order_names_dic:
-                        order_names_dic[productkey] = set()
+                    order_names_dic[productkey] = set()
                     # Añadir el valor al set usando add (no necesita ser un iterable)
                     order_names_dic[productkey].add(ordername)                                
                                                  
