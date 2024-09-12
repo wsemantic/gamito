@@ -47,11 +47,48 @@ class StockPicking(models.Model):
                     vals['location_id']=8                    
                     vals['picking_type_id']=2
                     #vals['warehouse_id']=1
-                    _logger.info("Valores super: %s", vals)
+                    _logger.info("Valores super: %s", vals)                    
                     
                 if 'move_ids' in vals and vals['move_ids']:
                     _logger.info(f"WSEM Existen move_ids {len(vals['move_ids'])}")
                 else:
                     _logger.info(f"WSEM No Existen move_ids")
+        
+        picking = super(StockPicking, self).create(vals)
+        _logger.info(f"Albarán creado con ID: {picking.id}, Número de move_ids: {len(picking.move_ids)}")
 
-        return super(StockPicking, self).create(vals)
+        # Si se han creado movimientos, asegurarse de que tienen la compañía correcta
+        if picking.move_ids:
+            self._adjust_moves_company(picking)
+
+        return picking
+        
+    def write(self, vals):
+        _logger.info(f"WSEM write llamado")
+        res = super(StockPicking, self).write(vals)
+        
+        # Si se están añadiendo o modificando movimientos, ajustar la compañía
+        if 'move_ids' in vals:
+            _logger.info(f"WSEM write existen move ids")
+            for picking in self:
+                self._adjust_moves_company(picking)
+        
+        return res
+        
+    def _adjust_moves_company(self, picking):
+        _logger.info(f"Ajustando movimientos para el albarán ID: {picking.id}")
+        for move in picking.move_ids:
+            if move.company_id != picking.company_id:
+                _logger.info(f"Ajustando compañía del movimiento ID: {move.id}")
+                move.write({
+                    'company_id': picking.company_id.id,
+                    'location_id': picking.location_id.id,
+                    'location_dest_id': picking.location_dest_id.id,
+                })
+                for line in move.move_line_ids:
+                    line.write({
+                        'company_id': picking.company_id.id,
+                        'location_id': picking.location_id.id,
+                        'location_dest_id': picking.location_dest_id.id,
+                    })
+                    
