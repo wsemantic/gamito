@@ -330,7 +330,7 @@ class MrpDateGrouping(models.TransientModel):
                 'product_id': product.id,
                 'product_qty': multiplos*bom.product_qty,
                 'qty_produced':multiplos*bom.product_qty,
-                'qty_producing':multiplos*bom.product_qty,
+                #'qty_producing':multiplos*bom.product_qty, si relleno esto el estado pasa de ser borrador a "para cerrar", y ya no rellena lo consumido
                 'bom_id': bom.id,
                 'ws_multiplos':multiplos,
                 'date_planned_start': start_date_pro,
