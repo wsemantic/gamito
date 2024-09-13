@@ -329,6 +329,7 @@ class MrpDateGrouping(models.TransientModel):
             production_data = {
                 'product_id': product.id,
                 'product_qty': multiplos*bom.product_qty,
+                'qty_produced':multiplos*bom.product_qty,
                 #'qty_producing':multiplos*bom.product_qty,
                 'bom_id': bom.id,
                 'ws_multiplos':multiplos,
