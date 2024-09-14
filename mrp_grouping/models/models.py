@@ -306,7 +306,11 @@ class MrpDateGrouping(models.TransientModel):
             end_date_pro=end_dates[productkey]
             start_date_pro=start_dates[productkey]
             
-            multiplos = math.ceil((quantity / bom.product_qty) * 2) / 2
+            mdec=quantity / bom.product_qty
+            if mdec>1:
+                multiplos=math.ceil(mdec)
+            else:
+                multiplos = math.ceil( mdec * 2) / 2
             # Preparar datos para la creación de la orden de producción  
 
             # Obtener la zona horaria del usuario o usar UTC como predeterminado
