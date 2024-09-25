@@ -23,6 +23,8 @@ class MrpProduction(models.Model):
         readonly=True
     )
     
+    ws_demanda_minima	= fields.Float('Demanda min.', default=1.0)
+    
     @api.depends('workorder_ids')
     def _compute_wsem_workcenter(self):
         for production in self:
