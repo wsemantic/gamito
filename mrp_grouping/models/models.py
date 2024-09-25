@@ -232,7 +232,7 @@ class MrpDateGrouping(models.TransientModel):
                 if sub_productkey not in products_demand:
                     products_demand[sub_productkey] = 0
 
-                products_demand[sub_productkey] += root_quantity * line.product_qty
+                products_demand[sub_productkey] += root_quantity / bom.product_qty * line.product_qty
 
                 # Asignar la etiqueta al subproducto si no está ya asignada
                 if sub_productkey not in product_tags:
