@@ -16,6 +16,8 @@ class MrpProduction(models.Model):
     )
     ws_ordenes= fields.Char(string='Ordenes')  
     ws_fecha_grupo_str = fields.Char(string='Fecha Grupo')
+    ws_fecha_min_str = fields.Char(string='Fecha Minima') #fecha minima de entrega de las ordenes de venta agrupadas
+    ws_fecha_max_str = fields.Char(string='Fecha Maxima') #fecha maxima de entrega de las ordenes de venta agrupadas
     
     packaging_qty = fields.Float(
         string='Cantidad por bulto',

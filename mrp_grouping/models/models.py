@@ -48,8 +48,9 @@ class MrpDateGrouping(models.TransientModel):
                     
                                                       
                     current_group.append(order)
-                    _logger.info(f"WSEM itera orden : {order.name} n-ordenes:{len(current_group)} order tag:{order_tag} previo:{prev_tag}")
-                                                                                                                            
+                    # Calculamos las fechas mínima y máxima de entrega de los pedidos en el grupo actual
+                    fecha_minima = min(order.commitment_date for order in current_group if order.commitment_date)
+                    fecha_maxima = max(order.commitment_date for order in current_group if order.commitment_date)                                                                                                                           
                     products_demand = self._products_demand(current_group, product_tags, order_names, order.name)
                     
                     self._calculate_lead_times_by_phase(products_demand, start_dates, end_dates)
@@ -68,7 +69,10 @@ class MrpDateGrouping(models.TransientModel):
 
                     planned_groups += 1
                                         
-                    self._create_production_orders(products_demand, product_tags, start_dates, end_dates, order_names)
+                    self._create_production_orders(
+                        products_demand, product_tags, start_dates, end_dates, order_names,
+                        fecha_minima=fecha_minima, fecha_maxima=fecha_maxima
+                    )                                                                          
 
                     if planned_groups > self.ngroups:
                         _logger.info("WSEM superado n grupos")
@@ -281,8 +285,8 @@ class MrpDateGrouping(models.TransientModel):
                 sub_productkey = (linname, line.product_id, None)  # None para el packaging de componentes
                 self._calculate_product_lead_time(sub_productkey, workcenter_sched, workcenter_of_products, products_demand)
                 _logger.info("WSEM añadido extra")
-
-    def _create_production_orders(self, products_demand, product_tags, start_dates, end_dates, order_names):
+    
+    def _create_production_orders(self, products_demand, product_tags, start_dates, end_dates, order_names, fecha_minima, fecha_maxima):
         """
         Crear órdenes de producción basadas en los productos agrupados por fase,
         considerando las cantidades acumuladas de cada producto.
@@ -342,6 +346,8 @@ class MrpDateGrouping(models.TransientModel):
                 'company_id': self.env.company.id,  # Asume que la compañía se toma del contexto actual
                 'ws_ordenes':lista_ordenes,
                 'ws_fecha_grupo_str':custom_datetime_str,
+                'ws_fecha_min_str': fecha_minima.strftime('%Y-%m-%d %H:%M:%S') if fecha_minima else '',
+                'ws_fecha_max_str': fecha_maxima.strftime('%Y-%m-%d %H:%M:%S') if fecha_maxima else '',
             }
 
              # Agregar la etiqueta como origen si se encontró para el producto
