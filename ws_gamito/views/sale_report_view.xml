@@ -37,7 +37,7 @@
             </xpath>
 
             <!-- Agregar las columnas de cantidad de empaquetado y unidades por paquete en el encabezado -->
-            <xpath expr="//thead/tr/th_quantity" position="after">
+            <xpath expr="//thead/tr/th[@name='th_quantity']" position="after">
                 <th class="text-end">Bultos</th>
                 <th class="text-end">Unid/Bulto</th>
             </xpath>
