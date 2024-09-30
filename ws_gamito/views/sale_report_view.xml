@@ -37,13 +37,13 @@
             </xpath>
 
             <!-- Agregar las columnas de cantidad de empaquetado y unidades por paquete en el encabezado -->
-            <xpath expr="//thead/tr" position="inside">
+            <xpath expr="//thead/tr/th_quantity" position="after">
                 <th class="text-end">Bultos</th>
                 <th class="text-end">Unid/Bulto</th>
             </xpath>
 
             <!-- Agregar las columnas de cantidad de empaquetado y unidades por paquete en las líneas -->
-            <xpath expr="//tbody[@class='sale_tbody']//tr/t[not(@t-elif)]" position="inside">
+            <xpath expr="//tbody[@class='sale_tbody']//tr/t/td[@name='td_quantity']" position="after">
                 <!-- Columna para Cantidad de Empaquetado -->
                 <td class="text-end">
                     <span t-field="line.product_packaging_qty" t-options='{"widget": "float", "precision": 0}'/>
