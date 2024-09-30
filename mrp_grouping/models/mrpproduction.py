@@ -23,7 +23,16 @@ class MrpProduction(models.Model):
         readonly=True
     )
     
-    ws_demanda_minima	= fields.Float('Demanda min.', default=1.0)
+    ws_demanda_minima	= fields.Float('Cantidad demanda', default=1.0)
+    ws_bultos	= fields.Float('Bultos', compute='_compute_total_bultos')
+    
+    @api.depends('product_qty', 'packaging_qty')
+    def _compute_total_bultos(self):
+        for record in self:
+            if record.packaging_qty:
+                record.total_bultos = record.product_qty / record.packaging_qty
+            else:
+                record.total_bultos = 0
     
     @api.depends('workorder_ids')
     def _compute_wsem_workcenter(self):

@@ -9,9 +9,7 @@
                 <field name="ws_fecha_grupo_str"/>
 				<field name="wsem_packaging_id" optional="show"/>
 				<field name="packaging_qty" string="Cantidad por bulto" optional="show"/>
-				<t t-set="total_bultos" t-value="o.product_qty / o.packaging_qty"/>
-				<t t-esc="total_bultos" string="Total bultos"/>
-
+				<field name="ws_bultos" optional="show"/>
 				<field name="ws_multiplos"/>
 				<field name="ws_ordenes"/>
 				<field name="wsem_workcenter" optional="show"/>
