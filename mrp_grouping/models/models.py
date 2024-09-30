@@ -49,8 +49,14 @@ class MrpDateGrouping(models.TransientModel):
                                                       
                     current_group.append(order)
                     # Calculamos las fechas mínima y máxima de entrega de los pedidos en el grupo actual
-                    fecha_minima = min(order.commitment_date for order in current_group if order.commitment_date)
-                    fecha_maxima = max(order.commitment_date for order in current_group if order.commitment_date)                                                                                                                           
+                    # Calculamos las fechas mínima y máxima de entrega de los pedidos en el grupo actual
+                    fechas_compromiso = [order.commitment_date for order in current_group if order.commitment_date]
+
+                    # Si hay fechas válidas, calcular mínimo y máximo; de lo contrario, establecer None
+                    fecha_minima = min(fechas_compromiso) if fechas_compromiso else None
+                    fecha_maxima = max(fechas_compromiso) if fechas_compromiso else None
+
+                                                                                                                         
                     products_demand = self._products_demand(current_group, product_tags, order_names, order.name)
                     
                     self._calculate_lead_times_by_phase(products_demand, start_dates, end_dates)
