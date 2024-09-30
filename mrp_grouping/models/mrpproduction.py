@@ -30,9 +30,9 @@ class MrpProduction(models.Model):
     def _compute_total_bultos(self):
         for record in self:
             if record.packaging_qty:
-                record.total_bultos = record.product_qty / record.packaging_qty
+                record.ws_bultos = record.product_qty / record.packaging_qty
             else:
-                record.total_bultos = 0
+                record.ws_bultos = 0
     
     @api.depends('workorder_ids')
     def _compute_wsem_workcenter(self):
