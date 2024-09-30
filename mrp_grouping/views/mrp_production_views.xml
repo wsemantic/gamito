@@ -36,5 +36,18 @@
 			</xpath>
 		</field>
 	</record>
+	
+	<record id="action_production_order_confirm" model="ir.actions.server">
+        <field name="name">Confirmar</field>
+        <field name="model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            records._action_confirm()
+        </field>
+        <!-- Añadir secuencia para colocarla detrás de "Mark as Done" -->
+        <!--<field name="sequence">15</field> --><!-- Entre las acciones Mark as Done y Unreserve -->
+    </record>
 		
 </odoo>
