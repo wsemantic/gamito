@@ -54,6 +54,10 @@
             </div>
         </xpath>
 		
+		<xpath expr="//table[@name='stock_move_table']" position="attributes">
+            <attribute name="style">font-size: 12px;</attribute>
+        </xpath>
+			
 		<!-- Reemplazar columna "Delivered" -->
 			<xpath expr="//table[@name='stock_move_table']//th[@name='th_sm_quantity']" position="replace">
 				<th name="th_sm_packaging"><strong>Unidades bulto</strong></th>
