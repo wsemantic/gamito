@@ -91,7 +91,7 @@
 			<attribute name="t-if">False</attribute>
 		</xpath>
 			
-		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']/thead/tr/th[.='Quantity']" position="after">		
+		<xpath expr="//table[@t-if='o.move_line_ids and o.move_ids_without_package']/thead/tr/th[2]" position="after">		
 			<th name="th_unid_bultos"><strong>Unid.Bultos</strong></th>	
 			<th name="th_bultos"><strong>Bultos</strong></th>						
 		</xpath>
