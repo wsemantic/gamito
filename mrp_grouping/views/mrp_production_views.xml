@@ -44,7 +44,7 @@
         <field name="binding_view_types">list</field>
         <field name="state">code</field>
         <field name="code">
-            records._action_confirm()
+            records.action_confirm()
         </field>
         <!-- Añadir secuencia para colocarla detrás de "Mark as Done" -->
         <!--<field name="sequence">15</field> --><!-- Entre las acciones Mark as Done y Unreserve -->
