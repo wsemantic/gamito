@@ -125,6 +125,19 @@
                 </form>
             </field>
         </record>
+		
+
+		<record id="view_sale_order_tree_custom" model="ir.ui.view">
+			<field name="name">sale.order.tree.custom</field>
+			<field name="model">sale.order</field>
+			<field name="inherit_id" ref="sale.view_order_tree"/>
+			<field name="arch" type="xml">
+				<!-- Usamos XPath para insertar el campo ws_fecha_grupo después del campo name -->
+				<xpath expr="//field[@name='name']" position="after">
+					<field name="ws_fecha_grupo" string="Fecha Grupo" widget="date"/>
+				</xpath>
+			</field>
+		</record>
 
 
     </data>
