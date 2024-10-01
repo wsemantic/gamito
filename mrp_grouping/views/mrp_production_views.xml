@@ -33,10 +33,11 @@
 				<xpath expr="//field[@name='ws_fecha_max_str']" position="after">
 					<field name="date_planned_start" invisible="0"/>
 				</xpath>
+				<xpath expr="//field[@name='product_id']" position="after">
+					<field name="priority" invisible="0"/>
+					<field name="product_description_variants" string="Nota"/>
+				</xpath>				
 			<!--fin reordenar-->
-			<xpath expr="//field[@name='priority']" position="after">
-				<field name="product_description_variants" string="Nota"/>
-			</xpath>
 			
 			<xpath expr="//field[@name='origin']" position="attributes">
 				<attribute name="string">Etiqueta</attribute>
