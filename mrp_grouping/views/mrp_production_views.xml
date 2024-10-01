@@ -6,11 +6,13 @@
         <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
         <field name="arch" type="xml">
 			
-            <xpath expr="//field[@name='name']" position="after">
-				<field name="product_description_variants" string="Nota"/>
+            <xpath expr="//field[@name='name']" position="before">				
 				<field name="ws_fecha_grupo_str"/>
 				<field name="ws_fecha_min_str"/>
 				<field name="ws_fecha_max_str"/>
+			</xpath>
+					
+			<xpath expr="//field[@name='components_availability']" position="after">						
 				<field name="wsem_packaging_id" optional="show"/>
 				<field name="packaging_qty" string="Cantidad por bulto" optional="show"/>
 				<field name="ws_bultos" optional="show"/>
@@ -24,11 +26,17 @@
 				<xpath expr="//field[@name='date_planned_start']" position="attributes">
 					<attribute name="invisible">1</attribute>
 				</xpath>
+				<xpath expr="//field[@name='priority']" position="attributes">
+					<attribute name="invisible">1</attribute>
+				</xpath>				
 				<!-- Volver a añadir 'date_planned_start' después de 'ws_fecha_max_str' -->
 				<xpath expr="//field[@name='ws_fecha_max_str']" position="after">
 					<field name="date_planned_start" invisible="0"/>
 				</xpath>
 			<!--fin reordenar-->
+			<xpath expr="//field[@name='priority']" position="after">
+				<field name="product_description_variants" string="Nota"/>
+			</xpath>
 			
 			<xpath expr="//field[@name='origin']" position="attributes">
 				<attribute name="string">Etiqueta</attribute>
