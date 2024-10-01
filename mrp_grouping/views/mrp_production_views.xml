@@ -19,8 +19,8 @@
 				<field name="ws_demanda_minima" string="Cantidad demanda"/>				
             </xpath>
 
-			<xpath expr="//field[@name='date_planned_start']" position="after">
-				<field name="ws_fecha_max_str"/>
+			<xpath expr="//field[@name='date_planned_start']" position="move">
+				<move expr="//field[@name='date_planned_start']" to="//field[@name='ws_fecha_max_str']" position="after"/>
 			</xpath>
 		
 			<xpath expr="//field[@name='origin']" position="attributes">
@@ -31,6 +31,8 @@
 				<attribute name="widget" />
 			</xpath>
 			
+			<xpath expr="//field[@name='production_duration_expected']" position="replace"/>
+			<xpath expr="//field[@name='production_real_duration']" position="replace"/>
 			<xpath expr="//field[@name='activity_exception_decoration']" position="replace"/>
 			<xpath expr="//field[@name='delay_alert_date']" position="replace"/>
 			<xpath expr="//field[@name='json_popover']" position="replace"/>
