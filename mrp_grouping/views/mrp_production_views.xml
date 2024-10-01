@@ -20,16 +20,16 @@
 				<field name="ws_demanda_minima" string="Cantidad demanda"/>				
             </xpath>
 
-			<!-- Eliminar 'date_planned_start' de su posición original sin borrarlo -->
-			<xpath expr="//field[@name='date_planned_start']" position="attributes">
-				<attribute name="invisible">1</attribute>
-			</xpath>
-
-			<!-- Volver a añadir 'date_planned_start' después de 'ws_fecha_max_str' -->
-			<xpath expr="//field[@name='ws_fecha_max_str']" position="after">
-				<field name="date_planned_start" invisible="0"/>
-			</xpath>
-		
+			<!-- Reordenar. Primero eliminar 'date_planned_start' de su posición original sin borrarlo -->
+				<xpath expr="//field[@name='date_planned_start']" position="attributes">
+					<attribute name="invisible">1</attribute>
+				</xpath>
+				<!-- Volver a añadir 'date_planned_start' después de 'ws_fecha_max_str' -->
+				<xpath expr="//field[@name='ws_fecha_max_str']" position="after">
+					<field name="date_planned_start" invisible="0"/>
+				</xpath>
+			<!--fin reordenar-->
+			
 			<xpath expr="//field[@name='origin']" position="attributes">
 				<attribute name="string">Etiqueta</attribute>
 			</xpath>
@@ -38,7 +38,10 @@
 				<attribute name="widget" />
 			</xpath>
 			
-			<xpath expr="//field[@name='company_id']" position="replace"/>
+			<xpath expr="//field[@name='company_id']" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</xpath>
+				
 			<xpath expr="//field[@name='production_duration_expected']" position="replace"/>
 			<xpath expr="//field[@name='production_real_duration']" position="replace"/>
 			<xpath expr="//field[@name='activity_exception_decoration']" position="replace"/>
