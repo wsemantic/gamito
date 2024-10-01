@@ -358,8 +358,9 @@ class MrpDateGrouping(models.TransientModel):
                 'ws_fecha_grupo_str':custom_datetime_str,
                 'ws_fecha_min_str': fecha_minima.strftime('%Y-%m-%d') if fecha_minima else '',
                 'ws_fecha_max_str': fecha_maxima.strftime('%Y-%m-%d') if fecha_maxima else '',
-                'product_description_variants':proname,
             }
+            if proname:
+                production_data['product_description_variants'] = proname
 
              # Agregar la etiqueta como origen si se encontró para el producto
             if productkey in product_tags:
