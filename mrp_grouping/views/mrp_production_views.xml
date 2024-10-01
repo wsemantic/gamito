@@ -20,8 +20,14 @@
 				<field name="ws_demanda_minima" string="Cantidad demanda"/>				
             </xpath>
 
-			<xpath expr="//field[@name='date_planned_start']" position="after">
-				<field name="ws_fecha_max_str"/>
+			<!-- Eliminar 'date_planned_start' de su posición original sin borrarlo -->
+			<xpath expr="//field[@name='date_planned_start']" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</xpath>
+
+			<!-- Volver a añadir 'date_planned_start' después de 'ws_fecha_max_str' -->
+			<xpath expr="//field[@name='ws_fecha_max_str']" position="after">
+				<field name="date_planned_start" invisible="0"/>
 			</xpath>
 		
 			<xpath expr="//field[@name='origin']" position="attributes">
