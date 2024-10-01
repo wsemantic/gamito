@@ -5,6 +5,8 @@
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
         <field name="arch" type="xml">
+			<xpath expr="//field[@name='production_duration_expected']" position="replace"/>
+			
             <xpath expr="//field[@name='name']" position="after">
 				<field name="product_description_variants" string="Nota"/>
 				<field name="ws_fecha_grupo_str"/>
@@ -19,8 +21,8 @@
 				<field name="ws_demanda_minima" string="Cantidad demanda"/>				
             </xpath>
 
-			<xpath expr="//field[@name='date_planned_start']" position="move">
-				<move expr="//field[@name='date_planned_start']" to="//field[@name='ws_fecha_max_str']" position="after"/>
+			<xpath expr="//field[@name='date_planned_start']" position="after">
+				<field name="ws_fecha_max_str"/>
 			</xpath>
 		
 			<xpath expr="//field[@name='origin']" position="attributes">
