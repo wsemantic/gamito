@@ -359,7 +359,14 @@ class MrpDateGrouping(models.TransientModel):
                 'ws_fecha_min_str': fecha_minima.strftime('%Y-%m-%d') if fecha_minima else '',
                 'ws_fecha_max_str': fecha_maxima.strftime('%Y-%m-%d') if fecha_maxima else '',
             }
-            if proname:
+            # Verificamos si proname no coincide con el formato esperado del nombre de la línea
+            # Extraemos el código de referencia y el nombre del producto del producto
+            codigo_ref = product.default_code or ''
+            nombre_producto = product.name or ''
+            nombre_linea = f"[{codigo_ref}] {nombre_producto}"
+
+            # Solo añadimos 'product_description_variants' si proname tiene un valor y no coincide con el nombre de la línea
+            if proname and proname != nombre_linea:
                 production_data['product_description_variants'] = proname
 
              # Agregar la etiqueta como origen si se encontró para el producto
