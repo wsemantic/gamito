@@ -5,23 +5,35 @@
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='product_uom_id']" position="after">
+            <xpath expr="//field[@name='name']" position="after">
 				<field name="product_description_variants" string="Nota"/>
+				<field name="ws_fecha_grupo_str"/>
 				<field name="ws_fecha_min_str"/>
 				<field name="ws_fecha_max_str"/>
-                <field name="ws_fecha_grupo_str"/>
 				<field name="wsem_packaging_id" optional="show"/>
 				<field name="packaging_qty" string="Cantidad por bulto" optional="show"/>
 				<field name="ws_bultos" optional="show"/>
 				<field name="ws_multiplos"/>
 				<field name="ws_ordenes"/>
 				<field name="wsem_workcenter" optional="show"/>
-				<field name="ws_demanda_minima" string="Cantidad demanda"/>
-				
+				<field name="ws_demanda_minima" string="Cantidad demanda"/>				
             </xpath>
+
+			<xpath expr="//field[@name='date_planned_start']" position="after">
+				<field name="ws_fecha_max_str"/>
+			</xpath>
+		
+			<xpath expr="//field[@name='origin']" position="attributes">
+				<attribute name="string">Etiqueta</attribute>
+			</xpath>
+		
 			<xpath expr="//field[@name='date_deadline']" position="attributes">
 				<attribute name="widget" />
 			</xpath>
+			
+			<xpath expr="//field[@name='activity_exception_decoration']" position="replace"/>
+			<xpath expr="//field[@name='delay_alert_date']" position="replace"/>
+			<xpath expr="//field[@name='json_popover']" position="replace"/>
         </field>
     </record>
 	
