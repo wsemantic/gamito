@@ -38,6 +38,7 @@
 				<attribute name="widget" />
 			</xpath>
 			
+			<xpath expr="//field[@name='company_id']" position="replace"/>
 			<xpath expr="//field[@name='production_duration_expected']" position="replace"/>
 			<xpath expr="//field[@name='production_real_duration']" position="replace"/>
 			<xpath expr="//field[@name='activity_exception_decoration']" position="replace"/>
