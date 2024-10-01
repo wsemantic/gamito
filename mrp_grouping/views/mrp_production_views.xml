@@ -5,7 +5,6 @@
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
         <field name="arch" type="xml">
-			<xpath expr="//field[@name='date_planned_start']" position="replace"/>
 			
             <xpath expr="//field[@name='name']" position="after">
 				<field name="product_description_variants" string="Nota"/>
