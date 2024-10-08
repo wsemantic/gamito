@@ -40,14 +40,7 @@ class ResPartnerBank(models.Model):
         for line in move_lines:
             line._compute_acc_number()
             
-
-class IrExports(models.Model):
-    _inherit = 'ir.exports'
-
-    @api.model
-    def export_data(self, model, ids, fields, domain=None, groupby=None, offset=0, limit=False, sort=False):
-        
-        
+   
 class IrActionsReport(models.Model):
     _inherit = 'ir.actions.report'
 
