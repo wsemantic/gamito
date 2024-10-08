@@ -23,7 +23,7 @@ class AccountMoveLine(models.Model):
     def export_data(self, fields_to_export):
         """
         Sobrescribimos el método `export_data` para capturar los registros exportados
-        y actualizar la fecha de exportación.
+        y actualizar la fecha de exportación solo si hay active_ids.
         """
         # Log inicial
         _logger.info(f'WSEM dentro export')
@@ -31,21 +31,21 @@ class AccountMoveLine(models.Model):
         # Llamamos al método original para realizar la exportación
         res = super(AccountMoveLine, self).export_data(fields_to_export)
 
-        # Obtener los registros exportados solo si se han seleccionado
-        if self.env.context.get('active_ids'):
-            # Si hay registros seleccionados, logeamos los active_ids y actualizamos solo esos
-            _logger.info(f'WSEM hay active_ids: {self.env.context.get("active_ids")}')
-            records = self.browse(self.env.context['active_ids'])
+        # Revisar si hay `active_ids` en el contexto
+        active_ids = self.env.context.get('active_ids')
+        if active_ids:
+            # Si hay registros seleccionados, logueamos los active_ids y actualizamos solo esos
+            _logger.info(f'WSEM hay active_ids: {active_ids}')
+            records = self.browse(active_ids)
+
+            # Log del número de registros localizados
+            _logger.info(f'WSEM Número de registros localizados para actualizar: {len(records)}')
+
+            # Actualizar la fecha de exportación solo para los registros correspondientes
+            records.write({'export_date': fields.Date.today()})
         else:
-            # Si no se seleccionaron registros, usar el dominio filtrado
-            domain = self.env.context.get('domain', [])
-            records = self.search(domain)
-
-        # Log del número de registros localizados
-        _logger.info(f'WSEM Número de registros localizados para actualizar: {len(records)}')
-
-        # Actualizar la fecha de exportación solo para los registros correspondientes
-        records.write({'export_date': fields.Date.today()})
+            # No hay active_ids, no se realizará ninguna acción
+            _logger.info('WSEM no hay active_ids, no se realiza ninguna acción')
 
         return res
         
