@@ -23,37 +23,25 @@ class AccountMoveLine(models.Model):
     def export_data(self, fields_to_export):
         """
         Sobrescribimos el método `export_data` para capturar los registros exportados
-        y actualizar la fecha de exportación solo si hay active_ids.
+        y actualizar la fecha de exportación utilizando los registros en `self`.
         """
         # Log inicial
         _logger.info(f'WSEM dentro export')
-        
-        # Imprimir detalles del dominio o filtrado
-        domain = self.env.context.get('domain', [])
-        _logger.info(f'WSEM domain en contexto: {domain}')
-        
-        # Imprimir detalles de search_default si existen
-        search_default = self.env.context.get('search_default', {})
-        _logger.info(f'WSEM search_default en contexto: {search_default}')
 
         # Llamamos al método original para realizar la exportación
         res = super(AccountMoveLine, self).export_data(fields_to_export)
 
-        # Revisar si hay `active_ids` en el contexto
-        active_ids = self.env.context.get('active_ids')
-        if active_ids:
-            # Si hay registros seleccionados, logueamos los active_ids y actualizamos solo esos
-            _logger.info(f'WSEM hay active_ids: {active_ids}')
-            records = self.browse(active_ids)
-
+        # Usar los registros en `self` que están siendo exportados
+        if self:
+            # Log de los registros que se están exportando
+            _logger.info(f'WSEM Registros exportados (self): {self.ids}')
             # Log del número de registros localizados
-            _logger.info(f'WSEM Número de registros localizados para actualizar: {len(records)}')
+            _logger.info(f'WSEM Número de registros localizados para actualizar: {len(self)}')
 
-            # Actualizar la fecha de exportación solo para los registros correspondientes
-            records.write({'export_date': fields.Date.today()})
+            # Actualizar la fecha de exportación solo para los registros en self
+            self.write({'export_date': fields.Date.today()})
         else:
-            # No hay active_ids, no se realizará ninguna acción
-            _logger.info('WSEM no hay active_ids, no se realiza ninguna acción')
+            _logger.info('WSEM No se encontraron registros en self para actualizar')
 
         return res
         
