@@ -25,21 +25,27 @@ class AccountMoveLine(models.Model):
         Sobrescribimos el método `export_data` para capturar los registros exportados
         y actualizar la fecha de exportación.
         """
+        # Log inicial
         _logger.info(f'WSEM dentro export')
-        # Llamar al método original para realizar la exportación
+
+        # Llamamos al método original para realizar la exportación
         res = super(AccountMoveLine, self).export_data(fields_to_export)
 
-        # Capturar los registros exportados desde el contexto (seleccionados o filtrados)
+        # Obtener los registros exportados solo si se han seleccionado
         if self.env.context.get('active_ids'):
+            # Si hay registros seleccionados, logeamos los active_ids y actualizamos solo esos
+            _logger.info(f'WSEM hay active_ids: {self.env.context.get("active_ids")}')
             records = self.browse(self.env.context['active_ids'])
         else:
-            # Si no hay selección de registros, usar el dominio filtrado
+            # Si no se seleccionaron registros, usar el dominio filtrado
             domain = self.env.context.get('domain', [])
             records = self.search(domain)
 
-        # Actualizar la fecha de exportación para múltiples registros sin utilizar ensure_one()
-        for record in records:
-            record.write({'export_date': fields.Date.today()})
+        # Log del número de registros localizados
+        _logger.info(f'WSEM Número de registros localizados para actualizar: {len(records)}')
+
+        # Actualizar la fecha de exportación solo para los registros correspondientes
+        records.write({'export_date': fields.Date.today()})
 
         return res
         
