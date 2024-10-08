@@ -27,8 +27,14 @@ class AccountMoveLine(models.Model):
         """
         # Log inicial
         _logger.info(f'WSEM dentro export')
-        # Imprimir todas las variables de contexto
-        _logger.info(f'WSEM Contexto completo: {self.env.context}')
+        
+        # Imprimir detalles del dominio o filtrado
+        domain = self.env.context.get('domain', [])
+        _logger.info(f'WSEM domain en contexto: {domain}')
+        
+        # Imprimir detalles de search_default si existen
+        search_default = self.env.context.get('search_default', {})
+        _logger.info(f'WSEM search_default en contexto: {search_default}')
 
         # Llamamos al método original para realizar la exportación
         res = super(AccountMoveLine, self).export_data(fields_to_export)
