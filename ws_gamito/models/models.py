@@ -9,7 +9,7 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     acc_number = fields.Char(string='Account Number', compute='_compute_acc_number', store=True)
-    export_date = fields.Datetime(string='Fecha de Exportación', readonly=True)
+    export_date = fields.Date(string='Fecha de Exportación', readonly=True)
 
     @api.depends('partner_id.bank_ids')
     def _compute_acc_number(self):
@@ -46,35 +46,29 @@ class IrExports(models.Model):
 
     @api.model
     def export_data(self, model, ids, fields, domain=None, groupby=None, offset=0, limit=False, sort=False):
-        _logger.info(f"WSEM Iniciando exportación. Modelo: {model}, IDs: {ids}, Campos: {fields}, Dominio: {domain}")
         
-        result = super(IrExports, self).export_data(model, ids, fields, domain, groupby, offset, limit, sort)
         
-        _logger.info(f"WSEM Exportación completada. Resultado: {result}")
-        
-        if model == 'account.move.line':
-            _logger.info("El modelo es account.move.line. Actualizando fechas de exportación.")
-            
-            if ids:
-                records = self.env[model].browse(ids)
-                _logger.info(f"WSEM Actualizando {len(records)} registros específicos.")
-            elif domain:
-                records = self.env[model].search(domain)
-                _logger.info(f"WSEM Actualizando {len(records)} registros basados en el dominio: {domain}")
+class IrActionsReport(models.Model):
+    _inherit = 'ir.actions.report'
+
+    def export_report(self, fields_to_export, raw_data=False):
+        """
+        Intercepta la acción de exportación.
+        """
+        _logger.info(f"WSEM Iniciando exportación")
+        res = super(IrActionsReport, self).export_report(fields_to_export, raw_data=raw_data)
+
+        # Obtener el contexto para identificar qué registros están siendo exportados
+        if self.env.context.get('active_model') == 'account.move.line':
+            if self.env.context.get('active_ids'):
+                # Si se han seleccionado registros
+                records = self.env['account.move.line'].browse(self.env.context['active_ids'])
             else:
-                records = self.env[model].search([])
-                _logger.info(f"WSEM Actualizando todos los registros: {len(records)}")
-            
-            current_time = fields.Datetime.now()
-            update_result = records.write({'export_date': current_time})
-            
-            _logger.info(f"WSEM Actualización de fechas completada. Resultado: {update_result}")
-            
-            # Verificación adicional
-            for record in records:
-                if record.export_date != current_time:
-                    _logger.warning(f"WSEM La fecha de exportación no se actualizó correctamente para el registro ID {record.id}")
-                else:
-                    _logger.info(f"WSEM Fecha de exportación actualizada correctamente para el registro ID {record.id}")
-        
-        return result
+                # Si no hay selección, utilizar el dominio para obtener los registros
+                domain = self.env.context.get('domain', [])
+                records = self.env['account.move.line'].search(domain)
+                
+            # Establecer la fecha de exportación en la fecha actual
+            records.write({'export_date': fields.Date.today()})
+
+        return res
