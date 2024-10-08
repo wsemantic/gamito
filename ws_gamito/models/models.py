@@ -41,27 +41,3 @@ class ResPartnerBank(models.Model):
             line._compute_acc_number()
             
    
-class IrActionsReport(models.Model):
-    _inherit = 'ir.actions.report'
-
-    def export_report(self, fields_to_export, raw_data=False):
-        """
-        Intercepta la acción de exportación.
-        """
-        _logger.info(f"WSEM Iniciando exportación")
-        res = super(IrActionsReport, self).export_report(fields_to_export, raw_data=raw_data)
-
-        # Obtener el contexto para identificar qué registros están siendo exportados
-        if self.env.context.get('active_model') == 'account.move.line':
-            if self.env.context.get('active_ids'):
-                # Si se han seleccionado registros
-                records = self.env['account.move.line'].browse(self.env.context['active_ids'])
-            else:
-                # Si no hay selección, utilizar el dominio para obtener los registros
-                domain = self.env.context.get('domain', [])
-                records = self.env['account.move.line'].search(domain)
-                
-            # Establecer la fecha de exportación en la fecha actual
-            records.write({'export_date': fields.Date.today()})
-
-        return res
