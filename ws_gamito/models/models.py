@@ -9,6 +9,7 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     acc_number = fields.Char(string='Account Number', compute='_compute_acc_number', store=True)
+    export_date = fields.Datetime(string='Fecha de Exportación', readonly=True)
 
     @api.depends('partner_id.bank_ids')
     def _compute_acc_number(self):
@@ -38,3 +39,18 @@ class ResPartnerBank(models.Model):
         move_lines = self.env['account.move.line'].search([('partner_id', '=', partner.id)])
         for line in move_lines:
             line._compute_acc_number()
+            
+
+class IrExports(models.Model):
+    _inherit = 'ir.exports'
+
+    @api.model
+    def export_data(self, model, ids, fields, domain=None, groupby=None, offset=0, limit=False, sort=False):
+        result = super(IrExports, self).export_data(model, ids, fields, domain, groupby, offset, limit, sort)
+        
+        if model == 'account.move.line':
+            # Actualizar la fecha de exportación para los registros exportados
+            records = self.env[model].browse(ids) if ids else self.env[model].search(domain or [])
+            records.write({'export_date': fields.Datetime.now()})
+        
+        return result
