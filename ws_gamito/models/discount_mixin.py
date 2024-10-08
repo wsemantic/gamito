@@ -44,15 +44,20 @@ class AccountMove(models.Model):
         #DiscountMixin._apply_discounts(move)
         return move
 
-    def write(self, vals):
+    def write(self, vals):    
         if self.env.context.get('prevent_recursion'):
             return super(AccountMove, self).write(vals)
-        self = self.with_context(prevent_recursion=True)            
+        
+        self = self.with_context(prevent_recursion=True)
         res = super(AccountMove, self).write(vals)
-        if not self.discounts_initialized:
-            self._initialize_discount_ids()
-        DiscountMixin._apply_discounts(self)
-        return res                              
+
+        # Iterar sobre cada registro en caso de múltiples registros
+        for record in self:
+            if not record.discounts_initialized:
+                record._initialize_discount_ids()
+            DiscountMixin._apply_discounts(record)
+
+        return res        
         
     def _initialize_discount_ids(self):    
         if self.discounts_initialized:
