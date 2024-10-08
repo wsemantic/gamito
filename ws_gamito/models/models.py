@@ -46,11 +46,35 @@ class IrExports(models.Model):
 
     @api.model
     def export_data(self, model, ids, fields, domain=None, groupby=None, offset=0, limit=False, sort=False):
+        _logger.info(f"Iniciando exportación. Modelo: {model}, IDs: {ids}, Campos: {fields}, Dominio: {domain}")
+        
         result = super(IrExports, self).export_data(model, ids, fields, domain, groupby, offset, limit, sort)
         
+        _logger.info(f"Exportación completada. Resultado: {result}")
+        
         if model == 'account.move.line':
-            # Actualizar la fecha de exportación para los registros exportados
-            records = self.env[model].browse(ids) if ids else self.env[model].search(domain or [])
-            records.write({'export_date': fields.Datetime.now()})
+            _logger.info("El modelo es account.move.line. Actualizando fechas de exportación.")
+            
+            if ids:
+                records = self.env[model].browse(ids)
+                _logger.info(f"Actualizando {len(records)} registros específicos.")
+            elif domain:
+                records = self.env[model].search(domain)
+                _logger.info(f"Actualizando {len(records)} registros basados en el dominio: {domain}")
+            else:
+                records = self.env[model].search([])
+                _logger.info(f"Actualizando todos los registros: {len(records)}")
+            
+            current_time = fields.Datetime.now()
+            update_result = records.write({'export_date': current_time})
+            
+            _logger.info(f"Actualización de fechas completada. Resultado: {update_result}")
+            
+            # Verificación adicional
+            for record in records:
+                if record.export_date != current_time:
+                    _logger.warning(f"La fecha de exportación no se actualizó correctamente para el registro ID {record.id}")
+                else:
+                    _logger.info(f"Fecha de exportación actualizada correctamente para el registro ID {record.id}")
         
         return result
