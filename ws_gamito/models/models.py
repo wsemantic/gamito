@@ -26,7 +26,7 @@ class AccountMoveLine(models.Model):
         y actualizar la fecha de exportación.
         """
         _logger.info(f'WSEM dentro export')
-        # Llamamos al método original para realizar la exportación
+        # Llamar al método original para realizar la exportación
         res = super(AccountMoveLine, self).export_data(fields_to_export)
 
         # Capturar los registros exportados desde el contexto (seleccionados o filtrados)
@@ -37,10 +37,13 @@ class AccountMoveLine(models.Model):
             domain = self.env.context.get('domain', [])
             records = self.search(domain)
 
-        # Actualizar la fecha de exportación
-        records.write({'export_date': fields.Date.today()})
+        # Actualizar la fecha de exportación para múltiples registros sin utilizar ensure_one()
+        for record in records:
+            record.write({'export_date': fields.Date.today()})
 
         return res
+        
+
 
 
                 
