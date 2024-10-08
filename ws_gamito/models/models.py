@@ -20,6 +20,28 @@ class AccountMoveLine(models.Model):
             else:
                 line.acc_number = ''
                 
+    def export_data(self, fields_to_export, raw_data=False):
+        """
+        Sobrescribimos el método genérico de exportación para capturar los registros exportados
+        """
+        _logger.info(f'WSEM dentro export')
+        res = super(AccountMoveLine, self).export_data(fields_to_export, raw_data=raw_data)
+
+        # Capturamos el contexto para obtener los registros seleccionados
+        if self.env.context.get('active_model') == 'account.move.line':
+            if self.env.context.get('active_ids'):
+                # Si hay registros seleccionados
+                records = self.browse(self.env.context['active_ids'])
+            else:
+                # Si no hay registros seleccionados, usamos el dominio
+                domain = self.env.context.get('domain', [])
+                records = self.search(domain)
+
+            # Marcar los registros con la fecha de exportación actual
+            records.write({'export_date': fields.Date.today()})
+
+        return res
+                
 class ResPartnerBank(models.Model):
     _inherit = 'res.partner.bank'
 
