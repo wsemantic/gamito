@@ -27,6 +27,8 @@ class AccountMoveLine(models.Model):
         """
         # Log inicial
         _logger.info(f'WSEM dentro export')
+        # Imprimir todas las variables de contexto
+        _logger.info(f'WSEM Contexto completo: {self.env.context}')
 
         # Llamamos al método original para realizar la exportación
         res = super(AccountMoveLine, self).export_data(fields_to_export)
