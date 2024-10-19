@@ -215,7 +215,7 @@ class DiscountMixin:
                         
             if es_real:
                 _logger.info(f'WSEM si es real pro name: {line.product_id.name}')
-                updated=DiscountMixin.update_discount_line(line, base_before_discount)
+                updated=DiscountMixin.update_discount_line(line, base_before_discount,move_type)
                 if updated and discount_line and line == discount_line:
                     discount_line_updated = True
                             
