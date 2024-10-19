@@ -153,7 +153,7 @@ class InvoiceLineCustom(models.Model):
             _logger.info(f'WSEM Descuentos factura. move {line.move_id.id}')
             if line.move_id and not line._context.get('avoid_recursion'):
                 line = line.with_context(avoid_recursion=True)
-                DiscountMixin.update_discount_lines(line.move_id, line)
+                DiscountMixin.update_discount_lines(line.move_id, line,line.move_id.move_type)
         return lines
 
     def write(self, values):       
@@ -163,7 +163,7 @@ class InvoiceLineCustom(models.Model):
             if record.move_id and not record._context.get('avoid_recursion'):
                 _logger.info("WSEM Existe factura.")
                 record = record.with_context(avoid_recursion=True)
-                DiscountMixin.update_discount_lines(record.move_id, None)
+                DiscountMixin.update_discount_lines(record.move_id, None,record.move_id.move_type)
         return result
 
 class DiscountMixin:
@@ -191,7 +191,7 @@ class DiscountMixin:
             return "unknown"
             
     @staticmethod 
-    def update_discount_lines(order, discount_line):
+    def update_discount_lines(order, discount_line, move_type):
         # Ordenar las líneas por secuencia u otro criterio apropiado        
 
         if hasattr(order, 'order_line'):
@@ -228,16 +228,17 @@ class DiscountMixin:
                 
         # Si la línea de descuento no se actualizó en sorted_lines, forzar su actualización
         if discount_line and not discount_line_updated:
-            DiscountMixin.update_discount_line(discount_line, base_before_discount)
+            DiscountMixin.update_discount_line(discount_line, base_before_discount,move_type)
                 
     @staticmethod
-    def update_discount_line(line, base_before_discount):
+    def update_discount_line(line, base_before_discount, move_type):
         if line.product_id.name == 'DESCUENTO':
             if line.name:
+                signo= 1 if move_type in['out_refund'] else -1
                 discount_percentage = DiscountMixin.extract_discount_percentage(line.name)
                 _logger.info(f'WSEM descuento Porc {discount_percentage}')
-                if discount_percentage:
-                    precio_lin_desc = -(base_before_discount * (discount_percentage / 100.0))
+                if discount_percentage:                    
+                    precio_lin_desc = signo*(base_before_discount * (discount_percentage / 100.0))
                     values_to_update = {
                         'price_unit': precio_lin_desc,
                     }
@@ -293,12 +294,12 @@ class DiscountMixin:
             # Obtener la secuencia más alta de las líneas existentes
             max_sequence = max(lines.mapped('sequence'), default=0)
 
-            q=-1 if move_type in ['out_refund'] else 1
+            
             # Crear nuevas líneas de descuento
             for discount in discounts:
                 
                 existing_line = lines.filtered(lambda l: l.discount_id.id == discount.id)
-                _logger.info(f'WSEM itera descuentos {existing_line} cond {bool(existing_line)} q:{q} move:{move_type} name:{record.name}')
+                _logger.info(f'WSEM itera descuentos {existing_line} cond {bool(existing_line)}')
                 if not existing_line:
                     _logger.info(f'WSEM creando linea')
                     max_sequence += 1
@@ -308,7 +309,7 @@ class DiscountMixin:
                         'name': f"{discount.name} {discount.discount_percent}%",
                         'discount_id': discount.id,
                         'price_unit': 0.0,
-                        'product_uom_qty' if hasattr(record, 'order_line') else 'quantity': q,
+                        'product_uom_qty' if hasattr(record, 'order_line') else 'quantity': 1,
                         'sequence': max_sequence,
                     })
-            DiscountMixin.update_discount_lines(record,None)
+            DiscountMixin.update_discount_lines(record,None,move_type)
