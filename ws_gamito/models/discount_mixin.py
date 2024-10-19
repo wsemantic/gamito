@@ -293,6 +293,7 @@ class DiscountMixin:
             # Obtener la secuencia más alta de las líneas existentes
             max_sequence = max(lines.mapped('sequence'), default=0)
 
+            q=-1 if move_type in ['out_refund'] else 1
             # Crear nuevas líneas de descuento
             for discount in discounts:
                 
@@ -307,7 +308,7 @@ class DiscountMixin:
                         'name': f"{discount.name} {discount.discount_percent}%",
                         'discount_id': discount.id,
                         'price_unit': 0.0,
-                        'product_uom_qty' if hasattr(record, 'order_line') else 'quantity': 1,
+                        'product_uom_qty' if hasattr(record, 'order_line') else 'quantity': q,
                         'sequence': max_sequence,
                     })
             DiscountMixin.update_discount_lines(record,None)
