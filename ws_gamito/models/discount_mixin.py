@@ -298,7 +298,7 @@ class DiscountMixin:
             for discount in discounts:
                 
                 existing_line = lines.filtered(lambda l: l.discount_id.id == discount.id)
-                _logger.info(f'WSEM itera descuentos {existing_line} cond {bool(existing_line)} q:{q}')
+                _logger.info(f'WSEM itera descuentos {existing_line} cond {bool(existing_line)} q:{q} move:{move_type} name:{record.name}')
                 if not existing_line:
                     _logger.info(f'WSEM creando linea')
                     max_sequence += 1
