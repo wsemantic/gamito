@@ -125,7 +125,7 @@ class PurchaseOrderLineCustom(models.Model):
             _logger.info(f'WSEM Logica personalizada compras después de crear una línea del pedido. order {line.order_id.id}')
             if line.order_id and not line._context.get('avoid_recursion'):
                 line = line.with_context(avoid_recursion=True)
-                DiscountMixin.update_discount_lines(line.order_id, line)
+                DiscountMixin.update_discount_lines(line.order_id, line, 'in')
 
         return lines 
         
@@ -138,7 +138,7 @@ class PurchaseOrderLineCustom(models.Model):
         if self.order_id and not self._context.get('avoid_recursion'):
             _logger.info("WSEM Existe orden.")
             self = self.with_context(avoid_recursion=True)
-            DiscountMixin.update_discount_lines(self.order_id,None)
+            DiscountMixin.update_discount_lines(self.order_id,None,'in')
             
         return result               
 
