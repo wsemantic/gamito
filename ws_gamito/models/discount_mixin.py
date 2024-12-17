@@ -74,7 +74,7 @@ class AccountMove(models.Model):
 
         for line in self.invoice_line_ids:
             if not line.discount_id:
-                matching_discount = discounts.filtered(lambda d: line.name.startswith(d.name))
+                matching_discount = discounts.filtered(lambda d: line.name and line.name.startswith(d.name))
                 if matching_discount:
                     line.discount_id = matching_discount[0].id
                     _logger.info(f"WSEM Assigned discount {matching_discount[0].name} to line {line.name}")
