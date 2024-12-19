@@ -242,21 +242,37 @@ class DiscountMixin:
     def update_discount_line(line, base_before_discount, move_type):
         if line.product_id.name == 'DESCUENTO':
             if line.name:
-                signo= 1 if move_type in['out_refund'] else -1
+                signo = 1 if move_type in ['out_refund'] else -1
                 discount_percentage = DiscountMixin.extract_discount_percentage(line.name)
                 _logger.info(f'WSEM descuento Porc {discount_percentage}')
-                if discount_percentage:                    
-                    precio_lin_desc = signo*(base_before_discount * (discount_percentage / 100.0))
-                    values_to_update = {
-                        'price_unit': precio_lin_desc,
-                    }
+                if discount_percentage:
+                    precio_lin_desc = signo * (base_before_discount * (discount_percentage / 100.0))
+                    
+                    # Valores actuales
+                    current_price_unit = line.price_unit
+                    current_qty = line.product_uom_qty if 'product_uom_qty' in line._fields else None
+                    
+                    # Valores propuestos
+                    values_to_update = {'price_unit': precio_lin_desc}
                     if 'product_uom_qty' in line._fields:
                         values_to_update['product_uom_qty'] = 1
-                
-                    line.write(values_to_update)
+                    
+                    # Comprobar si hay cambios reales
+                    need_write = False
+                    if current_price_unit != values_to_update['price_unit']:
+                        need_write = True
+                    if 'product_uom_qty' in values_to_update and current_qty != values_to_update['product_uom_qty']:
+                        need_write = True
+                    
+                    if need_write:
+                        _logger.info(f'WSEM need write')
+                        line.write(values_to_update)
+                    else:
+                        _logger.info(f'WSEM No need write')
                     
                     return True
         return False
+
      
     @staticmethod      
     def extract_discount_percentage(description):
