@@ -193,8 +193,8 @@ class DiscountMixin:
     @staticmethod 
     def update_discount_lines(order, discount_line, move_type):
 		# Si ya existe la bandera, salimos inmediatamente
-		if order.env.context.get('avoid_recursion'):
-			return
+	    if order.env.context.get('avoid_recursion'):
+            return
 
 		# Activamos la bandera en el contexto antes de seguir
 		order = order.with_context(avoid_recursion=True)       
