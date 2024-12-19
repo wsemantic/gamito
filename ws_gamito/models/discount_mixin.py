@@ -216,6 +216,7 @@ class DiscountMixin:
             if es_real:
                 _logger.info(f'WSEM si es real pro name: {line.product_id.name}')
                 updated=DiscountMixin.update_discount_line(line, base_before_discount,move_type)
+                
                 if updated and discount_line and line == discount_line:
                     discount_line_updated = True
                             
@@ -311,5 +312,7 @@ class DiscountMixin:
                         'price_unit': 0.0,
                         'product_uom_qty' if hasattr(record, 'order_line') else 'quantity': 1,
                         'sequence': max_sequence,
+                        'tax_ids': [(6, 0, discount_product.taxes_id.ids)], 
                     })
             DiscountMixin.update_discount_lines(record,None,move_type)
+        record._recompute_tax_lines()
