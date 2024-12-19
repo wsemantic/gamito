@@ -315,9 +315,9 @@ class DiscountMixin:
                         'tax_ids': [(6, 0, discount_product.taxes_id.ids)], 
                     })
             DiscountMixin.update_discount_lines(record,None,move_type)
-            try:
-                record.compute_taxes()
-                _logger.info(f'WSEM recompute')
-            except Exception as e:
-                _logger.exception("Error al recalcular impuestos: %s", e)
-                # Aquí no se vuelve a lanzar la excepción, simplemente se registra.
+        try:
+            record.compute_taxes()
+            _logger.info(f'WSEM recompute')
+        except Exception as e:
+            _logger.exception("Error al recalcular impuestos: %s", e)
+            # Aquí no se vuelve a lanzar la excepción, simplemente se registra.
