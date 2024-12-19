@@ -192,7 +192,12 @@ class DiscountMixin:
             
     @staticmethod 
     def update_discount_lines(order, discount_line, move_type):
-        # Ordenar las líneas por secuencia u otro criterio apropiado        
+		# Si ya existe la bandera, salimos inmediatamente
+		if order.env.context.get('avoid_recursion'):
+			return
+
+		# Activamos la bandera en el contexto antes de seguir
+		order = order.with_context(avoid_recursion=True)       
 
         if hasattr(order, 'order_line'):
             lines = order.order_line
@@ -215,7 +220,6 @@ class DiscountMixin:
                         
             if es_real:
                 _logger.info(f'WSEM si es real pro name: {line.product_id.name}')
-                line = line.with_context(avoid_recursion=True)
                 updated=DiscountMixin.update_discount_line(line, base_before_discount,move_type)
                 
                 if updated and discount_line and line == discount_line:
