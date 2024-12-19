@@ -230,7 +230,7 @@ class DiscountMixin:
                 
         # Si la línea de descuento no se actualizó en sorted_lines, forzar su actualización
         if discount_line and not discount_line_updated:
-             _logger.info(f'WSEM forzando discount line {discount_line.product_id.name}')
+            _logger.info(f'WSEM forzando discount line {discount_line.product_id.name}')
             DiscountMixin.update_discount_line(discount_line, base_before_discount,move_type)
                 
     @staticmethod
