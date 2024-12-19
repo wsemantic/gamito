@@ -197,7 +197,7 @@ class DiscountMixin:
             return
 
 		# Activamos la bandera en el contexto antes de seguir
-		order = order.with_context(avoid_recursion=True)       
+        order = order.with_context(avoid_recursion=True)       
 
         if hasattr(order, 'order_line'):
             lines = order.order_line
