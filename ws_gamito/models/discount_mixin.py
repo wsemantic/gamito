@@ -158,8 +158,9 @@ class InvoiceLineCustom(models.Model):
 
     def write(self, values):       
         result = super(InvoiceLineCustom, self).write(values)
+        _logger.info(f'WSEM Descuentos previo itera')
         for record in self:
-            _logger.info(f'WSEM Descuentos Factura Write linea {record.move_id.id}')
+            _logger.info(f'WSEM Descuentos Factura Write en factura {record.move_id.id}')
             if record.move_id and not record._context.get('avoid_recursion'):
                 _logger.info("WSEM Existe factura.")
                 record = record.with_context(avoid_recursion=True)
