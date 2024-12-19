@@ -56,11 +56,9 @@ class AccountMove(models.Model):
             if not record.discounts_initialized:
                 record._initialize_discount_ids()
             DiscountMixin._apply_discounts(record)
-
-        if hasattr(record, '_onchange_invoice_line_ids'):
-            _logger.info("WSEM existe atributo onchange_invoice")
-            record._onchange_invoice_line_ids()
-
+            if hasattr(record, '_onchange_invoice_line_ids'):
+                _logger.info("WSEM existe atributo onchange_invoice")
+                record._onchange_invoice_line_ids()
 
         return res        
         
