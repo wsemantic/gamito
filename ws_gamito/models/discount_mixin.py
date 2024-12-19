@@ -315,4 +315,4 @@ class DiscountMixin:
                         'tax_ids': [(6, 0, discount_product.taxes_id.ids)], 
                     })
             DiscountMixin.update_discount_lines(record,None,move_type)
-        record._recompute_tax_lines()
+        record._recompute_dynamic_lines(recompute_all_taxes=True)
