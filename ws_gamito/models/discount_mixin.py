@@ -215,6 +215,7 @@ class DiscountMixin:
                         
             if es_real:
                 _logger.info(f'WSEM si es real pro name: {line.product_id.name}')
+                line = line.with_context(avoid_recursion=True)
                 updated=DiscountMixin.update_discount_line(line, base_before_discount,move_type)
                 
                 if updated and discount_line and line == discount_line:
@@ -229,6 +230,7 @@ class DiscountMixin:
                 
         # Si la línea de descuento no se actualizó en sorted_lines, forzar su actualización
         if discount_line and not discount_line_updated:
+             _logger.info(f'WSEM forzando discount line {discount_line.product_id.name}')
             DiscountMixin.update_discount_line(discount_line, base_before_discount,move_type)
                 
     @staticmethod
@@ -315,9 +317,4 @@ class DiscountMixin:
                         'tax_ids': [(6, 0, discount_product.taxes_id.ids)], 
                     })
             DiscountMixin.update_discount_lines(record,None,move_type)
-        try:
-            record.compute_taxes()
-            _logger.info(f'WSEM recompute')
-        except Exception as e:
-            _logger.exception("Error al recalcular impuestos: %s", e)
-            # Aquí no se vuelve a lanzar la excepción, simplemente se registra.
+
