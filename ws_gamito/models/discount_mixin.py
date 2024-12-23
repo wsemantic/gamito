@@ -338,7 +338,7 @@ class DiscountMixin:
                         'price_unit': 0.0,
                         'product_uom_qty' if hasattr(record, 'order_line') else 'quantity': 1,
                         'sequence': max_sequence,
-                        'tax_ids': [(6, 0, discount_product.taxes_id.ids)], 
+                        
                     })
             DiscountMixin.update_discount_lines(record,None,move_type)
 
