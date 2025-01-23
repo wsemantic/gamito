@@ -49,7 +49,7 @@ class MrpProduction(models.Model):
         if self.ws_multiplos and self.bom_id:
             newq=self.bom_id.product_qty * self.ws_multiplos
             
-            self.qty_producing = newq
+            #self.qty_producing = newq
             self.product_qty = newq
             
 
