@@ -63,22 +63,20 @@
         </field>
     </record>
 	
-
 	<record id="mrp_production_form_view_inherit" model="ir.ui.view">
 		<field name="name">mrp.production.form.inherit</field>
 		<field name="model">mrp.production</field>
 		<field name="inherit_id" ref="mrp.mrp_production_form_view"/>
 		<field name="arch" type="xml">
 			<xpath expr="//div[@name='bom_div']" position="after">
-					<label for="ws_multiplos" name="multiplos_label"/>
-					<label for="ws_demanda_minima" name="demanda label"/>
-					<div class="o_row" name="multiplos_div">
-						<field name="ws_multiplos" context="{'default_product_tmpl_id': product_tmpl_id}" />
-						<field name="ws_demanda_minima" context="{'default_product_tmpl_id': product_tmpl_id}" />
-					</div>
+				<group>
+					<field name="ws_multiplos" context="{'default_product_tmpl_id': product_tmpl_id}" />
+					<field name="ws_demanda_minima" context="{'default_product_tmpl_id': product_tmpl_id}" />
+				</group>
 			</xpath>
 		</field>
 	</record>
+
 	
 	<record id="action_production_order_confirm" model="ir.actions.server">
         <field name="name">Confirmar</field>
