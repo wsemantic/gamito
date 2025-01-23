@@ -68,7 +68,7 @@
 		<field name="model">mrp.production</field>
 		<field name="inherit_id" ref="mrp.mrp_production_form_view"/>
 		<field name="arch" type="xml">
-			<xpath expr="//div[@name='bom_label']" position="before">
+			<xpath expr="//label[@name='bom_label']" position="before">
 					<field name="ws_multiplos" context="{'default_product_tmpl_id': product_tmpl_id}" />
 					<field name="ws_demanda_minima" context="{'default_product_tmpl_id': product_tmpl_id}" />
 			</xpath>
