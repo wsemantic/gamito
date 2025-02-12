@@ -5,10 +5,8 @@ from odoo import models, fields, api
 class AccountInvoiceReportInherit(models.Model):
     _inherit = "account.invoice.report"
 
-    # Conservamos el cálculo del peso neto y añadimos el packaging
     net_weight = fields.Float(string='Total Kilos Netos', readonly=True)
     packaging_id = fields.Many2one('product.packaging', string='Packaging', readonly=True)
-    # Nuevo campo que concatena el nombre del packaging y el nombre del producto (tomado desde product.template)
     packaging_label = fields.Char(string='Packaging (Producto)', readonly=True)
 
     _depends = {
@@ -21,11 +19,9 @@ class AccountInvoiceReportInherit(models.Model):
             'move_id', 'product_id', 'product_uom_id', 'account_id',
             'journal_id', 'company_id', 'currency_id', 'partner_id',
         ],
-        # Dependencia para tener acceso al packaging en la línea del pedido de venta
         'sale.order.line': ['product_packaging_id'],
         'product.product': ['product_tmpl_id', 'net_weight'],
-        # Se añade 'name' a las dependencias de product.template para asegurar que se recalcule el informe si cambia
-        'product.template': ['categ_id', 'name'],
+        'product.template': ['categ_id', 'name'],  # 'name' es un campo JSON en este modelo.
         'product.packaging': ['name'],
         'uom.uom': ['category_id', 'factor', 'name', 'uom_type'],
         'res.currency.rate': ['currency_id', 'name'],
@@ -38,9 +34,7 @@ class AccountInvoiceReportInherit(models.Model):
             (line.quantity * product.net_weight) *
                 (CASE WHEN move.move_type IN ('in_invoice','out_refund','in_receipt') THEN -1 ELSE 1 END) AS net_weight,
             sol.product_packaging_id AS packaging_id,
-            -- Se concatena el nombre del packaging (desde product_packaging alias pp) y
-            -- el nombre del producto (desde product_template alias template)
-            (COALESCE(pp.name, '') || ' - ' || COALESCE(template.name, '')) AS packaging_label
+            concat(COALESCE(pp.name, ''), ' - ', COALESCE(template.name->>'es_ES', '')) AS packaging_label
         '''
 
     @api.model
