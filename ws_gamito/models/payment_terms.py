@@ -14,9 +14,9 @@ class AccountPaymentTerm(models.Model):
     _inherit = "account.payment.term"   
     
 
-    def _compute_terms(self, date_ref, currency, company, tax_amount, tax_amount_currency, sign, untaxed_amount, untaxed_amount_currency):
+    def _compute_terms(self, date_ref, currency, company, tax_amount, tax_amount_currency, sign, untaxed_amount, untaxed_amount_currency, cash_rounding=None):
         _logger.info(f'WSEM Entra compute terms')
-        result = super(AccountPaymentTerm, self)._compute_terms(date_ref, currency, company, tax_amount, tax_amount_currency, sign, untaxed_amount, untaxed_amount_currency)
+        result = super(AccountPaymentTerm, self)._compute_terms(date_ref, currency, company, tax_amount, tax_amount_currency, sign, untaxed_amount, untaxed_amount_currency, cash_rounding)
 
         for line in self.line_ids:
             _logger.info(f'WSEM itera linea')
