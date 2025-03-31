@@ -32,7 +32,9 @@
         'report/report_deliveryslip_weight.xml',
         'report/stock_picking_operations.xml',
         'report/deliver_from_order.xml',
+        'report/report_invoice_net.xml',
         'data/ws_gamito_data.xml',
+        'wizard/report_invoice_net_wizard_view.xml'
         
     ],
     # only loaded in demonstration mode

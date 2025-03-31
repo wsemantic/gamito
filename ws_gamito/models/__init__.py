@@ -7,3 +7,4 @@ from . import sale_order_line
 from . import product
 from . import packaging
 from . import account_invoice_report
+from . import report_invoice_net
