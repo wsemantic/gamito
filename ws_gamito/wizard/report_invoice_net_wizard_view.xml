@@ -29,5 +29,5 @@
 	
 	 <!-- Menú para acceder al Wizard en el menú superior "Informes" de la Contabilidad -->
     <menuitem id="menu_report_invoice_net" name="Reporte Neto de Facturación"
-              parent="menu_finance_reports" action="action_report_invoice_net_wizard"/>
+              parent="account.menu_finance_reports" action="action_report_invoice_net_wizard"/>
 </odoo>
