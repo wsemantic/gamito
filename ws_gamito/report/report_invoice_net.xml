@@ -57,7 +57,6 @@
             <field name="report_type">qweb-pdf</field>
             <!-- El campo report_name debe referenciar el ID de la plantilla QWeb -->
             <field name="report_name">ws_gamito.ws_gamito_invoice_net_template</field>
-            <field name="auto" eval="False"/>
             <field name="print_report_name">'Reporte Neto - ' + (object.name or '')</field>
         </record>
     </data>
