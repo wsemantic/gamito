@@ -49,6 +49,7 @@
     </template>
 
     <!-- Definición de la acción de reporte -->
+	<data noupdate="1">
     <report
         id="report_ws_gamito_invoice_net_action"
         model="account.move"
@@ -60,4 +61,5 @@
 		<field name="binding_model_id" eval="False"/>
         <field name="binding_view_types" eval="[]"/>
 	</report>    
+	</data>
 </odoo>
