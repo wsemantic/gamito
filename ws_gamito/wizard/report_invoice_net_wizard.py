@@ -17,4 +17,4 @@ class ReportInvoiceNetWizard(models.TransientModel):
                 'fecha_fin': self.fecha_fin,
             }
         }
-        return self.env.ref('ws_gamito_invoice_net.report_ws_gamito_invoice_net_action').report_action(self, data=data)
+        return self.env.ref('ws_gamito.report_ws_gamito_invoice_net_action').report_action(self, data=data)
