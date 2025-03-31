@@ -49,13 +49,17 @@
     </template>
 
     <!-- Definición de la acción de reporte -->
-    <report
-        id="report_ws_gamito_invoice_net_action"
-        model="account.move"
-        string="Reporte Neto de Facturación"
-        report_type="qweb-pdf"
-        name="ws_gamito.invoice.net"
-        file="report_invoice_net_template"
-        print_report_name="'Reporte Neto - ' + (object.name or '')"
-    />
+    <data noupdate="1">
+        <record id="report_ws_gamito_invoice_net_action" model="ir.actions.report">
+            <field name="name">ws_gamito.invoice.net</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <!-- El campo report_name debe referenciar el ID de la plantilla QWeb -->
+            <field name="report_name">ws_gamito_invoice_net_template</field>
+            <!-- Evitamos que se muestre en el menú contextual "Imprimir" -->
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_view_types" eval="[]"/>
+            <field name="print_report_name">'Reporte Neto - ' + (object.name or '')</field>
+        </record>
+    </data>
 </odoo>
