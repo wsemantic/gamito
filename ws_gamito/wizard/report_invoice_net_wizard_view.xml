@@ -1,0 +1,29 @@
+<odoo>
+    <!-- Vista Formulario del Wizard -->
+    <record id="view_report_invoice_net_wizard_form" model="ir.ui.view">
+        <field name="name">report.invoice.net.wizard.form</field>
+        <field name="model">report.invoice.net.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generar Reporte Neto de Facturación">
+                <group>
+                    <field name="cliente_id"/>
+                    <field name="fecha_inicio"/>
+                    <field name="fecha_fin"/>
+                </group>
+                <footer>
+                    <button string="Imprimir" type="object" name="action_print_report" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción para abrir el Wizard en una ventana modal -->
+    <record id="action_report_invoice_net_wizard" model="ir.actions.act_window">
+        <field name="name">Reporte Neto de Facturación</field>
+        <field name="res_model">report.invoice.net.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_report_invoice_net_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

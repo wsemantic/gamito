@@ -1,6 +1,6 @@
 <odoo>
     <!-- Plantilla QWeb para el reporte -->
-    <template id="report_invoice_net_template">
+    <template id="ws_gamito.invoice.net">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <h2>Reporte Neto de Facturación</h2>
