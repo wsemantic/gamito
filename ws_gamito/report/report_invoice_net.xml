@@ -56,6 +56,8 @@
         report_type="qweb-pdf"
         name="ws_gamito.invoice.net"
         file="report_invoice_net_template"
-        print_report_name="'Reporte Neto - ' + (object.name or '')"
-    />
+        print_report_name="'Reporte Neto - ' + (object.name or '')">
+		<field name="binding_model_id" eval="False"/>
+        <field name="binding_view_types" eval="[]"/>
+	</report>    
 </odoo>
