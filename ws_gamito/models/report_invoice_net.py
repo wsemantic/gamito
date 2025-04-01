@@ -71,7 +71,6 @@ class ReportInvoiceNet(models.AbstractModel):
             # Sumar a returned_amount solo si es una nota de crédito
             if line.move_id.move_type == 'out_refund':
                 line_data_dict[key]['returned_amount'] += importe
-                _logger.info(f"WS Retornado {line.product_id.name} {importe}")
             else:
                 _logger.info(f"WS Facturado {line.product_id.name} {importe}")
 
@@ -87,11 +86,11 @@ class ReportInvoiceNet(models.AbstractModel):
             product_id = values['product_id']
             product_name = self.env['product.product'].browse(product_id).name if product_id else 'Sin producto'
 
-            total_amount_line = float_utils.float_round(values['total_amount'], precision_digits=2)
-            returned_amount_line = float_utils.float_round(values['returned_amount'], precision_digits=2)
+            total_amount_line = values['total_amount']
+            returned_amount_line = values['returned_amount']
 
             # Calcular porcentaje: returned / (total bruto antes de restar)
-            total_bruto = total_amount_line + returned_amount_line
+            total_bruto = float_utils.float_round(total_amount_line + returned_amount_line, precision_digits=2)
             porcentaje_devuelto = float_utils.float_round((returned_amount_line / total_bruto * 100), precision_digits=2) if total_bruto > 0 else 0.0
 
             _logger.info(f"WS Producto: {product_name}, Total Neto: {total_amount_line}, Retornado: {returned_amount_line}, Porcentaje: {porcentaje_devuelto}")
@@ -102,7 +101,7 @@ class ReportInvoiceNet(models.AbstractModel):
             line_data.append({
                 'product_name': product_name,
                 'packaging_name': values['packaging_name'],
-                'total_amount': total_amount_line,
+                'total_amount': total_bruto,
                 'return_percentage': porcentaje_devuelto,
                 'net_weight': net_weight_line,
                 'units': units_line,
@@ -114,8 +113,7 @@ class ReportInvoiceNet(models.AbstractModel):
             total_units += units_line
 
         # Calcular el porcentaje total devuelto
-        total_bruto = total_amount + total_returned_amount
-        total_return_percentage = float_utils.float_round((total_returned_amount / total_bruto * 100), precision_digits=2) if total_bruto > 0 else 0.0
+        total_return_percentage = float_utils.float_round((total_returned_amount / total_amount * 100), precision_digits=2) if total_amount > 0 else 0.0
         _logger.info(f"WS Totales: Total Neto: {total_amount}, Retornado: {total_returned_amount}, Porcentaje: {total_return_percentage}")
 
         result = {
