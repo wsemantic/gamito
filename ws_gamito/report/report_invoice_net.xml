@@ -16,7 +16,7 @@
 					<thead>
 						<tr>
 							<th>Producto / Empaquetado</th>
-							<th>Importe Total</th>
+							<th>Importe Total (Neto)</th>
 							<th>% Importe Devuelto</th>
 							<th>Peso Neto Facturado</th>
 							<th>Unidades</th>
@@ -26,18 +26,18 @@
 						<t t-foreach="doc['line_data']" t-as="line">
 							<tr>
 								<td><t t-esc="line['product_name']"/> / <t t-esc="line['packaging_name']"/></td>
-								<td><t t-esc="line['total_amount']"/></td>
-								<td><t t-esc="line['return_percentage']"/></td>
-								<td><t t-esc="line['net_weight']"/></td>
-								<td><t t-esc="line['units']"/></td>
+								<td><t t-esc="line['total_amount']" t-options="{'widget': 'float', 'precision': 2}"/></td>
+								<td><t t-esc="line['return_percentage']" t-options="{'widget': 'float', 'precision': 2}"/></td>
+								<td><t t-esc="line['net_weight']" t-options="{'widget': 'float', 'precision': 2}"/></td>
+								<td><t t-esc="line['units']" t-options="{'widget': 'float', 'precision': 2}"/></td>
 							</tr>
 						</t>
 						<tr class="total">
 							<td><strong>Total</strong></td>
-							<td><strong><t t-esc="doc['total_amount']"/></strong></td>
-							<td></td>
-							<td><strong><t t-esc="doc['total_net_weight']"/></strong></td>
-							<td><strong><t t-esc="doc['total_units']"/></strong></td>
+							<td><strong><t t-esc="doc['total_amount']" t-options="{'widget': 'float', 'precision': 2}"/></strong></td>
+							<td><strong><t t-esc="doc['total_return_percentage']" t-options="{'widget': 'float', 'precision': 2}"/></strong></td>
+							<td><strong><t t-esc="doc['total_net_weight']" t-options="{'widget': 'float', 'precision': 2}"/></strong></td>
+							<td><strong><t t-esc="doc['total_units']" t-options="{'widget': 'float', 'precision': 2}"/></strong></td>
 						</tr>
 					</tbody>
 				</table>
