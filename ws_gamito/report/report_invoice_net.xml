@@ -12,32 +12,42 @@
 					Periodo:
 					<t t-esc="data['form']['fecha_inicio']"/> - <t t-esc="data['form']['fecha_fin']"/>
 				</p>
+				<style>
+					.table-bordered td.numeric, .table-bordered th.numeric {
+						text-align: right;
+						font-family: monospace;
+						padding-right: 10px; /* Espacio a la derecha para mejor legibilidad */
+					}
+					.table-bordered th {
+						text-align: center;
+					}
+				</style>
 				<table class="table table-bordered">
 					<thead>
 						<tr>
 							<th>Producto / Empaquetado</th>
-							<th>Importe Total (Neto)</th>
-							<th>% Importe Devuelto</th>
-							<th>Peso Neto Facturado</th>
-							<th>Unidades</th>
+							<th class="numeric">Importe Total (Neto)</th>
+							<th class="numeric">% Importe Devuelto</th>
+							<th class="numeric">Peso Neto Facturado</th>
+							<th class="numeric">Unidades</th>
 						</tr>
 					</thead>
 					<tbody>
 						<t t-foreach="doc['line_data']" t-as="line">
 							<tr>
 								<td><t t-esc="line['product_name']"/> / <t t-esc="line['packaging_name']"/></td>
-								<td><t t-esc="line['total_amount']"/></td>
-								<td><t t-esc="line['return_percentage']"/></td>
-								<td><t t-esc="line['net_weight']"/></td>
-								<td><t t-esc="line['units']"/></td>
+								<td class="numeric"><t t-esc="line['total_amount']"/></td>
+								<td class="numeric"><t t-esc="line['return_percentage']"/></td>
+								<td class="numeric"><t t-esc="line['net_weight']"/></td>
+								<td class="numeric"><t t-esc="line['units']"/></td>
 							</tr>
 						</t>
 						<tr class="total">
 							<td><strong>Total</strong></td>
-							<td><strong><t t-esc="doc['total_amount']"/></strong></td>
-							<td><strong><t t-esc="doc['total_return_percentage']"/></strong></td>
-							<td><strong><t t-esc="doc['total_net_weight']"/></strong></td>
-							<td><strong><t t-esc="doc['total_units']"/></strong></td>
+							<td class="numeric"><strong><t t-esc="doc['total_amount']"/></strong></td>
+							<td class="numeric"><strong><t t-esc="doc['total_return_percentage']"/></strong></td>
+							<td class="numeric"><strong><t t-esc="doc['total_net_weight']"/></strong></td>
+							<td class="numeric"><strong><t t-esc="doc['total_units']"/></strong></td>
 						</tr>
 					</tbody>
 				</table>
