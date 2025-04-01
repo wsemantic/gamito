@@ -34,21 +34,25 @@ class ReportInvoiceNet(models.AbstractModel):
         for line in invoice_lines:
             product_id = line.product_id.id if line.product_id else False
             packaging_id = False
-            packaging_name = 'Sin empaquetado'
+            packaging_name = False
 
             if line.sale_line_ids:
                 sale_line = line.sale_line_ids[0]
                 packaging_id = sale_line.product_packaging_id.id if sale_line.product_packaging_id else False
-                packaging_name = sale_line.product_packaging_id.name if sale_line.product_packaging_id else 'Sin empaquetado'
-            else:
-                _logger.debug(f"WS Línea de factura {line.id} sin pedido de venta asociado")
+                packaging_name = sale_line.product_packaging_id.name if sale_line.product_packaging_id else False
+            if not packaging_name and line.product_id:
+                packaging = line.product_id.packaging_ids[:1]
+                packaging_id = packaging.id if packaging else False
+                packaging_name = packaging.name if packaging else 'Sin empaquetado'
+            if not packaging_name:
+                _logger.warning(f"WS Línea de factura {line.id} sin empaquetado asociado para {line.product_id.name}")
 
             key = (product_id, packaging_id)
             if key not in line_data_dict:
                 line_data_dict[key] = {
                     'product_id': product_id,
                     'packaging_id': packaging_id,
-                    'packaging_name': packaging_name,
+                    'packaging_name': packaging_name or 'Sin empaquetado',
                     'total_amount': 0.0,      # Neto: facturas - notas de crédito
                     'returned_amount': 0.0,   # Solo notas de crédito, positivo
                     'total_units': 0.0,
@@ -60,15 +64,12 @@ class ReportInvoiceNet(models.AbstractModel):
             net_weight = float_utils.float_round(line.product_id.product_tmpl_id.net_weight, precision_digits=2) if line.product_id else 0.0
             peso_total = float_utils.float_round(net_weight * unidades, precision_digits=2)
 
-            # Determinar el signo según el tipo de movimiento
             signo = 1 if line.move_id.move_type == 'out_invoice' else -1
 
-            # Actualizar los valores
             line_data_dict[key]['total_amount'] += signo * importe
             line_data_dict[key]['total_units'] += signo * unidades
             line_data_dict[key]['total_net_weight'] += signo * peso_total
 
-            # Sumar a returned_amount solo si es una nota de crédito
             if line.move_id.move_type == 'out_refund':
                 line_data_dict[key]['returned_amount'] += importe
             else:
@@ -86,14 +87,12 @@ class ReportInvoiceNet(models.AbstractModel):
             product_id = values['product_id']
             product_name = self.env['product.product'].browse(product_id).name if product_id else 'Sin producto'
 
-            total_amount_line = values['total_amount']
-            returned_amount_line = values['returned_amount']
-
-            # Calcular porcentaje: returned / (total bruto antes de restar)
+            total_amount_line = float_utils.float_round(values['total_amount'], precision_digits=2)
+            returned_amount_line = float_utils.float_round(values['returned_amount'], precision_digits=2)
             total_bruto = float_utils.float_round(total_amount_line + returned_amount_line, precision_digits=2)
             porcentaje_devuelto = float_utils.float_round((returned_amount_line / total_bruto * 100), precision_digits=2) if total_bruto > 0 else 0.0
 
-            _logger.info(f"WS Producto: {product_name}, Total Neto: {total_amount_line}, Retornado: {returned_amount_line}, Porcentaje: {porcentaje_devuelto}")
+            _logger.info(f"WS Producto: {product_name}, Total Neto: {total_amount_line}, Total Bruto: {total_bruto}, Retornado: {returned_amount_line}, Porcentaje: {porcentaje_devuelto}")
 
             net_weight_line = float_utils.float_round(values['total_net_weight'], precision_digits=2)
             units_line = float_utils.float_round(values['total_units'], precision_digits=2)
@@ -101,7 +100,7 @@ class ReportInvoiceNet(models.AbstractModel):
             line_data.append({
                 'product_name': product_name,
                 'packaging_name': values['packaging_name'],
-                'total_amount': total_bruto,
+                'total_amount': total_amount_line,  # Usamos neto como estaba originalmente
                 'return_percentage': porcentaje_devuelto,
                 'net_weight': net_weight_line,
                 'units': units_line,
@@ -112,9 +111,9 @@ class ReportInvoiceNet(models.AbstractModel):
             total_net_weight += net_weight_line
             total_units += units_line
 
-        # Calcular el porcentaje total devuelto
-        total_return_percentage = float_utils.float_round((total_returned_amount / total_amount * 100), precision_digits=2) if total_amount > 0 else 0.0
-        _logger.info(f"WS Totales: Total Neto: {total_amount}, Retornado: {total_returned_amount}, Porcentaje: {total_return_percentage}")
+        total_bruto_global = float_utils.float_round(total_amount + total_returned_amount, precision_digits=2)
+        total_return_percentage = float_utils.float_round((total_returned_amount / total_bruto_global * 100), precision_digits=2) if total_bruto_global > 0 else 0.0
+        _logger.info(f"WS Totales: Total Neto: {total_amount}, Total Bruto: {total_bruto_global}, Retornado: {total_returned_amount}, Porcentaje: {total_return_percentage}")
 
         result = {
             'doc_ids': docids,
