@@ -4,7 +4,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class ReportInvoiceNet(models.AbstractModel):
-    _name = 'report.ws_gamito.invoice.net'
+    _name = 'report.ws_gamito.invoice_net_template'
     _description = 'Reporte Neto de Facturación ws_gamito'
 
     @api.model

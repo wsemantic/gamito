@@ -1,6 +1,6 @@
 <odoo>
     <!-- Plantilla QWeb para el reporte -->
-    <template id="ws_gamito_invoice_net_template">
+    <template id="invoice_net_template">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <h2>Reporte Neto de Facturación</h2>
@@ -56,7 +56,7 @@
             <field name="model">report.invoice.net.wizard</field>
             <field name="report_type">qweb-pdf</field>
             <!-- El campo report_name debe referenciar el ID de la plantilla QWeb -->
-            <field name="report_name">ws_gamito.ws_gamito_invoice_net_template</field>
+            <field name="report_name">ws_gamito.invoice_net_template</field>
             <field name="print_report_name">'Reporte Neto - ' + (object.name or '')</field>
         </record>
     </data>
