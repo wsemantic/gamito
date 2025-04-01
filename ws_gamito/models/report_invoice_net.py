@@ -13,6 +13,7 @@ class ReportInvoiceNet(models.AbstractModel):
         cliente_id = data.get('form', {}).get('cliente_id')
         fecha_inicio = data.get('form', {}).get('fecha_inicio')
         fecha_fin = data.get('form', {}).get('fecha_fin')
+        desglosar_empaquetado = data.get('form', {}).get('desglosar_empaquetado', False)
 
         _logger.info(f"WS Parámetros: cliente_id={cliente_id}, fecha_inicio={fecha_inicio}, fecha_fin={fecha_fin}")
 
@@ -35,23 +36,24 @@ class ReportInvoiceNet(models.AbstractModel):
             packaging_id = False
             packaging_name = False
 
-            if line.sale_line_ids:
-                sale_line = line.sale_line_ids[0]
-                packaging_id = sale_line.product_packaging_id.id if sale_line.product_packaging_id else False
-                packaging_name = sale_line.product_packaging_id.name if sale_line.product_packaging_id else False
-            if not packaging_name and line.product_id:
-                packaging = line.product_id.packaging_ids[:1]
-                packaging_id = packaging.id if packaging else False
-                packaging_name = packaging.name if packaging else 'Sin empaquetado'
-            if not packaging_name:
-                _logger.warning(f"WS Línea de factura {line.id} sin empaquetado asociado para {line.product_id.name}")
+            if desglosar_empaquetado:
+                if line.sale_line_ids:
+                    sale_line = line.sale_line_ids[0]
+                    packaging_id = sale_line.product_packaging_id.id if sale_line.product_packaging_id else False
+                    packaging_name = sale_line.product_packaging_id.name if sale_line.product_packaging_id else False
+                if not packaging_name and line.product_id:
+                    packaging = line.product_id.packaging_ids[:1]
+                    packaging_id = packaging.id if packaging else False
+                    packaging_name = packaging.name if packaging else 'Sin empaquetado'
+                if not packaging_name:
+                    _logger.warning(f"WS Línea de factura {line.id} sin empaquetado asociado para {line.product_id.name}")
 
-            key = (product_id, packaging_id)
+            key = (product_id, packaging_id) if desglosar_empaquetado else (product_id,)
             if key not in line_data_dict:
                 line_data_dict[key] = {
                     'product_id': product_id,
                     'packaging_id': packaging_id,
-                    'packaging_name': packaging_name or 'Sin empaquetado',
+                    'packaging_name': packaging_name or 'Sin empaquetado' if desglosar_empaquetado else '',
                     'total_amount': 0.0,
                     'returned_amount': 0.0,
                     'total_units': 0.0,
