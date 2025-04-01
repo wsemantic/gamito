@@ -95,7 +95,7 @@ class ReportInvoiceNet(models.AbstractModel):
 
         _logger.info("WS Finalizando _get_report_values")
 
-        return {
+        result= {
             'doc_ids': docids,
             'doc_model': 'account.move',
             'docs': [{
@@ -106,3 +106,5 @@ class ReportInvoiceNet(models.AbstractModel):
             }],
             'data': data,
         }
+        _logger.info(f"WS Resultado devuelto: {result}")
+        return result
