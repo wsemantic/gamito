@@ -65,7 +65,6 @@ class ReportInvoiceNet(models.AbstractModel):
 
             signo = 1 if line.move_id.move_type == 'out_invoice' else -1
 
-            # Redondear después de cada acumulación
             line_data_dict[key]['total_amount'] = round(line_data_dict[key]['total_amount'] + (signo * importe), 2)
             line_data_dict[key]['total_units'] = round(line_data_dict[key]['total_units'] + (signo * unidades), 2)
             line_data_dict[key]['total_net_weight'] = round(line_data_dict[key]['total_net_weight'] + (signo * peso_total), 2)
@@ -97,7 +96,6 @@ class ReportInvoiceNet(models.AbstractModel):
             net_weight_line = round(values['total_net_weight'], 2)
             units_line = round(values['total_units'], 2)
 
-            # Convertir a strings con 2 decimales
             line_data.append({
                 'product_name': product_name,
                 'packaging_name': values['packaging_name'],
@@ -111,6 +109,9 @@ class ReportInvoiceNet(models.AbstractModel):
             total_returned_amount += returned_amount_line
             total_net_weight += net_weight_line
             total_units += units_line
+
+        # Ordenar line_data por referencia (última parte del product_name después de "-")
+        line_data = sorted(line_data, key=lambda x: x['product_name'].split('-')[-1].strip() if '-' in x['product_name'] else x['product_name'])
 
         total_bruto_global = round(total_amount + total_returned_amount, 2)
         total_return_percentage = round((total_returned_amount / total_bruto_global * 100), 2) if total_bruto_global > 0 else 0.0
