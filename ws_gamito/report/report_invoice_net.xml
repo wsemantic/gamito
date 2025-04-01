@@ -1,9 +1,9 @@
 <odoo>
     <!-- Plantilla QWeb para el reporte -->
-    <template id="invoice_net_template">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="doc">
-                <h2>Reporte Neto de Facturación</h2>
+	<template id="invoice_net_template">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="doc">
+				<h2>Reporte Neto de Facturación</h2>
 				<p>
 					Cliente:
 					<t t-esc="data['form']['cliente_id'] and env['res.partner'].browse(data['form']['cliente_id']).name or ''"/>
@@ -12,41 +12,38 @@
 					Periodo:
 					<t t-esc="data['form']['fecha_inicio']"/> - <t t-esc="data['form']['fecha_fin']"/>
 				</p>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Producto / Empaquetado</th>
-                            <th>Importe Total</th>
-                            <th>% Importe Devuelto</th>
-                            <th>Peso Neto Facturado</th>
-                            <th>Unidades</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <t t-foreach="doc.line_data" t-as="line">
-                            <tr>
-                                <td>
-                                    <t t-esc="line.product_name"/> /
-                                    <t t-esc="line.packaging_name"/>
-                                </td>
-                                <td><t t-esc="line.total_amount"/></td>
-                                <td><t t-esc="line.return_percentage"/></td>
-                                <td><t t-esc="line.net_weight"/></td>
-                                <td><t t-esc="line.units"/></td>
-                            </tr>
-                        </t>
-                        <tr class="total">
-                            <td><strong>Total</strong></td>
-                            <td><strong><t t-esc="doc.total_amount"/></strong></td>
-                            <td></td>
-                            <td><strong><t t-esc="doc.total_net_weight"/></strong></td>
-                            <td><strong><t t-esc="doc.total_units"/></strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </t>
-        </t>
-    </template>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Producto / Empaquetado</th>
+							<th>Importe Total</th>
+							<th>% Importe Devuelto</th>
+							<th>Peso Neto Facturado</th>
+							<th>Unidades</th>
+						</tr>
+					</thead>
+					<tbody>
+						<t t-foreach="doc['line_data']" t-as="line">
+							<tr>
+								<td><t t-esc="line['product_name']"/> / <t t-esc="line['packaging_name']"/></td>
+								<td><t t-esc="line['total_amount']"/></td>
+								<td><t t-esc="line['return_percentage']"/></td>
+								<td><t t-esc="line['net_weight']"/></td>
+								<td><t t-esc="line['units']"/></td>
+							</tr>
+						</t>
+						<tr class="total">
+							<td><strong>Total</strong></td>
+							<td><strong><t t-esc="doc['total_amount']"/></strong></td>
+							<td></td>
+							<td><strong><t t-esc="doc['total_net_weight']"/></strong></td>
+							<td><strong><t t-esc="doc['total_units']"/></strong></td>
+						</tr>
+					</tbody>
+				</table>
+			</t>
+		</t>
+	</template>
 
     <!-- Registro del Reporte -->
     <data noupdate="1">
