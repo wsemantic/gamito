@@ -21,7 +21,7 @@
 
     # any module necessary for this one to work correctly
     'depends': ['account','stock','sale'], 
-
+    'external_dependencies': {'python': ['xlsxwriter']},
     # always loaded
     'data': [
         'security/ir.model.access.csv',
