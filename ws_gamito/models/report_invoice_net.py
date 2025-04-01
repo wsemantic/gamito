@@ -65,7 +65,7 @@ class ReportInvoiceNet(models.AbstractModel):
                 line_data_dict[key]['total_units'] += unidades
                 line_data_dict[key]['total_net_weight'] += peso_total
             elif line.move_id.move_type == 'out_refund':
-                _logger.info(f"WS retornado {product_id.name} {importe}")
+                _logger.info(f"WS retornado {line.product_id.name} {importe}")
                 line_data_dict[key]['returned_amount'] += importe
                 line_data_dict[key]['total_units'] -= unidades
                 line_data_dict[key]['total_net_weight'] -= peso_total
