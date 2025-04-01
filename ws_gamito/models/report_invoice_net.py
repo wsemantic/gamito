@@ -38,8 +38,8 @@ class ReportInvoiceNet(models.AbstractModel):
             if line.sale_line_ids:
                 # Tomamos la primera línea de venta (ajusta si necesitas otra lógica)
                 sale_line = line.sale_line_ids[0]
-                packaging_id = sale_line.product_packaging.id if sale_line.product_packaging else False
-                packaging_name = sale_line.product_packaging.name if sale_line.product_packaging else 'Sin empaquetado'
+                packaging_id = sale_line.product_packaging_id.id if sale_line.product_packaging_id else False
+                packaging_name = sale_line.product_packaging_id.name if sale_line.product_packaging_id else 'Sin empaquetado'
             else:
                 _logger.debug(f"WS Línea de factura {line.id} sin pedido de venta asociado")
 
