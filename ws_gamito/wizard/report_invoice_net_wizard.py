@@ -42,28 +42,44 @@ class ReportInvoiceNetWizard(models.TransientModel):
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
         worksheet = workbook.add_worksheet('Reporte Neto')
 
+        # Definir formato para números con dos decimales
+        number_format = workbook.add_format({'num_format': '0.00'})
+
+        # Encabezados en el orden del reporte
         headers = [
             'Producto / Empaquetado',
-            'Importe Total (Neto)',
-            '% Importe Devuelto',
-            'Peso Neto Facturado',
-            'Unidades'
+            'Referencia',
+            'CONSUMO REAL (Un.)',
+            'DEVOLUCION (Un.)',
+            '% Devuelto (€)',
+            'Total Kg neto',
+            'Total Fact. Base',
+            'Total Fact con IVA'
         ]
         for col, header in enumerate(headers):
             worksheet.write(0, col, header)
 
+        # Escribir datos
         for row, line in enumerate(line_data, start=1):
+            # Construir el nombre del producto según desglosar_empaquetado
             name = (f"{line['product_name']} / {line['packaging_name']}"
                     if data['form']['desglosar_empaquetado'] and line['packaging_name']
                     else line['product_name'])
-            worksheet.write(row, 0, name)
-            worksheet.write(row, 1, float(line['total_amount']))
-            worksheet.write(row, 2, float(line['return_percentage']))
-            worksheet.write(row, 3, float(line['net_weight']))
-            worksheet.write(row, 4, float(line['units']))
+            
+            # Escribir valores en las columnas correspondientes
+            worksheet.write(row, 0, name)  # Producto / Empaquetado (texto)
+            worksheet.write(row, 1, line['default_code'])  # Referencia (texto)
+            worksheet.write(row, 2, float(line['units']), number_format)  # CONSUMO REAL (Un.)
+            worksheet.write(row, 3, float(line['returned_units']), number_format)  # DEVOLUCION (Un.)
+            worksheet.write(row, 4, float(line['return_percentage']), number_format)  # % Devuelto (€)
+            worksheet.write(row, 5, float(line['net_weight']), number_format)  # Total Kg neto
+            worksheet.write(row, 6, float(line['total_amount_no_tax']), number_format)  # Total Fact. Base
+            worksheet.write(row, 7, float(line['total_amount']), number_format)  # Total Fact con IVA
 
-        worksheet.set_column(0, 0, 50)
-        worksheet.set_column(1, 4, 15)
+        # Ajustar anchos de columnas
+        worksheet.set_column(0, 0, 50)  # Producto / Empaquetado
+        worksheet.set_column(1, 1, 15)  # Referencia
+        worksheet.set_column(2, 7, 15)  # Columnas numéricas
 
         workbook.close()
         output.seek(0)
