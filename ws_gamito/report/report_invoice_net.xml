@@ -31,6 +31,7 @@
                     <thead>
                         <tr>
                             <th>Producto / Empaquetado</th>
+							<th>Referencia</th> 
 							<th class="numeric">CONSUMO REAL (Un.)</th>
 							<th class="numeric">DEVOLUCION (Un.)</th>
 							<th class="numeric">% Devuelto (€)</th>
@@ -48,6 +49,7 @@
                                         / <t t-esc="line['packaging_name']"/>
                                     </t>
                                 </td>
+								<td><t t-esc="line['default_code']"/></td>								
 								<td class="numeric"><t t-esc="line['units']"/></td>
                                 <td class="numeric"><t t-esc="line['returned_units']"/></td>
                                 <td class="numeric"><t t-esc="line['return_percentage']"/></td>		

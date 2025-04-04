@@ -55,11 +55,12 @@ class ReportInvoiceNet(models.AbstractModel):
                     'packaging_id': packaging_id,
                     'packaging_name': packaging_name or 'Sin empaquetado' if desglosar_empaquetado else '',
                     'total_amount': 0.0,  # Con IVA
-                    'total_amount_no_tax': 0.0,  # Sin IVA (nueva clave)
+                    'total_amount_no_tax': 0.0,  # Sin IVA
                     'returned_amount': 0.0,
                     'total_units': 0.0,
                     'returned_units': 0.0,
                     'total_net_weight': 0.0,
+                    'default_code': line.product_id.default_code if line.product_id else '',  # Referencia interna
                 }
 
             importe = round(line.price_total, 2)  # Con IVA
@@ -74,7 +75,7 @@ class ReportInvoiceNet(models.AbstractModel):
             is_rappel = line.product_id.default_code == '100006' if line.product_id else False
 
             line_data_dict[key]['total_amount'] += round(signo * importe, 2)
-            line_data_dict[key]['total_amount_no_tax'] += round(signo * importe_sin_iva, 2)  # Acumular sin IVA
+            line_data_dict[key]['total_amount_no_tax'] += round(signo * importe_sin_iva, 2)
             line_data_dict[key]['total_units'] += round(signo * unidades, 2)
             line_data_dict[key]['total_net_weight'] += round(signo * peso_total, 2)
 
@@ -89,7 +90,7 @@ class ReportInvoiceNet(models.AbstractModel):
 
         line_data = []
         total_amount = 0.0
-        total_amount_no_tax = 0.0  # Total sin IVA
+        total_amount_no_tax = 0.0
         total_net_weight = 0.0
         total_units = 0.0
         total_returned_amount = 0.0
@@ -100,12 +101,12 @@ class ReportInvoiceNet(models.AbstractModel):
             product_name = self.env['product.product'].browse(product_id).name if product_id else 'Sin producto'
 
             total_amount_line = round(values['total_amount'], 2)
-            total_amount_no_tax_line = round(values['total_amount_no_tax'], 2)  # Sin IVA
+            total_amount_no_tax_line = round(values['total_amount_no_tax'], 2)
             returned_amount_line = round(values['returned_amount'], 2)
-            total_bruto = round(total_amount_line + returned_amount_line, 2)
-            porcentaje_devuelto = round((returned_amount_line / total_bruto * 100), 2) if total_bruto > 0 else 0.0
+                                                                            
+            porcentaje_devuelto = round((returned_amount_line / total_amount_line * 100), 2) if total_amount_line > 0 else 0.0
 
-            _logger.info(f"WS Producto: {product_name}, Total Neto: {total_amount_line}, Total Bruto: {total_bruto}, Retornado: {returned_amount_line}, Porcentaje: {porcentaje_devuelto}")
+            _logger.info(f"WS Producto: {product_name}, Total Neto: {total_amount_line}, Retornado: {returned_amount_line}, Porcentaje: {porcentaje_devuelto}")
 
             net_weight_line = round(values['total_net_weight'], 2)
             units_line = round(values['total_units'], 2)
@@ -113,10 +114,12 @@ class ReportInvoiceNet(models.AbstractModel):
 
             line_data.append({
                 'product_name': product_name,
+                'default_code': values['default_code'],  # Referencia interna
                 'packaging_name': values['packaging_name'],
+                'total_amount_no_tax': "{:.2f}".format(total_amount_no_tax_line),
                 'total_amount': "{:.2f}".format(total_amount_line),
-                'total_amount_no_tax': "{:.2f}".format(total_amount_no_tax_line),  # Nueva columna sin IVA
-                'total_bruto': "{:.2f}".format(total_bruto),
+                                                                                                          
+                                                            
                 'return_percentage': "{:.2f}".format(porcentaje_devuelto),
                 'net_weight': "{:.2f}".format(net_weight_line),
                 'units': "{:.2f}".format(units_line),
@@ -124,7 +127,7 @@ class ReportInvoiceNet(models.AbstractModel):
             })
 
             total_amount += total_amount_line
-            total_amount_no_tax += total_amount_no_tax_line  # Acumular total sin IVA
+            total_amount_no_tax += total_amount_no_tax_line
             total_returned_amount += returned_amount_line
             total_net_weight += net_weight_line
             total_units += units_line
@@ -133,9 +136,9 @@ class ReportInvoiceNet(models.AbstractModel):
         # Ordenar line_data por referencia (última parte del product_name después de "-")
         line_data = sorted(line_data, key=lambda x: x['product_name'].split('-')[-1].strip() if '-' in x['product_name'] else x['product_name'])
 
-        total_bruto_global = round(total_amount + total_returned_amount, 2)
-        total_return_percentage = round((total_returned_amount / total_bruto_global * 100), 2) if total_bruto_global > 0 else 0.0
-        _logger.info(f"WS Totales: Total Neto: {total_amount}, Total Bruto: {total_bruto_global}, Retornado: {total_returned_amount}, Porcentaje: {total_return_percentage}")
+                                                                           
+        total_return_percentage = round((total_returned_amount / total_amount * 100), 2) if total_amount > 0 else 0.0
+        _logger.info(f"WS Totales: Total Neto: {total_amount}, Retornado: {total_returned_amount}, Porcentaje: {total_return_percentage}")
 
         result = {
             'doc_ids': docids,
@@ -143,12 +146,12 @@ class ReportInvoiceNet(models.AbstractModel):
             'docs': [{
                 'line_data': line_data,
                 'total_amount': "{:.2f}".format(round(total_amount, 2)),
-                'total_amount_no_tax': "{:.2f}".format(round(total_amount_no_tax, 2)),  # Total sin IVA
+                'total_amount_no_tax': "{:.2f}".format(round(total_amount_no_tax, 2)),
                 'total_returned_amount': "{:.2f}".format(round(total_returned_amount, 2)),
                 'total_net_weight': "{:.2f}".format(round(total_net_weight, 2)),
                 'total_units': "{:.2f}".format(round(total_units, 2)),
                 'total_returned_units': "{:.2f}".format(round(total_returned_units, 2)),
-                'total_bruto_global': "{:.2f}".format(total_bruto_global),
+                                                                          
                 'total_return_percentage': "{:.2f}".format(total_return_percentage),
             }],
             'data': data,
