@@ -54,25 +54,34 @@ class ReportInvoiceNet(models.AbstractModel):
                     'product_id': product_id,
                     'packaging_id': packaging_id,
                     'packaging_name': packaging_name or 'Sin empaquetado' if desglosar_empaquetado else '',
-                    'total_amount': 0.0,
+                    'total_amount': 0.0,  # Con IVA
+                    'total_amount_no_tax': 0.0,  # Sin IVA (nueva clave)
                     'returned_amount': 0.0,
                     'total_units': 0.0,
+                    'returned_units': 0.0,
                     'total_net_weight': 0.0,
                 }
 
-            importe = round(line.price_total, 2)
+            importe = round(line.price_total, 2)  # Con IVA
+            importe_sin_iva = round(line.price_subtotal, 2)  # Sin IVA
             unidades = round(line.quantity, 2)
             net_weight = round(line.product_id.product_tmpl_id.net_weight, 2) if line.product_id else 0.0
             peso_total = round(net_weight * unidades, 2)
 
             signo = 1 if line.move_id.move_type == 'out_invoice' else -1
 
-            line_data_dict[key]['total_amount'] = round(line_data_dict[key]['total_amount'] + (signo * importe), 2)
-            line_data_dict[key]['total_units'] = round(line_data_dict[key]['total_units'] + (signo * unidades), 2)
-            line_data_dict[key]['total_net_weight'] = round(line_data_dict[key]['total_net_weight'] + (signo * peso_total), 2)
+            # Detectar si es un producto "rappel" por su referencia "100006"
+            is_rappel = line.product_id.default_code == '100006' if line.product_id else False
+
+            line_data_dict[key]['total_amount'] += round(signo * importe, 2)
+            line_data_dict[key]['total_amount_no_tax'] += round(signo * importe_sin_iva, 2)  # Acumular sin IVA
+            line_data_dict[key]['total_units'] += round(signo * unidades, 2)
+            line_data_dict[key]['total_net_weight'] += round(signo * peso_total, 2)
 
             if line.move_id.move_type == 'out_refund':
-                line_data_dict[key]['returned_amount'] = round(line_data_dict[key]['returned_amount'] + importe, 2)
+                if not is_rappel:
+                    line_data_dict[key]['returned_amount'] += round(importe, 2)
+                line_data_dict[key]['returned_units'] += round(unidades, 2)
             else:
                 _logger.info(f"WS Facturado {line.product_id.name} {importe}")
 
@@ -80,15 +89,18 @@ class ReportInvoiceNet(models.AbstractModel):
 
         line_data = []
         total_amount = 0.0
+        total_amount_no_tax = 0.0  # Total sin IVA
         total_net_weight = 0.0
         total_units = 0.0
         total_returned_amount = 0.0
+        total_returned_units = 0.0
 
         for key, values in line_data_dict.items():
             product_id = values['product_id']
             product_name = self.env['product.product'].browse(product_id).name if product_id else 'Sin producto'
 
             total_amount_line = round(values['total_amount'], 2)
+            total_amount_no_tax_line = round(values['total_amount_no_tax'], 2)  # Sin IVA
             returned_amount_line = round(values['returned_amount'], 2)
             total_bruto = round(total_amount_line + returned_amount_line, 2)
             porcentaje_devuelto = round((returned_amount_line / total_bruto * 100), 2) if total_bruto > 0 else 0.0
@@ -97,20 +109,26 @@ class ReportInvoiceNet(models.AbstractModel):
 
             net_weight_line = round(values['total_net_weight'], 2)
             units_line = round(values['total_units'], 2)
+            returned_units_line = round(values['returned_units'], 2)
 
             line_data.append({
                 'product_name': product_name,
                 'packaging_name': values['packaging_name'],
                 'total_amount': "{:.2f}".format(total_amount_line),
+                'total_amount_no_tax': "{:.2f}".format(total_amount_no_tax_line),  # Nueva columna sin IVA
+                'total_bruto': "{:.2f}".format(total_bruto),
                 'return_percentage': "{:.2f}".format(porcentaje_devuelto),
                 'net_weight': "{:.2f}".format(net_weight_line),
                 'units': "{:.2f}".format(units_line),
+                'returned_units': "{:.2f}".format(returned_units_line),
             })
 
             total_amount += total_amount_line
+            total_amount_no_tax += total_amount_no_tax_line  # Acumular total sin IVA
             total_returned_amount += returned_amount_line
             total_net_weight += net_weight_line
             total_units += units_line
+            total_returned_units += returned_units_line
 
         # Ordenar line_data por referencia (última parte del product_name después de "-")
         line_data = sorted(line_data, key=lambda x: x['product_name'].split('-')[-1].strip() if '-' in x['product_name'] else x['product_name'])
@@ -125,9 +143,12 @@ class ReportInvoiceNet(models.AbstractModel):
             'docs': [{
                 'line_data': line_data,
                 'total_amount': "{:.2f}".format(round(total_amount, 2)),
+                'total_amount_no_tax': "{:.2f}".format(round(total_amount_no_tax, 2)),  # Total sin IVA
                 'total_returned_amount': "{:.2f}".format(round(total_returned_amount, 2)),
                 'total_net_weight': "{:.2f}".format(round(total_net_weight, 2)),
                 'total_units': "{:.2f}".format(round(total_units, 2)),
+                'total_returned_units': "{:.2f}".format(round(total_returned_units, 2)),
+                'total_bruto_global': "{:.2f}".format(total_bruto_global),
                 'total_return_percentage': "{:.2f}".format(total_return_percentage),
             }],
             'data': data,
