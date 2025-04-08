@@ -30,8 +30,8 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
+							<th>Referencia</th>
                             <th>Producto / Empaquetado</th>
-							<th>Referencia</th> 
 							<th class="numeric">CONSUMO REAL (Un.)</th>
 							<th class="numeric">DEVOLUCION (Un.)</th>
 							<th class="numeric">% Devuelto (€)</th>
@@ -43,13 +43,13 @@
                     <tbody>
                         <t t-foreach="doc['line_data']" t-as="line">
                             <tr>
+								<td><t t-esc="line['default_code']"/></td>								
                                 <td>
                                     <t t-esc="line['product_name']"/>
                                     <t t-if="data['form']['desglosar_empaquetado'] and line['packaging_name']">
                                         / <t t-esc="line['packaging_name']"/>
                                     </t>
-                                </td>
-								<td><t t-esc="line['default_code']"/></td>								
+                                </td>							
 								<td class="numeric"><t t-esc="line['units']"/></td>
                                 <td class="numeric"><t t-esc="line['returned_units']"/></td>
                                 <td class="numeric"><t t-esc="line['return_percentage']"/></td>		
@@ -59,6 +59,7 @@
                             </tr>
                         </t>
                         <tr class="total">
+							<td><strong></strong></td>
                             <td><strong>Total</strong></td>
                             <td class="numeric"><strong><t t-esc="doc['total_units']"/></strong></td>			
                             <td class="numeric"><strong><t t-esc="doc['total_returned_units']"/></strong></td>	

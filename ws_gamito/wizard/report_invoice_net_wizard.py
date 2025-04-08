@@ -67,8 +67,8 @@ class ReportInvoiceNetWizard(models.TransientModel):
                     else line['product_name'])
             
             # Escribir valores en las columnas correspondientes
-            worksheet.write(row, 0, name)  # Producto / Empaquetado (texto)
-            worksheet.write(row, 1, line['default_code'])  # Referencia (texto)
+            worksheet.write(row, 0, line['default_code'])  # Referencia (texto)
+            worksheet.write(row, 1, name)  # Producto / Empaquetado (texto)
             worksheet.write(row, 2, float(line['units']), number_format)  # CONSUMO REAL (Un.)
             worksheet.write(row, 3, float(line['returned_units']), number_format)  # DEVOLUCION (Un.)
             worksheet.write(row, 4, float(line['return_percentage']), number_format)  # % Devuelto (€)
