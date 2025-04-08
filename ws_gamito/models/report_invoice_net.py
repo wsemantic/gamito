@@ -54,13 +54,14 @@ class ReportInvoiceNet(models.AbstractModel):
                     'product_id': product_id,
                     'packaging_id': packaging_id,
                     'packaging_name': packaging_name or 'Sin empaquetado' if desglosar_empaquetado else '',
-                    'total_amount': 0.0,  # Con IVA
-                    'total_amount_no_tax': 0.0,  # Sin IVA
-                    'returned_amount': 0.0,
+                    'total_amount': 0.0,  # Con IVA, incluyendo todo para mostrar
+                    'total_amount_no_tax': 0.0,  # Sin IVA, incluyendo todo para mostrar
+                    'returned_amount': 0.0,  # Solo para notas de crédito no rappel
                     'total_units': 0.0,
                     'returned_units': 0.0,
                     'total_net_weight': 0.0,
-                    'default_code': line.product_id.default_code if line.product_id else '',  # Referencia interna
+                    'default_code': line.product_id.default_code if line.product_id else '',
+                    'total_amount_entregado': 0.0,  # Nuevo: solo para facturas de ventas no rappel
                 }
 
             importe = round(line.price_total, 2)  # Con IVA
@@ -74,6 +75,7 @@ class ReportInvoiceNet(models.AbstractModel):
             # Detectar si es un producto "rappel" por su referencia "100006"
             is_rappel = line.product_id.default_code == '100006' if line.product_id else False
 
+            # Acumular total_amount y total_amount_no_tax para mostrar, incluyendo todo
             line_data_dict[key]['total_amount'] += round(signo * importe, 2)
             line_data_dict[key]['total_amount_no_tax'] += round(signo * importe_sin_iva, 2)
             line_data_dict[key]['total_units'] += round(signo * unidades, 2)
@@ -81,8 +83,11 @@ class ReportInvoiceNet(models.AbstractModel):
 
             if line.move_id.move_type == 'out_refund':
                 if not is_rappel:
-                    line_data_dict[key]['returned_amount'] += round(importe, 2)
-                line_data_dict[key]['returned_units'] += round(unidades, 2)
+                    line_data_dict[key]['returned_amount'] += round(importe, 2)  # Solo no rappels
+                    line_data_dict[key]['returned_units'] += round(unidades, 2)
+            elif line.move_id.move_type == 'out_invoice' and not is_rappel:
+                # Acumular total_amount_entregado solo para facturas de ventas no rappel
+                line_data_dict[key]['total_amount_entregado'] += round(importe, 2)
             else:
                 _logger.info(f"WS Facturado {line.product_id.name} {importe}")
 
@@ -95,6 +100,7 @@ class ReportInvoiceNet(models.AbstractModel):
         total_units = 0.0
         total_returned_amount = 0.0
         total_returned_units = 0.0
+        total_amount_entregado_global = 0.0  # Para total general
 
         for key, values in line_data_dict.items():
             product_id = values['product_id']
@@ -103,10 +109,13 @@ class ReportInvoiceNet(models.AbstractModel):
             total_amount_line = round(values['total_amount'], 2)
             total_amount_no_tax_line = round(values['total_amount_no_tax'], 2)
             returned_amount_line = round(values['returned_amount'], 2)
-                                                                            
-            porcentaje_devuelto = round((returned_amount_line / total_amount_line * 100), 2) if total_amount_line > 0 else 0.0
+            total_amount_entregado_line = round(values['total_amount_entregado'], 2)
+                                                                                                                              
 
-            _logger.info(f"WS Producto: {product_name}, Total Neto: {total_amount_line}, Retornado: {returned_amount_line}, Porcentaje: {porcentaje_devuelto}")
+            # Calcular porcentaje devuelto usando total_amount_entregado_line
+            porcentaje_devuelto = round((returned_amount_line / total_amount_entregado_line * 100), 2) if total_amount_entregado_line > 0 else 0.0
+
+            _logger.info(f"WS Producto: {product_name}, Total Ventas Sin Rappel: {total_amount_entregado_line}, Retornado: {returned_amount_line}, Porcentaje: {porcentaje_devuelto}")
 
             net_weight_line = round(values['total_net_weight'], 2)
             units_line = round(values['total_units'], 2)
@@ -114,11 +123,10 @@ class ReportInvoiceNet(models.AbstractModel):
 
             line_data.append({
                 'product_name': product_name,
-                'default_code': values['default_code'],  # Referencia interna
+                'default_code': values['default_code'],
                 'packaging_name': values['packaging_name'],
                 'total_amount_no_tax': "{:.2f}".format(total_amount_no_tax_line),
                 'total_amount': "{:.2f}".format(total_amount_line),
-                                                                                                          
                                                             
                 'return_percentage': "{:.2f}".format(porcentaje_devuelto),
                 'net_weight': "{:.2f}".format(net_weight_line),
@@ -132,13 +140,14 @@ class ReportInvoiceNet(models.AbstractModel):
             total_net_weight += net_weight_line
             total_units += units_line
             total_returned_units += returned_units_line
+            total_amount_entregado_global += total_amount_entregado_line
 
-        # Ordenar line_data por referencia (última parte del product_name después de "-")
-        line_data = sorted(line_data, key=lambda x: x['product_name'].split('-')[-1].strip() if '-' in x['product_name'] else x['product_name'])
+        # Ordenar line_data por default_code de manera ascendente
+        line_data = sorted(line_data, key=lambda x: x['default_code'])
 
-                                                                           
-        total_return_percentage = round((total_returned_amount / total_amount * 100), 2) if total_amount > 0 else 0.0
-        _logger.info(f"WS Totales: Total Neto: {total_amount}, Retornado: {total_returned_amount}, Porcentaje: {total_return_percentage}")
+        # Calcular total_return_percentage usando total_amount_entregado_global
+        total_return_percentage = round((total_returned_amount / total_amount_entregado_global * 100), 2) if total_amount_entregado_global > 0 else 0.0
+        _logger.info(f"WS Totales: Total Ventas Sin Rappel: {total_amount_entregado_global}, Retornado: {total_returned_amount}, Porcentaje: {total_return_percentage}")
 
         result = {
             'doc_ids': docids,
