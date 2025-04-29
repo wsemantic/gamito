@@ -143,7 +143,7 @@ class ReportInvoiceNet(models.AbstractModel):
             total_amount_entregado_global += total_amount_entregado_line
 
         # Ordenar line_data por default_code de manera ascendente
-        line_data = sorted(line_data, key=lambda x: x['default_code'])
+        line_data = sorted(line_data, key=lambda x: (x.get('default_code') or '').lower())
 
         # Calcular total_return_percentage usando total_amount_entregado_global
         total_return_percentage = round((total_returned_amount / total_amount_entregado_global * 100), 2) if total_amount_entregado_global > 0 else 0.0
