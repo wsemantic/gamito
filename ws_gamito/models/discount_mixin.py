@@ -249,7 +249,7 @@ class DiscountMixin:
                 discount_percentage = DiscountMixin.extract_discount_percentage(line.name)
                 _logger.info(f'WSEM descuento Porc {discount_percentage} type {move_type} signo {signo} doc {line.move_id.name}')
                 if discount_percentage:
-                    precio_lin_desc = signo * (base_before_discount * (discount_percentage / 100.0))
+                    precio_lin_desc =  (base_before_discount * (discount_percentage / 100.0))
                     
                     # Valores actuales
                     current_price_unit = line.price_unit
@@ -258,7 +258,7 @@ class DiscountMixin:
                     # Valores propuestos
                     values_to_update = {'price_unit': precio_lin_desc}
                     if 'product_uom_qty' in line._fields:
-                        values_to_update['product_uom_qty'] = 1
+                        values_to_update['product_uom_qty'] = -1
                     
                     # Comprobar si hay cambios reales
                     need_write = False
