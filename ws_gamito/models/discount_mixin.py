@@ -258,7 +258,7 @@ class DiscountMixin:
                     # Valores propuestos
                     values_to_update = {'price_unit': precio_lin_desc}
                     if 'product_uom_qty' in line._fields:
-                        values_to_update['product_uom_qty'] = -1
+                        values_to_update['product_uom_qty'] = 1
                     
                     # Comprobar si hay cambios reales
                     need_write = False
