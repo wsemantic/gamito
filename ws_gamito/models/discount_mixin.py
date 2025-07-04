@@ -245,7 +245,7 @@ class DiscountMixin:
     def update_discount_line(line, base_before_discount, move_type):
         if line.product_id.name == 'DESCUENTO':
             if line.name:
-                signo = 1 if move_type in ['out_refund'] else -1
+                signo = -1 #1 if move_type in ['out_refund'] else -1
                 discount_percentage = DiscountMixin.extract_discount_percentage(line.name)
                 _logger.info(f'WSEM descuento Porc {discount_percentage} type {move_type} signo {signo} doc {line.move_id.name}')
                 if discount_percentage:
