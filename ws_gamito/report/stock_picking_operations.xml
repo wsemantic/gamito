@@ -29,6 +29,21 @@
             </t>
         </xpath>
 
+		<!-- Modificar la línea del nombre para añadir fecha de envío a la derecha -->
+		<xpath expr="//h1[@t-field='o.name']" position="replace">
+			<div class="row align-items-center">
+				<div class="col-8">
+					<h1 t-field="o.name" class="mt0 mb0"/>
+				</div>
+				<div class="col-4 text-end">
+					<div t-if="o.date_done">
+						<strong>Shipped Date:</strong><br/>
+						<span t-field="o.date_done" t-options="{'widget': 'datetime'}"/>
+					</div>
+				</div>
+			</div>
+		</xpath>
+			
 		<xpath expr="//div[@name='div_sched_date']" position="after">
             <div t-if="o.sudo().sale_id.client_order_ref" class="col-auto col-3 mw-100 mb-2">
                 <strong><t t-translate="yes">Referencia cliente:</t></strong>
