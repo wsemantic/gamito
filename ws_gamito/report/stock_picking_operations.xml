@@ -79,7 +79,16 @@
         </xpath>
 		
 		<xpath expr="//tbody//tr//td/span[@t-field='ml.product_id.display_name']" position="replace">
-			<span t-field="ml.move_id.sale_line_id.name"/>
+			<span t-if="o.picking_type_id.code == 'outgoing' and ml.move_id.sale_line_id" 
+				  t-field="ml.move_id.sale_line_id.name"/>
+			
+			<!-- Caso 2: Albarán de compra/recepción con línea de pedido de compra -->
+			<span t-elif="o.picking_type_id.code == 'incoming' and ml.move_id.purchase_line_id" 
+				  t-field="ml.move_id.purchase_line_id.name"/>
+			
+			<!-- Caso 3: Cualquier otro caso (interno, sin líneas de pedido, etc.) -->
+			<span t-else="" 
+				  t-field="ml.product_id.display_name"/>			
 		</xpath>
 
 
