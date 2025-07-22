@@ -81,14 +81,10 @@
 			<!-- Caso 1: Albarán de venta con línea de pedido -->
 			<span t-if="o.picking_type_id.code == 'outgoing' and move.sale_line_id" 
 				  t-field="move.sale_line_id.name"/>
-			
-			<!-- Caso 2: Albarán de compra con línea de pedido -->
-			<span t-elif="o.picking_type_id.code == 'incoming' and move.purchase_line_id" 
-				  t-field="move.purchase_line_id.name"/>
-			
+						
 			<!-- Caso 3: Albarán interno o sin línea de pedido -->
 			<span t-else="" 
-				  t-field="move.product_id"/>
+				  t-field="move.name"/>
 		</xpath>
 		
 		
