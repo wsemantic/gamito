@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+	<!-- son operaciones con lote (a nivel de move line), por tanto para el albaran de entrega-->
     <template id="report_stockpicking_inherited" inherit_id="stock.report_picking"><!-- en stock/report/report_stockpicking_operations.xml-->
         <xpath expr="//t[@t-call='web.external_layout']" position="before">
             <t t-set="total_net_weight" t-value="0"/>
