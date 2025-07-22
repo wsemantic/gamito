@@ -84,7 +84,7 @@
 						
 			<!-- Caso 3: Albarán interno o sin línea de pedido -->
 			<span t-else="" 
-				  t-field="move.name"/>
+				  t-field="move.product_id.display_name"/>
 		</xpath>
 		
 		
