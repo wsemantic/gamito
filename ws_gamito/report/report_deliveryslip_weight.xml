@@ -78,13 +78,12 @@
 			</xpath>
 		<!-- FIN: Reemplazar columna "Delivered" -->
 		<xpath expr="//table[contains(@t-if, 'o.state!=') and contains(@t-if, 'done')]//tbody/tr/td/span[@t-field='move.product_id']" position="replace">
-			<!-- Caso 1: Albarán de venta con línea de pedido -->
-			<span t-if="o.picking_type_id.code == 'outgoing' and move.sale_line_id" 
-				  t-field="move.sale_line_id.name"/>
-						
-			<!-- Caso 3: Albarán interno o sin línea de pedido -->
-			<span t-else="" 
-				  t-field="move.product_id.display_name"/>
+			<t t-if="o.picking_type_id.code == 'outgoing' and move.sale_line_id">
+				<span t-field="move.sale_line_id.name"/>
+			</t>
+			<t t-else="">
+				<span t-field="move.product_id.display_name"/>
+			</t>
 		</xpath>
 		
 		
