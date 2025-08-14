@@ -10,9 +10,7 @@
             </xpath>
 
             <!-- Añadir el modo de pago junto a la referencia de pago -->
-		  <xpath expr="//t[t-if='o.invoice_payment_term_id.display_on_invoice and payment_term_details']
-					   /div[@id='total_payment_term_details_table']"
-				 position="replace">
+		<xpath expr="//div[@id='total_payment_term_details_table']" position="replace">
 			<div id="total_payment_term_details_table" class="row">
 			  <div t-attf-class="#{'col-7' if report_type != 'html' else 'col-sm-7 col-md-6'} mt-2 mb-2">
 				<table class="table table-sm" style="page-break-inside: avoid;">
