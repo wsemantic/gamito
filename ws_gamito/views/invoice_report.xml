@@ -10,29 +10,15 @@
             </xpath>
 
             <!-- Añadir el modo de pago junto a la referencia de pago -->
-		<xpath expr="//div[@id='total_payment_term_details_table']" position="replace">
-			<div id="total_payment_term_details_table" class="row">
-			  <div t-attf-class="#{'col-7' if report_type != 'html' else 'col-sm-7 col-md-6'} mt-2 mb-2">
-				<table class="table table-sm" style="page-break-inside: avoid;">
-				  <th class="border-black text-start">Due Date</th>
-				  <th class="border-black text-end">Amount Due</th>
-				  <th t-if="o.show_discount_details" class="border-black text-end">Discount</th>
-				  <t t-foreach="payment_term_details" t-as="term">
-					<tr>
-					  <td t-esc="term.get('date')" class="text-start"/>
-					  <td t-options='{"widget": "monetary", "display_currency": o.currency_id}'
-						  t-esc="term.get('amount')" class="text-end"/>
-					  <td t-if="term.get('discount_date')" class="text-end">
-						<span t-options='{"widget": "monetary", "display_currency": o.currency_id}'
-							  t-esc="term.get('discount_amount_currency')"/> if paid before
-						<span t-esc="term.get('discount_date')"/>
-					  </td>
-					</tr>
-				  </t>
-				</table>
-			  </div>
-			</div>
-		  </xpath>		
+		  <xpath expr="//p[@name='payment_communication']" position="after">
+			<p t-if="o.payment_mode_id" class="mt-2">
+			  <strong>Método de pago:</strong>
+			  <span t-field="o.payment_mode_id.name"/>
+			  <t t-if="o.payment_mode_id.payment_method_id">
+				<span class="text-muted">(<span t-field="o.payment_mode_id.payment_method_id.name"/>)</span>
+			  </t>
+			</p>
+		  </xpath>	
 
         </template>
         
