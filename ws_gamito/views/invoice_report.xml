@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Herencia del template original para modificar la fecha de vencimiento -->
+        <!-- Herencia del template original para modificar la fecha de vencimiento
+             y mostrar el modo de pago en la factura -->
         <template id="report_invoice_document_custom" inherit_id="account.report_invoice_document">
-            
-            <!-- Modificación mínima: solo cambiar el atributo t-if -->
+
+            <!-- Mostrar fecha de vencimiento solo para facturas publicadas -->
             <xpath expr="//div[@name='due_date']" position="attributes">
                 <attribute name="t-if">o.invoice_date_due and o.move_type in ('out_invoice', 'out_refund') and o.state == 'posted'</attribute>
             </xpath>
-            
-        </template> 
+
+            <!-- Añadir el modo de pago junto a la referencia de pago -->
+            <xpath expr="//p[span[@t-field='o.payment_reference']]" position="after">
+                <p t-if="o.payment_mode_id">
+                    <strong>Modo de pago:</strong>
+                    <span t-field="o.payment_mode_id.name"/>
+                </p>
+            </xpath>
+
+        </template>
         
     </data>
 </odoo>
