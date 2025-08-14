@@ -14,11 +14,8 @@
 			<p t-if="o.payment_mode_id" class="mt-2">
 			  <strong>Método de pago:</strong>
 			  <span t-field="o.payment_mode_id.name"/>
-			  <t t-if="o.payment_mode_id.payment_method_id">
-				<span class="text-muted">(<span t-field="o.payment_mode_id.payment_method_id.name"/>)</span>
-			  </t>
 			</p>
-		  </xpath>	
+		  </xpath>
 
         </template>
         
