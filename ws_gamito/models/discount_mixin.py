@@ -47,9 +47,18 @@ class AccountMove(models.Model):
     def write(self, vals):    
         if self.env.context.get('prevent_recursion'):
             return super(AccountMove, self).write(vals)
-        
+
+        apply_discounts = any(
+            field in vals for field in ['invoice_line_ids', 'line_ids', 'partner_id', 'move_type']
+        )
+        enforce_draft_discounts = vals.get('state') == 'draft'
         self = self.with_context(prevent_recursion=True)
         res = super(AccountMove, self).write(vals)
+
+        if not apply_discounts:
+            apply_discounts = enforce_draft_discounts or any(record.state == 'draft' for record in self)
+        if not apply_discounts:
+            return res
 
         # Iterar sobre cada registro en caso de múltiples registros
         for record in self:
@@ -341,4 +350,3 @@ class DiscountMixin:
                         
                     })
             DiscountMixin.update_discount_lines(record,None,move_type)
-
