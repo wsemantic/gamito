@@ -49,4 +49,15 @@
 				action = records.calcular_fecha_entrega()
 		</field>
 	</record>-->
+
+	<record id="product_product_ext_form_view2_inherit_hide_bom_cost" model="ir.ui.view">
+		<field name="name">product.product.form.hide.bom.cost</field>
+		<field name="model">product.product</field>
+		<field name="inherit_id" ref="mrp_account.product_product_ext_form_view2"/>
+		<field name="arch" type="xml">
+			<xpath expr="//button[@name='button_bom_cost']" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</xpath>
+		</field>
+	</record>
 </odoo>

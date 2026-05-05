@@ -20,7 +20,7 @@
     'version': '16.0.0.10',
 
     # any module necessary for this one to work correctly
-    'depends': ['account','stock','sale','purchase_stock'], 
+    'depends': ['account','stock','sale','purchase_stock','mrp_account'],
     'external_dependencies': {'python': ['xlsxwriter']},
     # always loaded
     'data': [
