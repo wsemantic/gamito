@@ -8,8 +8,8 @@
 			
             <xpath expr="//field[@name='name']" position="before">				
 				<field name="ws_fecha_grupo_str"/>
-				<field name="ws_fecha_min_str"/>
-				<field name="ws_fecha_max_str"/>
+				<!--<field name="ws_fecha_min_str"/>
+				<field name="ws_fecha_max_str"/>-->
 			</xpath>
 					
 			<xpath expr="//field[@name='components_availability']" position="after">						
@@ -32,8 +32,8 @@
 				<xpath expr="//field[@name='product_qty']" position="attributes">
 					<attribute name="invisible">1</attribute>
 				</xpath>					
-				<!-- Volver a añadir 'date_planned_start' después de 'ws_fecha_max_str' -->
-				<xpath expr="//field[@name='ws_fecha_max_str']" position="after">
+				<!-- Volver a añadir 'date_planned_start' después de 'ws_fecha_grupo_str' -->
+				<xpath expr="//field[@name='ws_fecha_grupo_str']" position="after">
 					<field name="date_planned_start" invisible="0"/>
 				</xpath>
 				<xpath expr="//field[@name='product_id']" position="after">
