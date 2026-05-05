@@ -19,7 +19,8 @@
 				<field name="ws_multiplos"/>
 				<field name="ws_ordenes"/>
 				<field name="wsem_workcenter" optional="show"/>
-				<field name="ws_demanda_minima" string="Cantidad demanda"/>				
+				<field name="ws_demanda_minima" string="Cantidad demanda"/>
+				<field name="qty_available" string="Stock disponible" optional="show"/>
             </xpath>
 
 			<!-- Reordenar. Primero eliminar 'date_planned_start' de su posición original sin borrarlo -->
@@ -71,6 +72,10 @@
 			<xpath expr="//label[@name='bom_label']" position="before">
 					<field name="ws_multiplos" context="{'default_product_tmpl_id': product_tmpl_id}" />
 					<field name="ws_demanda_minima" context="{'default_product_tmpl_id': product_tmpl_id}" />
+			</xpath>
+			<xpath expr="//label[@for='product_qty']/following-sibling::div[1]" position="after">
+					<label for="qty_available" string="Stock disponible"/>
+					<field name="qty_available" readonly="1"/>
 			</xpath>
 		</field>
 	</record>

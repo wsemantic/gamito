@@ -28,6 +28,12 @@ class MrpProduction(models.Model):
     
     ws_demanda_minima	= fields.Float('Cantidad demanda', default=1.0)
     ws_bultos	= fields.Float('Bultos', compute='_compute_total_bultos')
+
+    qty_available = fields.Float(
+        string='Stock disponible',
+        related='product_id.qty_available',
+        readonly=True,
+    )
     
     @api.depends('product_qty', 'packaging_qty')
     def _compute_total_bultos(self):
