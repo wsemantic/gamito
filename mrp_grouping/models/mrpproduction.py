@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.tools import float_compare
 from datetime import timedelta, datetime
 
 import logging
@@ -46,17 +47,32 @@ class MrpProduction(models.Model):
                 
     @api.onchange('ws_multiplos')
     def _onchange_ws_multiplos(self):
+        if self.state != 'draft':
+            return
         if self.ws_multiplos and self.bom_id:
-            newq=self.bom_id.product_qty * self.ws_multiplos
-            
-            #self.qty_producing = newq
-            self.product_qty = newq
-            
+            self.product_qty = self.bom_id.product_qty * self.ws_multiplos
 
     @api.onchange('product_qty', 'bom_id')
     def _onchange_product_qty(self):
         if self.product_qty and self.bom_id:
-            self.ws_multiplos = self.product_qty / self.bom_id.product_qty             
+            self.ws_multiplos = self.product_qty / self.bom_id.product_qty
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'ws_multiplos' in vals:
+            for rec in self:
+                if rec.state not in ('confirmed', 'progress'):
+                    continue
+                if not (rec.bom_id and rec.ws_multiplos and rec.bom_id.product_qty):
+                    continue
+                new_qty = rec.bom_id.product_qty * rec.ws_multiplos
+                rounding = rec.product_uom_id.rounding or 0.01
+                if float_compare(new_qty, rec.product_qty, precision_rounding=rounding) != 0:
+                    self.env['change.production.qty'].create({
+                        'mo_id': rec.id,
+                        'product_qty': new_qty,
+                    }).change_prod_qty()
+        return res
             
     def action_generate_serial(self):
         self.ensure_one()
