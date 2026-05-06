@@ -45,7 +45,7 @@
 
 		<template id="address_layout_compact" inherit_id="web.address_layout">
 			<xpath expr="//div[hasclass('row')][1]" position="attributes">
-				<attribute name="t-attf-class" separator=" " add="mt-n4"/>
+				<attribute name="class" separator=" " add="mt-n4"/>
 			</xpath>
 		</template>
 
