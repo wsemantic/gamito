@@ -33,6 +33,7 @@ class MrpProduction(models.Model):
         string='Stock disponible',
         related='product_id.qty_available',
         readonly=True,
+        digits=(16, 0)
     )
     
     @api.depends('product_qty', 'packaging_qty')
