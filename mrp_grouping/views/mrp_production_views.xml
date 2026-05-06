@@ -75,7 +75,7 @@
 			</xpath>
 			<xpath expr="//label[@for='product_qty']/following-sibling::div[1]" position="after">
 					<label for="qty_available" string="Stock disponible"/>
-					<field name="qty_available" readonly="1" widget="integer"/>
+					<field name="qty_available" readonly="1" t-options='{"widget": "float", "precision": 0}'/>
 			</xpath>
 		</field>
 	</record>
