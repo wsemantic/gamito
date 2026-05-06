@@ -24,19 +24,19 @@
 				  inherit_id="web.external_layout_standard">
 
 			<!-- Variable: True si el pie está vacío o solo tiene HTML vacío -->
-			<xpath expr="//div[hasclass('footer')]" position="before">
+			<xpath expr="//div[contains(@t-attf-class, 'footer')]" position="before">
 				<t t-set="_footer_is_empty"
 				   t-value="not company.report_footer or not company.report_footer.strip() or company.report_footer.strip() in ('&lt;p&gt;&lt;br&gt;&lt;/p&gt;', '&lt;p&gt;&lt;/p&gt;')"/>
 			</xpath>
 
 			<!-- Quitar margen inferior del <ul> solo si el pie está vacío -->
-			<xpath expr="//div[hasclass('footer')]//ul" position="attributes">
+			<xpath expr="//div[contains(@t-attf-class, 'footer')]//ul" position="attributes">
 				<attribute name="t-attf-class">list-inline {{ 'mb-0' if _footer_is_empty else 'mb4' }}</attribute>
 				<attribute name="class"/>
 			</xpath>
 
 			<!-- Compactar el contenedor solo si el pie está vacío -->
-			<xpath expr="//div[hasclass('footer')]//div[hasclass('text-center')]"
+			<xpath expr="//div[contains(@t-attf-class, 'footer')]//div[hasclass('text-center')]"
 				   position="attributes">
 				<attribute name="t-attf-style">border-top: 1px solid black; {{ 'padding-top: 2px; line-height: 1.1;' if _footer_is_empty else '' }}</attribute>
 			</xpath>
