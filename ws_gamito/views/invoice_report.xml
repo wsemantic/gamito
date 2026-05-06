@@ -42,12 +42,10 @@
 			</xpath>
 
 		</template>
-<!--
 		<template id="address_layout_compact" inherit_id="web.address_layout">
 			<xpath expr="//div[hasclass('row')][1]" position="attributes">
-				<attribute name="class" separator=" " add="mt-n4"/>
+				<attribute name="style">margin-top: -1.5rem;</attribute>
 			</xpath>
 		</template>
--->
     </data>
 </odoo>
