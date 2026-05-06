@@ -50,6 +50,21 @@
 		</field>
 	</record>-->
 
+	<template id="oca_financial_internal_layout_logo"
+			  inherit_id="account_financial_report.internal_layout">
+		<xpath expr="//t[@t-out='0']" position="before">
+			<t t-set="_company" t-value="env.company"/>
+			<div class="row mb-3">
+				<div class="col-4">
+					<img t-if="_company.logo"
+						 t-att-src="image_data_uri(_company.logo)"
+						 style="max-height: 60px;"
+						 alt="Logo"/>
+				</div>
+			</div>
+		</xpath>
+	</template>
+
 	<record id="product_product_ext_form_view2_inherit_hide_bom_cost" model="ir.ui.view">
 		<field name="name">product.product.form.hide.bom.cost</field>
 		<field name="model">product.product</field>
