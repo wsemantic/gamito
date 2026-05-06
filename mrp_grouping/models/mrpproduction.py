@@ -1,6 +1,8 @@
 from odoo import api, fields, models
 from odoo.tools import float_compare
 from datetime import timedelta, datetime
+from dateutil.relativedelta import relativedelta
+from calendar import monthrange
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -79,42 +81,93 @@ class MrpProduction(models.Model):
                         'mo_id': rec.id,
                         'product_qty': new_qty,
                     }).change_prod_qty()
+        if 'date_planned_start' in vals:
+            for rec in self:
+                if rec.lot_producing_id:
+                    rec._refresh_lot_for_production()
         return res
             
+    def _is_intermediate_product(self):
+        self.ensure_one()
+        cat = self.product_id.categ_id
+        while cat:
+            if cat.name == 'INT (Amasado)':
+                return True
+            cat = cat.parent_id
+        return False
+
+    def _compute_lot_expiration(self, production_date):
+        self.ensure_one()
+        if self._is_intermediate_product():
+            return production_date + relativedelta(months=16)
+        if production_date.month <= 6:
+            year = production_date.year + 1
+            month = production_date.month
+            last_day = monthrange(year, month)[1]
+            return datetime(year, month, last_day)
+        return datetime(production_date.year + 1, 12, 31)
+
+    def _get_production_local_datetime(self):
+        self.ensure_one()
+        dt = self.date_planned_start or fields.Datetime.now()
+        return fields.Datetime.context_timestamp(self, dt)
+
+    def _lot_is_exclusive_to_self(self, lot):
+        self.ensure_one()
+        if not lot:
+            return False
+        other_prod = self.env['mrp.production'].search_count([
+            ('lot_producing_id', '=', lot.id),
+            ('id', '!=', self.id),
+        ])
+        if other_prod:
+            return False
+        if self.env['stock.quant'].search_count([('lot_id', '=', lot.id)]):
+            return False
+        if self.env['stock.move.line'].search_count([('lot_id', '=', lot.id)]):
+            return False
+        return True
+
+    def _refresh_lot_for_production(self):
+        self.ensure_one()
+        if self.product_id.tracking == 'none':
+            return self.lot_producing_id
+
+        production_date = self._get_production_local_datetime()
+        new_lot_name = production_date.strftime("%g%V%u")
+        new_expiration = self._compute_lot_expiration(production_date)
+
+        target = self.lot_producing_id
+        if not target or target.name != new_lot_name:
+            target = self.env['stock.lot'].search([
+                ('name', '=', new_lot_name),
+                ('product_id', '=', self.product_id.id),
+            ], limit=1)
+            if not target and self.lot_producing_id and self._lot_is_exclusive_to_self(self.lot_producing_id):
+                target = self.lot_producing_id
+
+        if not target:
+            lot_vals = self._prepare_stock_lot_values()
+            lot_vals['name'] = new_lot_name
+            lot_vals['expiration_date'] = new_expiration
+            target = self.env['stock.lot'].create(lot_vals)
+            _logger.info(f'WSEM v2 nuevo lote :{new_lot_name}')
+        else:
+            updates = {}
+            if target.name != new_lot_name:
+                updates['name'] = new_lot_name
+            if target.expiration_date != new_expiration:
+                updates['expiration_date'] = new_expiration
+            if updates:
+                target.write(updates)
+
+        if self.lot_producing_id != target:
+            self.lot_producing_id = target
+            if self.product_id.tracking == 'serial':
+                self._set_qty_producing()
+
+        return target
+
     def action_generate_serial(self):
         self.ensure_one()
-        
-        # Crear los valores del lote
-        lot_vals = self._prepare_stock_lot_values()
-        
-        # Personalización del nombre del lote
-        product = self.product_id
-        date_now = fields.Datetime.now()
-        formatted_date = date_now.strftime("%g%V%u")
-        product_ref = product.default_code or 'NO_REF'
-        new_lot_name = f"{formatted_date}"
-        
-        existing_lot = self.env['stock.lot'].search([('name', '=', new_lot_name), ('product_id', '=', product.id)], limit=1)
-        if existing_lot:
-            # Si existe, usar el lote existente
-            _logger.info(f'WSEM v2 ya existía el lote :{new_lot_name}')
-            self.lot_producing_id = existing_lot
-            return existing_lot
-        
-        # Si no existe, crear un nuevo lote
-        lot_vals['name'] = new_lot_name
-        
-        # Calculando el 31 de diciembre del próximo año
-        current_year = date_now.year
-        next_year = current_year + 1
-        expiration_date = datetime(next_year, 12, 31)
-        
-        lot_vals['expiration_date'] = expiration_date
-        
-        self.lot_producing_id = self.env['stock.lot'].create(lot_vals)
-        
-        if self.product_id.tracking == 'serial':
-            self._set_qty_producing()
-        
-        _logger.info(f'WSEM v2 asignando nombre lote :{new_lot_name}')
-        return self.lot_producing_id
+        return self._refresh_lot_for_production()
