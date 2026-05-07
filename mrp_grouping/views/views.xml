@@ -114,9 +114,10 @@
             <field name="arch" type="xml">
                 <form string="Plan Production">
                     <group>
-                        <field name="daysgroup"/>
+						<field name="ws_use_capacity"/>
 						<field name="ws_fecha_grupo"/>
-                        <!--<field name="ngroups"/>-->
+                        <field name="daysgroup" attrs="{'invisible': [('ws_use_capacity', '=', False)]}"/>
+                        <field name="ngroups" attrs="{'invisible': [('ws_use_capacity', '=', False)]}"/>
                     </group>
                     <footer>
                         <button name="mrp_planning" type="object" string="Plan" class="btn-primary"/>

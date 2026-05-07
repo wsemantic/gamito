@@ -15,6 +15,7 @@ class MrpDateGrouping(models.TransientModel):
     daysgroup = fields.Integer(string='Agrupar cada produccion en dias', default=100, required=True)
     ngroups = fields.Integer(string='Numero de grupos a planificar', default=1000, required=True)
     ws_fecha_grupo = fields.Datetime(string='Fecha Grupo', required=True)
+    ws_use_capacity = fields.Boolean(string='Tener en cuenta capacidades de recursos', default=False)
 
     def mrp_planning(self):
         sale_orders = self.env['sale.order'].browse(self._context.get('active_ids'))
@@ -58,8 +59,11 @@ class MrpDateGrouping(models.TransientModel):
 
                                                                                                                          
                     products_demand = self._products_demand(current_group, product_tags, order_names, order.name)
-                    
-                    self._calculate_lead_times_by_phase(products_demand, start_dates, end_dates)
+
+                    if self.ws_use_capacity:
+                        self._calculate_lead_times_by_phase(products_demand, start_dates, end_dates)
+                    else:
+                        self._fill_default_dates(products_demand, start_dates, end_dates)
                     order.expected_date = self.max_reserved_date_for_order(order, end_dates)
                     
                     start_gr_date = min(start_dates.values())
@@ -274,7 +278,7 @@ class MrpDateGrouping(models.TransientModel):
             return {phase + 1 for phase in phases}
 
     def _calculate_product_lead_time(self, productkey, workcenter_sched, workcenter_of_products, products_demand):
-        
+
         proname, product, packaging = productkey
         bom = self.env['mrp.bom']._bom_find(product)[product]
         user_language = self.env.user.lang
@@ -457,9 +461,15 @@ class MrpDateGrouping(models.TransientModel):
         default_code = product.default_code or ''
         name_idioma = product.with_context(lang=language).name or product.name
         dn= f"[{default_code}] {name_idioma}"
-        
+
         return dn
-        
+
+    def _fill_default_dates(self, products_demand, start_dates, end_dates):
+        base_dt = self.ws_fecha_grupo or fields.Datetime.now()
+        for productkey in products_demand:
+            start_dates.setdefault(productkey, base_dt)
+            end_dates[productkey] = start_dates[productkey]
+
 '''class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
