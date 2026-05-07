@@ -107,6 +107,18 @@ class MrpProduction(models.Model):
             return datetime(year, month, last_day)
         return datetime(production_date.year + 1, 12, 31)
 
+    def _compute_lot_dates(self, production_date):
+        self.ensure_one()
+        product = self.product_id
+        vals = {'expiration_date': self._compute_lot_expiration(production_date)}
+        if product.use_time:
+            vals['use_date'] = production_date + timedelta(days=product.use_time)
+        if product.alert_time:
+            vals['alert_date'] = production_date + timedelta(days=product.alert_time)
+        if product.removal_time:
+            vals['removal_date'] = production_date + timedelta(days=product.removal_time)
+        return vals
+
     def _get_production_local_datetime(self):
         self.ensure_one()
         dt = self.date_planned_start or fields.Datetime.now()
@@ -135,7 +147,7 @@ class MrpProduction(models.Model):
 
         production_date = self._get_production_local_datetime()
         new_lot_name = production_date.strftime("%g%V%u")
-        new_expiration = self._compute_lot_expiration(production_date)
+        new_dates = self._compute_lot_dates(production_date)
 
         target = self.lot_producing_id
         if not target or target.name != new_lot_name:
@@ -149,15 +161,16 @@ class MrpProduction(models.Model):
         if not target:
             lot_vals = self._prepare_stock_lot_values()
             lot_vals['name'] = new_lot_name
-            lot_vals['expiration_date'] = new_expiration
+            lot_vals.update(new_dates)
             target = self.env['stock.lot'].create(lot_vals)
             _logger.info(f'WSEM v2 nuevo lote :{new_lot_name}')
         else:
             updates = {}
             if target.name != new_lot_name:
                 updates['name'] = new_lot_name
-            if target.expiration_date != new_expiration:
-                updates['expiration_date'] = new_expiration
+            for field, val in new_dates.items():
+                if target[field] != val:
+                    updates[field] = val
             if updates:
                 target.write(updates)
 
