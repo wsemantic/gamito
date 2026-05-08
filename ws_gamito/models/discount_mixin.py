@@ -181,6 +181,17 @@ class InvoiceLineCustom(models.Model):
 
 class DiscountMixin:
 
+    @staticmethod
+    def is_standalone_invoice(move):
+        """Retorna True si la factura no proviene de un pedido de venta."""
+        if not hasattr(move, 'invoice_line_ids'):
+            return True
+
+        if move.invoice_origin:
+            return False
+
+        return not any(line.sale_line_ids for line in move.invoice_line_ids)
+
 #DESCUENTOS GLOBALES  
     @staticmethod                  
     def ws_is_desc(line):
@@ -205,6 +216,10 @@ class DiscountMixin:
             
     @staticmethod 
     def update_discount_lines(order, discount_line, move_type):
+        if hasattr(order, 'invoice_line_ids') and not DiscountMixin.is_standalone_invoice(order):
+            _logger.info('WSEM factura desde pedido: se omite recalculo de descuentos mixing')
+            return
+
         # Si ya existe la bandera, salimos inmediatamente
         if order.env.context.get('avoid_recursion'):
             return
@@ -312,6 +327,10 @@ class DiscountMixin:
             partner_id = record.partner_id.id
 
         elif hasattr(record, 'invoice_line_ids'):
+            if not DiscountMixin.is_standalone_invoice(record):
+                _logger.info('WSEM factura desde pedido: se omite aplicacion de descuentos mixing')
+                return
+
             lines = record.invoice_line_ids
             line_model = record.env['account.move.line']
             partner_id = record.partner_id.id
