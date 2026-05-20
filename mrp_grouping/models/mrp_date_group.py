@@ -35,7 +35,8 @@ class MrpDateGrouping(models.TransientModel):
         end_dates = defaultdict(lambda: fields.Datetime.now())  # key product.id int
         planned_groups = 0
         prev_tag = None
-        self.find_max_reserved_date_for_work_centers(sale_orders, start_dates, fields.Datetime.now())
+        if self.ws_use_capacity:
+            self.find_max_reserved_date_for_work_centers(sale_orders, start_dates, fields.Datetime.now())
         
         _logger.info("WSEM Inicio:")
         for index, order in enumerate(sale_orders):
@@ -58,7 +59,10 @@ class MrpDateGrouping(models.TransientModel):
                     fecha_maxima = max(fechas_compromiso) if fechas_compromiso else None
 
                                                                                                                          
-                    products_demand = self._products_demand(current_group, product_tags, order_names, order.name)
+                    # Acumulamos incrementalmente la demanda del pedido añadido.
+                    # El total acumulado equivale al recálculo completo del grupo,
+                    # pero evita recomputar todo el árbol BOM en cada iteración.
+                    self._accumulate_order_demand(products_demand, order, product_tags, order_names)
 
                     if self.ws_use_capacity:
                         self._calculate_lead_times_by_phase(products_demand, start_dates, end_dates)
@@ -98,7 +102,8 @@ class MrpDateGrouping(models.TransientModel):
                     group_end_date = None     
                     product_tags = {}                
                     order_names.clear()
-                    self.find_max_reserved_date_for_work_centers(sale_orders, start_dates, fields.Datetime.now()) 
+                    if self.ws_use_capacity:
+                        self.find_max_reserved_date_for_work_centers(sale_orders, start_dates, fields.Datetime.now()) 
                 else:
                     prev_tag = order_tag                
             
@@ -179,6 +184,7 @@ class MrpDateGrouping(models.TransientModel):
  
     def _products_demand(self, sale_orders, product_tags, order_names_dic, ordername):
         products_demand = {}
+        bom_cache = {}
                 
         
         for order in sale_orders:
@@ -209,13 +215,19 @@ class MrpDateGrouping(models.TransientModel):
                     tag = tag_arr[0].name.strip()
                 product_tags[productkey] = tag 
                                                                                                                                                                                                                                                                                            
-                self._products_demand_bomlines(products_demand, productkey, product_tags, tag, line.product_uom_qty)                                                                         
+                self._products_demand_bomlines(products_demand, productkey, product_tags, tag, line.product_uom_qty, bom_cache=bom_cache)                                                                         
                                       
 
         return products_demand
 
-    def _products_demand_bomlines(self, products_demand, productkey, product_tags, tag, root_quantity, visited=None):
+    def _accumulate_order_demand(self, products_demand, order, product_tags, order_names_dic):
+        delta = self._products_demand([order], product_tags, order_names_dic, order.name)
+        for productkey, qty in delta.items():
+            products_demand[productkey] = products_demand.get(productkey, 0) + qty
+
+    def _products_demand_bomlines(self, products_demand, productkey, product_tags, tag, root_quantity, visited=None, bom_cache=None):
         pro_name, product, packaging = productkey
+        bom_cache = bom_cache or {}
 
         # Inicializar el conjunto de productos visitados si no se ha hecho
         if visited is None:
@@ -238,26 +250,33 @@ class MrpDateGrouping(models.TransientModel):
 
             # Obtener el BOM específico del producto
             bom = bom_dict[product]
-
-            user_language = self.env.user.lang
+            component_ratios = bom_cache.get(product.id)
+            if component_ratios is None:
+                user_language = self.env.user.lang
+                component_ratios = []
+                for line in bom.bom_line_ids:
+                    linname = self._generate_default_name(line.product_id, user_language)
+                    sub_productkey = (linname, line.product_id, None)
+                    component_ratios.append((sub_productkey, line.product_qty / bom.product_qty))
+                bom_cache[product.id] = component_ratios
 
             # Iterar sobre las líneas del BOM para calcular la demanda
-            for line in bom.bom_line_ids:
-                linname = self._generate_default_name(line.product_id, user_language)
-                sub_productkey = (linname, line.product_id, None)  # None para el packaging de componentes
-
+            for sub_productkey, ratio in component_ratios:
                 # Actualizar la cantidad demandada del subproducto
                 if sub_productkey not in products_demand:
                     products_demand[sub_productkey] = 0
 
-                products_demand[sub_productkey] += root_quantity / bom.product_qty * line.product_qty
+                component_qty = root_quantity * ratio
+                products_demand[sub_productkey] += component_qty
 
                 # Asignar la etiqueta al subproducto si no está ya asignada
                 if sub_productkey not in product_tags:
                     product_tags[sub_productkey] = tag
 
                 # Llamada recursiva para procesar subproductos
-                self._products_demand_bomlines(products_demand, sub_productkey, product_tags, tag, root_quantity * line.product_qty, visited)
+                self._products_demand_bomlines(
+                    products_demand, sub_productkey, product_tags, tag, component_qty, visited, bom_cache
+                )
         finally:
             # Eliminar el producto del conjunto de visitados al salir de la recursión
             visited.remove(product)
