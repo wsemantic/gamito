@@ -9,3 +9,5 @@ from . import packaging
 from . import account_invoice_report
 from . import report_invoice_net
 from . import purchase
+
+from . import partner_display_name
