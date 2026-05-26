@@ -25,6 +25,7 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/ws_gamito_security.xml',
         'views/views.xml',
         'views/descuentos.xml',
         'views/templates.xml',
