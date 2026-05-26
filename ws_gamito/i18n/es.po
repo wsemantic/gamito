@@ -40,3 +40,7 @@ msgstr "EAN13"
 #: model:ir.model.fields,field_description:product.field_product_packaging__barcode
 msgid "Barcode"
 msgstr "DUM14"
+#. module: ws_gamito
+#: model:res.groups,name:ws_gamito.group_bom_cost_button_access
+msgid "BOM Cost Button Access"
+msgstr "Acceso al botón de coste de LdM"
