@@ -1,6 +1,6 @@
 from odoo import api, fields, models
 from odoo.tools import float_compare
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, timezone
 from dateutil.relativedelta import relativedelta
 from calendar import monthrange
 
@@ -117,7 +117,15 @@ class MrpProduction(models.Model):
             vals['alert_date'] = production_date + timedelta(days=product.alert_time)
         if product.removal_time:
             vals['removal_date'] = production_date + timedelta(days=product.removal_time)
-        return vals
+        return {
+            field: self._to_odoo_naive_datetime(value)
+            for field, value in vals.items()
+        }
+
+    def _to_odoo_naive_datetime(self, value):
+        if value and value.tzinfo and value.tzinfo.utcoffset(value) is not None:
+            return value.astimezone(timezone.utc).replace(tzinfo=None)
+        return value
 
     def _get_production_local_datetime(self):
         self.ensure_one()
