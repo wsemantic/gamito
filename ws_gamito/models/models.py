@@ -49,6 +49,38 @@ class AccountMoveLine(models.Model):
 
 
                 
+class AccountMove(models.Model):
+    _inherit = 'account.move'
+
+    delivery_address = fields.Char(
+        string='Dirección Entrega',
+        compute='_compute_delivery_address',
+    )
+
+    @api.depends('partner_shipping_id')
+    def _compute_delivery_address(self):
+        for move in self:
+            move.delivery_address = move.partner_shipping_id._display_address(
+                without_company=True
+            ).replace('\n', ', ') if move.partner_shipping_id else ''
+
+
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
+
+    delivery_address = fields.Char(
+        string='Dirección Entrega',
+        compute='_compute_delivery_address',
+    )
+
+    @api.depends('partner_id')
+    def _compute_delivery_address(self):
+        for picking in self:
+            picking.delivery_address = picking.partner_id._display_address(
+                without_company=True
+            ).replace('\n', ', ') if picking.partner_id else ''
+
+
 class ResPartnerBank(models.Model):
     _inherit = 'res.partner.bank'
 
