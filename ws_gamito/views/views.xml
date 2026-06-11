@@ -54,7 +54,9 @@
 		<field name="model">account.move</field>
 		<field name="inherit_id" ref="account.view_out_invoice_tree"/>
 		<field name="arch" type="xml">
-			<xpath expr="//field[@name='invoice_partner_display_name'][@string='Customer']" position="after">
+			<!-- Hay dos campos invoice_partner_display_name (Vendor y Customer);
+			     el segundo es el de Cliente. No se puede seleccionar por @string. -->
+			<xpath expr="(//field[@name='invoice_partner_display_name'])[2]" position="after">
 				<field name="delivery_address" optional="show"/>
 			</xpath>
 		</field>
@@ -95,6 +97,23 @@
 		<field name="name">product.template.form.hide.bom.cost</field>
 		<field name="model">product.template</field>
 		<field name="inherit_id" ref="mrp_account.product_product_ext_form_view2"/>
+		<field name="arch" type="xml">
+			<xpath expr="//button[@name='button_bom_cost']/parent::t" position="attributes">
+				<attribute name="groups">ws_gamito.group_bom_cost_button_access</attribute>
+			</xpath>
+			<xpath expr="//button[@name='button_bom_cost']" position="attributes">
+				<attribute name="groups">ws_gamito.group_bom_cost_button_access</attribute>
+			</xpath>
+		</field>
+	</record>
+
+	<!-- Core Odoo 16: mrp_account.product_product_view_form_normal_inherit_extended (product.product)
+	     Mismo filtrado que en el formulario de plantilla, para el formulario de
+	     variante (al que se llega navegando desde una fabricación). -->
+	<record id="product_product_normal_form_inherit_hide_bom_cost" model="ir.ui.view">
+		<field name="name">product.product.form.hide.bom.cost</field>
+		<field name="model">product.product</field>
+		<field name="inherit_id" ref="mrp_account.product_product_view_form_normal_inherit_extended"/>
 		<field name="arch" type="xml">
 			<xpath expr="//button[@name='button_bom_cost']/parent::t" position="attributes">
 				<attribute name="groups">ws_gamito.group_bom_cost_button_access</attribute>
