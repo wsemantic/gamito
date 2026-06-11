@@ -81,7 +81,12 @@ class MrpProduction(models.Model):
                         'mo_id': rec.id,
                         'product_qty': new_qty,
                     }).change_prod_qty()
-        if 'date_planned_start' in vals:
+        # No regenerar el lote cuando la fecha la reescribe internamente Odoo
+        # (finalizar/planificar órdenes de trabajo usan force_date=True). Eso
+        # ocurría al "Marcar como hecho" si la OT estaba planificada a futuro:
+        # button_finish reescribía date_planned_start a la fecha actual y el
+        # lote cambiaba. Solo refrescamos ante reprogramaciones reales.
+        if 'date_planned_start' in vals and not self.env.context.get('force_date'):
             for rec in self:
                 if rec.lot_producing_id:
                     rec._refresh_lot_for_production()
